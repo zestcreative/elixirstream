@@ -10,9 +10,9 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 config :regex_tester, RegexTesterWeb.Endpoint,
-  http: [port: {:system, "PORT"}],
+  http: [port: 443, compress: true],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  url: [scheme: "https", host: "regex.bernheisel.dev", port: 443],
+  url: [scheme: "https", host: "regex.bernheisel.com", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production
