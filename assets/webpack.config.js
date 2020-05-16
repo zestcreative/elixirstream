@@ -5,13 +5,11 @@ const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = (env, options) => {
-  const devMode = options.mode !== 'production';
-
+module.exports = (_env, _options) => {
   return {
     optimization: {
       minimizer: [
-        new TerserPlugin({ cache: true, parallel: true, sourceMap: devMode }),
+        new TerserPlugin({ cache: true, parallel: true, sourceMap: true }),
         new OptimizeCSSAssetsPlugin({})
       ]
     },
@@ -23,22 +21,20 @@ module.exports = (env, options) => {
       path: path.resolve(__dirname, '../priv/static/js'),
       publicPath: '/js/'
     },
-    devtool: devMode ? 'source-map' : undefined,
+    devtool: 'source-map',
     module: {
       rules: [
         {
           test: /\.js$/,
           exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader'
-          }
+          use: { loader: 'babel-loader' }
         },
         {
           test: /\.[s]?css$/,
           use: [
             MiniCssExtractPlugin.loader,
-            'css-loader',
-            'sass-loader',
+            { loader: "css-loader", options: { importLoaders: 1, sourceMap: true } },
+            { loader: "postcss-loader", options: { sourceMap: true } },
           ],
         }
       ]

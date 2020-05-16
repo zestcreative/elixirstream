@@ -1,5 +1,7 @@
 defmodule RegexTesterWeb.Router do
   use RegexTesterWeb, :router
+  import Plug.BasicAuth
+  import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -9,12 +11,12 @@ defmodule RegexTesterWeb.Router do
     plug :put_secure_browser_headers
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
+  pipeline :auth do
+    plug :basic_auth, Application.get_env(:you_meet, :basic_auth)
   end
 
   scope "/", RegexTesterWeb do
-    pipe_through :browser
+    pipe_through [:browser]
 
     get "/", PageController, :index
   end
@@ -31,12 +33,8 @@ defmodule RegexTesterWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  if Mix.env() in [:dev, :test] do
-    import Phoenix.LiveDashboard.Router
-
-    scope "/" do
-      pipe_through :browser
-      live_dashboard "/dashboard", metrics: RegexTesterWeb.Telemetry
-    end
+  scope "/" do
+    pipe_through [:browser, :auth]
+    live_dashboard "/dashboard", metrics: RegexTesterWeb.Telemetry
   end
 end

@@ -14,9 +14,6 @@ defmodule RegexTester.MixProject do
     ]
   end
 
-  # Configuration for the OTP application.
-  #
-  # Type `mix help compile.app` for more information.
   def application do
     [
       mod: {RegexTester.Application, []},
@@ -38,10 +35,11 @@ defmodule RegexTester.MixProject do
       {:phoenix, "~> 1.5.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_dashboard, "~> 0.2.0"},
-      {:phoenix_live_view, "~> 0.11.1"},
+      {:phoenix_live_view, "~> 0.12.0"},
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
+      {:vapor, ">= 0.6.0"},
       # Test
       {:floki, ">= 0.0.0", only: :test},
       # Dev
@@ -49,12 +47,6 @@ defmodule RegexTester.MixProject do
     ]
   end
 
-  # Aliases are shortcuts or tasks specific to the current project.
-  # For example, to install project dependencies and perform other setup tasks, run:
-  #
-  #     $ mix setup
-  #
-  # See the documentation for `Mix` for more info on aliases.
   defp aliases do
     [
       setup: ["deps.get", "cmd npm install --prefix assets"]
