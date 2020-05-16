@@ -62,7 +62,32 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 //   .receive("ok", resp => { console.log("Joined successfully", resp) })
 //   .receive("error", resp => { console.log("Unable to join", resp) })
 
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}});
+let hooks = {};
+hooks.MaskFlags = {
+  mounted() {
+    this.el.addEventListener("input", _event => {
+      let masked = this.el.value
+      masked = masked.replace(/[^Ufimsux]+/g, "");
+      masked = masked.split('').filter((item, i, ar) => ar.indexOf(item) === i).join('');
+      this.el.value = masked;
+    });
+  },
+  unique_char(str1) {
+    var str = str1;
+    var uniql = "";
+    for (var x=0; x < str.length; x++) {
+      if(uniql.indexOf(str.charAt(x))==-1) {
+        uniql += str[x];
+      }
+    }
+    return uniql;
+  }
+}
+
+let liveSocket = new LiveSocket("/live", Socket, {
+  hooks,
+  params: {_csrf_token: csrfToken}
+});
 liveSocket.connect()
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()

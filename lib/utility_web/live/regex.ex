@@ -25,7 +25,6 @@ defmodule UtilityWeb.RegexLive do
     {:ok,
       socket
       |> assign(:record, record)
-      |> assign(:saved, false)
       |> assign_changeset(%{})
     }
   end
@@ -40,7 +39,6 @@ defmodule UtilityWeb.RegexLive do
       {:noreply,
         socket
         |> assign(:record, record)
-        |> assign(:saved, true)
         |> assign_changeset(%{})}
     else
       _ -> {:noreply, put_flash(socket, :error, "Could not find saved regex")}
@@ -54,8 +52,18 @@ defmodule UtilityWeb.RegexLive do
   end
 
   @impl Phoenix.LiveView
+  def handle_event("clear", _content, socket) do
+    {:noreply,
+      socket
+      |> assign(:record, %__MODULE__{})
+      |> assign_changeset(%{})
+    }
+  end
+
+  @impl Phoenix.LiveView
   def handle_event("permalink", _content, socket) do
     {:ok, record} = Changeset.apply_action(socket.assigns.changeset, :insert)
+    record = %{record | id: Ecto.UUID.generate()}
 
     case Utility.Redix.pipeline([
       ["HSET", record.id, "string", record.string],
@@ -64,8 +72,9 @@ defmodule UtilityWeb.RegexLive do
       ["HSET", record.id, "flags", record.flags]
     ]) do
       {:ok, _} ->
-        IO.inspect record.id, label: "SAVED"
-        {:noreply, push_patch(socket, to: "/regex/#{record.id}")}
+        {:noreply,
+          socket
+          |> push_patch(to: "/regex/#{record.id}")}
       _ ->
         {:noreply, put_flash(socket, :error, "Could not save regex")}
     end
@@ -80,33 +89,15 @@ defmodule UtilityWeb.RegexLive do
     changeset = changeset(socket.assigns.record, params)
     socket
     |> assign(:changeset, Map.put(changeset, :action, :insert))
+    |> assign(:function, Changeset.get_field(changeset, :function))
     |> assign(:result, Changeset.get_field(changeset, :result))
   end
 
   def changeset(record, params) do
     record
-    |> Changeset.cast(sort_flags(params), ~w[string flags regex function]a)
+    |> Changeset.cast(params, ~w[string flags regex function]a)
     |> Changeset.validate_inclusion(:function, @allowed_functions)
-    |> Changeset.validate_format(:flags, ~r/\AU?f?i?m?s?u?x?\z/, message: "invalid flags")
-    |> ensure_id()
     |> put_result()
-  end
-
-  defp sort_flags(%{"flags" => flags} = params) when is_binary(flags) do
-    sorted =
-      flags
-      |> String.split("")
-      |> Enum.sort()
-      |> Enum.join("")
-    Map.put(params, "flags", sorted)
-  end
-  defp sort_flags(params), do: params
-
-  defp ensure_id(changeset) do
-    case Changeset.get_field(changeset, :id) do
-      nil -> Changeset.put_change(changeset, :id, Ecto.UUID.generate())
-      _ -> changeset
-    end
   end
 
   defp put_result(changeset) do
@@ -118,8 +109,8 @@ defmodule UtilityWeb.RegexLive do
           Regex.scan(regex, Changeset.get_field(changeset, :string))
         {"named_captures", {:ok, regex}} ->
           Regex.named_captures(regex, Changeset.get_field(changeset, :string))
-        _ ->
-          "Invalid Regex"
+        {_, {:error, {error, pos}}} ->
+          "#{error} (index #{pos})"
       end
 
     Changeset.put_change(changeset, :result, result)

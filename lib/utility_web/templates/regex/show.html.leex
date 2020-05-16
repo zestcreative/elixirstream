@@ -5,8 +5,13 @@
     </div>
     <div class="flex-shrink-0 mt-2 ml-4">
       <span class="inline-flex rounded-md shadow-sm">
-        <button phx-click="permalink" type="button" class="relative inline-flex items-center px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent leading-5 rounded-md hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700">
-          <%= if @saved, do: "Save", else: "Permalink" %>
+        <% is_disabled = @record.id && !changed?(@changeset) %>
+        <button phx-click="permalink" <%= if is_disabled, do: "disabled=true" %> type="button" class="relative inline-flex items-center <%= if is_disabled, do: "opacity-50 cursor-not-allowed" %> px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent leading-5 rounded-md hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700">
+
+          <svg viewBox="0 0 24 24" class="w-4 h-5 mr-2 fill-current">
+            <path d="M19.48 13.03A4 4 0 0 1 16 19h-4a4 4 0 1 1 0-8h1a1 1 0 0 0 0-2h-1a6 6 0 1 0 0 12h4a6 6 0 0 0 5.21-8.98L21.2 12a1 1 0 1 0-1.72 1.03zM4.52 10.97A4 4 0 0 1 8 5h4a4 4 0 1 1 0 8h-1a1 1 0 0 0 0 2h1a6 6 0 1 0 0-12H8a6 6 0 0 0-5.21 8.98l.01.02a1 1 0 1 0 1.72-1.03z"/>
+          </svg>
+          <%= if @record.id && !changed?(@changeset), do: "Saved", else: "Permalink" %>
         </button>
       </span>
     </div>
@@ -19,11 +24,25 @@
       <div class="sm:col-span-5">
         <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="relative mt-1 rounded-md shadow-sm">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pr-4 text-gray-500 pointer-events-none">
+            ~r/
+          </div>
           <%= text_input f, :regex,
                 placeholder: "regex",
-                class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
+                autocomplete: "off",
+                class: "form-input pl-12 font-mono block w-full sm:text-sm sm:leading-5" %>
+          <div class="absolute inset-y-0 flex items-center pl-3 text-gray-500 pointer-events-none right-4">/</div>
         </div>
         <%= error_tag f, :regex %>
+        <p class="p-1 font-mono text-xs text-gray-700">
+          For example:
+        <%= case @function do %>
+          <% "named_captures" -> %>
+            <code class="select-all">\A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z</code>
+          <% _ -> %>
+            <code class="select-all">\A[a-z0-9-]+\z</code>
+        <% end %>
+        </p>
       </div>
 
       <div class="sm:col-span-1">
@@ -31,10 +50,15 @@
         <div class="relative mt-1 rounded-md shadow-sm">
           <%= text_input f, :flags,
                 placeholder: "flags",
+                phx_hook: "MaskFlags",
+                autocomplete: "off",
                 phx_debounce: "blur",
                 class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
         </div>
         <%= error_tag f, :flags %>
+        <p class="p-1 font-mono text-xs text-gray-700">
+          U f i m s u x
+        </p>
       </div>
 
       <div class="sm:col-span-6">
@@ -46,14 +70,19 @@
       </div>
     </div>
 
+    <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
+    <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
+      <%= inspect(@result, limit: :infinity, pretty: true) %>
+    </div>
+
     <fieldset class="mt-6">
-      <legend class="text-base font-medium text-gray-900 leading-6">Function</legend>
+      <legend class="text-sm font-medium text-gray-700 leading-5">Function</legend>
       <p class="text-sm text-gray-500 leading-5">Which <a href="https://hexdocs.pm/elixir/Regex.html" target="_BLANK">Regex function</a> to run</p>
       <div class="flex flex-wrap mt-1 space-x-8">
         <div class="flex items-center">
           <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
           <label for="regex_live_function_run" class="ml-2">
-            <span class="text-sm font-medium text-gray-700 leading-5">Run (first match)</span>
+            <span class="text-sm font-medium text-gray-700 leading-5">Run</span>
           </label>
         </div>
         <div class="flex items-center">
@@ -72,13 +101,109 @@
     </fieldset>
   </form>
 
-  <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
-    <%= inspect(@result, pretty: true) %>
-  </div>
-
   <div>
 
-    <h3>Flags</h3>
+    <h3 class="text-xl font-semibold text-gray-900">Cheatsheet</h3>
+    <dl class="flex flex-wrap -mx-2 text-sm">
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>[abc]</code></dt>
+        <dd>A single character of: a, b, or c</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>[^abc]</code></dt>
+        <dd>Any single character except: a, b, or c</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>[a-z]</code></dt>
+        <dd>Any single character in the range a-z</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>[a-zA-Z]</code></dt>
+        <dd>Any single character in the range a-z or A-Z</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>^</code></dt>
+        <dd>Start of line</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>$</code></dt>
+        <dd>End of line</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\A</code></dt>
+        <dd>Start of string</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\z</code></dt>
+        <dd>End of string</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>.</code></dt>
+        <dd>Any single character</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\s</code></dt>
+        <dd>Any whitespace character</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\S</code></dt>
+        <dd>Any non-whitespace character</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\d</code></dt>
+        <dd>Any digit</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\D</code></dt>
+        <dd>Any non-digit</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\w</code></dt>
+        <dd>Any word character (letter, number, underscore)</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\W</code></dt>
+        <dd>Any non-word character</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>\b</code></dt>
+        <dd>Any word boundary</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>(...)</code></dt>
+        <dd>Capture everything enclosed</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>(a|b)</code></dt>
+        <dd>a or b</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a?</code></dt>
+        <dd>Zero or one of a</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a*</code></dt>
+        <dd>Zero or more of a</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a+</code></dt>
+        <dd>One or more of a</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a{3}</code></dt>
+        <dd>Exactly 3 of a</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a{3,}</code></dt>
+        <dd>3 or more of a</dd>
+      </div>
+      <div class="w-1/3 px-2">
+        <dt class="font-semibold select-all"><code>a{3,6}</code></dt>
+        <dd class="">Between 3 and 6 of a</dd>
+      </div>
+    </dl>
+
+    <h3 class="text-xl font-semibold text-gray-900">Flags</h3>
     <ul>
       <li>unicode (<code>u</code>) - enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match</li>
 
