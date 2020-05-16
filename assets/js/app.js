@@ -10,10 +10,16 @@ import "../css/app.css"
 // Import deps with the dep name or local files with a relative path, for example:
 //
 //     import {Socket} from "phoenix"
-//     import socket from "./socket"
 //
 import "phoenix_html"
-import Topbar from "topbar";
+import "./socket"
+import topbar from "topbar";
 
-window.addEventListener("phx:page-loading-start", _info => Topbar.show());
-window.addEventListener("phx:page-loading-stop", _info => Topbar.hide());
+topbar.config({
+  barThickness: 2,
+  shadowBlur: 5,
+  barColors: ["#F56565", "#9B2C2C"],
+})
+
+window.addEventListener("phx:page-loading-start", _info => topbar.show());
+window.addEventListener("phx:page-loading-stop", _info => topbar.hide());

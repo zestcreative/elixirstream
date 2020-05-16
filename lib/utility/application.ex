@@ -29,7 +29,8 @@ defmodule Utility.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Utility.PubSub},
       # Start the Endpoint (http/https)
-      UtilityWeb.Endpoint
+      UtilityWeb.Endpoint,
+      Utility.Redix,
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}
     ]

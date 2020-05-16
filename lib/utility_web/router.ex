@@ -21,6 +21,7 @@ defmodule UtilityWeb.Router do
 
     get "/", DashboardController, :show
     live "/regex", RegexLive
+    live "/regex/:id", RegexLive
   end
 
   # Other scopes may use custom stacks.

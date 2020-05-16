@@ -7,11 +7,20 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@tailwindcss/ui": "^0.3.0",
+    "@webcomponents/template": "^1.4.2",
+    "child-replace-with-polyfill": "^1.0.1",
+    "classlist-polyfill": "^1.2.0",
+    "core-js": "^3.6.5",
+    "formdata-polyfill": "^3.0.19",
+    "mdn-polyfills": "^5.20.0",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
+    "shim-keyboard-event-key": "^1.0.3",
     "tailwindcss": "^1.4.6",
-    "topbar": "^0.1.4"
+    "topbar": "^0.1.4",
+    "url-search-params-polyfill": "^8.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

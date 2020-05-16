@@ -12,7 +12,7 @@ use Mix.Config
 config :utility, UtilityWeb.Endpoint,
   http: [port: {:system, "PORT"}, compress: true],
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  url: [scheme: "https", host: "regex.bernheisel.com", port: 443],
+  url: [scheme: "https", host: "util.bernheisel.com", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
 # Do not print debug messages in production

@@ -1,1 +1,99 @@
-Hello
+<div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+  <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
+    <div class="mt-2 ml-4">
+      <h1 class="text-2xl font-semibold text-gray-900">Regex Tester</h1>
+    </div>
+    <div class="flex-shrink-0 mt-2 ml-4">
+      <span class="inline-flex rounded-md shadow-sm">
+        <button phx-click="permalink" type="button" class="relative inline-flex items-center px-4 py-2 font-medium text-white bg-indigo-600 border border-transparent leading-5 rounded-md hover:bg-indigo-500 focus:outline-none focus:shadow-outline-indigo focus:border-indigo-700 active:bg-indigo-700">
+          <%= if @saved, do: "Save", else: "Permalink" %>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+  <%= f = form_for @changeset, "#", [phx_change: :validate] %>
+    <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
+      <div class="sm:col-span-5">
+        <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
+        <div class="relative mt-1 rounded-md shadow-sm">
+          <%= text_input f, :regex,
+                placeholder: "regex",
+                class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
+        </div>
+        <%= error_tag f, :regex %>
+      </div>
+
+      <div class="sm:col-span-1">
+        <%= label f, :flags, class: "block text-sm font-medium leading-5 text-gray-700" %>
+        <div class="relative mt-1 rounded-md shadow-sm">
+          <%= text_input f, :flags,
+                placeholder: "flags",
+                phx_debounce: "blur",
+                class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
+        </div>
+        <%= error_tag f, :flags %>
+      </div>
+
+      <div class="sm:col-span-6">
+        <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
+        <div class="mt-1 rounded-md shadow-sm">
+          <%= textarea f, :string, rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
+        </div>
+        <%= error_tag f, :string %>
+      </div>
+    </div>
+
+    <fieldset class="mt-6">
+      <legend class="text-base font-medium text-gray-900 leading-6">Function</legend>
+      <p class="text-sm text-gray-500 leading-5">Which <a href="https://hexdocs.pm/elixir/Regex.html" target="_BLANK">Regex function</a> to run</p>
+      <div class="flex flex-wrap mt-1 space-x-8">
+        <div class="flex items-center">
+          <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+          <label for="regex_live_function_run" class="ml-2">
+            <span class="text-sm font-medium text-gray-700 leading-5">Run (first match)</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <%= radio_button f, :function, "named_captures", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+          <label for="regex_live_function_named_captures" class="ml-2">
+            <span class="text-sm font-medium text-gray-700 leading-5">Named Captures</span>
+          </label>
+        </div>
+        <div class="flex items-center">
+          <%= radio_button f, :function, "scan", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+          <label for="regex_live_function_scan" class="ml-2">
+            <span class="text-sm font-medium text-gray-700 leading-5">Scan</span>
+          </label>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+  <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
+    <%= inspect(@result, pretty: true) %>
+  </div>
+
+  <div>
+
+    <h3>Flags</h3>
+    <ul>
+      <li>unicode (<code>u</code>) - enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match</li>
+
+      <li>caseless (<code>i</code>) - adds case insensitivity</li>
+
+      <li>dotall (<code>s</code>) - causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation</li>
+
+      <li>multiline (<code>m</code>) - causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string</li>
+
+      <li>extended (<code>x</code>) - whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments</li>
+
+      <li>firstline (<code>f</code>) - forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline</li>
+
+      <li>ungreedy (<code>U</code>) - inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)</li>
+    </ul>
+  </div>
+
+</div>
