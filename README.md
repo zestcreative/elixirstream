@@ -1,4 +1,4 @@
-# RegexTester
+# Utility
 
 To start your Phoenix server:
 

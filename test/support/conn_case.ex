@@ -1,4 +1,4 @@
-defmodule RegexTesterWeb.ConnCase do
+defmodule UtilityWeb.ConnCase do
   @moduledoc """
   This module defines the test case to be used by
   tests that require setting up a connection.
@@ -11,7 +11,7 @@ defmodule RegexTesterWeb.ConnCase do
   we enable the SQL sandbox, so changes done to the database
   are reverted at the end of every test. If you are using
   PostgreSQL, you can even run database tests asynchronously
-  by setting `use RegexTesterWeb.ConnCase, async: true`, although
+  by setting `use UtilityWeb.ConnCase, async: true`, although
   this option is not recommended for other databases.
   """
 
@@ -22,12 +22,12 @@ defmodule RegexTesterWeb.ConnCase do
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
-      import RegexTesterWeb.ConnCase
+      import UtilityWeb.ConnCase
 
-      alias RegexTesterWeb.Router.Helpers, as: Routes
+      alias UtilityWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing
-      @endpoint RegexTesterWeb.Endpoint
+      @endpoint UtilityWeb.Endpoint
     end
   end
 

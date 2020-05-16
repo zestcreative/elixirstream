@@ -1,0 +1,7 @@
+<%# live.html.leex template %>
+<%= if @flash do %>
+  <div id="live-notifications-info"><%= live_flash(@flash, :info) %></div>
+  <div id="live-notifications-error"><%= live_flash(@flash, :error) %></div>
+<% end %>
+
+<%= @inner_content %>

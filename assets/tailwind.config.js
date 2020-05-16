@@ -1,10 +1,10 @@
 module.exports = {
   purge: [
-    "../lib/regex_tester_web/live/**/*.ex",
-    "../lib/regex_tester_web/templates/**/*.eex",
-    "../lib/regex_tester_web/templates/**/*.leex",
-    "../lib/regex_tester_web/views/**/*.ex",
-    "../lib/regex_tester_web/components/**/*.ex",
+    "../lib/utility_web/live/**/*.ex",
+    "../lib/utility_web/templates/**/*.eex",
+    "../lib/utility_web/templates/**/*.leex",
+    "../lib/utility_web/views/**/*.ex",
+    "../lib/utility_web/components/**/*.ex",
     "./js/**/*.js"
   ],
   theme: {

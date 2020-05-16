@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
-config :regex_tester, RegexTesterWeb.Endpoint,
+config :utility, UtilityWeb.Endpoint,
   http: [port: 4000],
   debug_errors: true,
   code_reloader: true,
@@ -46,13 +46,13 @@ config :regex_tester, RegexTesterWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :regex_tester, RegexTesterWeb.Endpoint,
+config :utility, UtilityWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"priv/gettext/.*(po)$",
-      ~r"lib/regex_tester_web/(live|views)/.*(ex)$",
-      ~r"lib/regex_tester_web/templates/.*(eex)$"
+      ~r"lib/utility_web/(live|views)/.*(ex)$",
+      ~r"lib/utility_web/templates/.*(eex)$"
     ]
   ]
 

@@ -8,11 +8,11 @@
 use Mix.Config
 
 # Configures the endpoint
-config :regex_tester, RegexTesterWeb.Endpoint,
+config :utility, UtilityWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "gJjLZxqBoWFJVdwbLjZe1v2jd2txjpePiZan9WJrhOZsnKhLGftHdjSDHOmDQ+tP",
-  render_errors: [view: RegexTesterWeb.ErrorView, accepts: ~w(html json), layout: false],
-  pubsub_server: RegexTester.PubSub,
+  render_errors: [view: UtilityWeb.ErrorView, accepts: ~w(html json), layout: false],
+  pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
 
 # Configures Elixir's Logger

@@ -1,9 +1,9 @@
-defmodule RegexTester.MixProject do
+defmodule Utility.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :regex_tester,
+      app: :utility,
       version: "0.1.0",
       elixir: "~> 1.7",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -16,7 +16,7 @@ defmodule RegexTester.MixProject do
 
   def application do
     [
-      mod: {RegexTester.Application, []},
+      mod: {Utility.Application, []},
       extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end

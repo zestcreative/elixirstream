@@ -11,7 +11,7 @@ secret_key_base =
     You can generate one by calling: mix phx.gen.secret
     """
 
-config :regex_tester, RegexTesterWeb.Endpoint,
+config :utility, UtilityWeb.Endpoint,
   http: [
     port: String.to_integer(System.get_env("PORT") || "4000"),
     transport_options: [socket_opts: [:inet6]]
@@ -23,7 +23,7 @@ config :regex_tester, RegexTesterWeb.Endpoint,
 # If you are doing OTP releases, you need to instruct Phoenix
 # to start each relevant endpoint:
 #
-#     config :regex_tester, RegexTesterWeb.Endpoint, server: true
+#     config :utility, UtilityWeb.Endpoint, server: true
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
