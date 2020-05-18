@@ -21,5 +21,10 @@
         <% end %>
       </nav>
     </div>
+    <div class="flex flex-shrink-0 p-4 bg-gray-700">
+      <p class="text-sm font-medium text-gray-400 leading-5 group-hover:text-gray-300 transition ease-in-out duration-150">
+        Running Elixir <%= System.version() %>-otp-<%= System.otp_release() %>
+      </p>
+    </div>
   </div>
 </div>
