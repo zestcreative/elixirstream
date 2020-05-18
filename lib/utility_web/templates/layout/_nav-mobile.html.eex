@@ -1,0 +1,39 @@
+<div class="md:hidden">
+  <div id="mobile-nav" class="fixed inset-0 z-40 flex hidden">
+    <div id="mobile-sidebar" class="fixed inset-0">
+      <div class="absolute inset-0 bg-gray-600 opacity-75"></div>
+    </div>
+
+    <div class="relative flex flex-col flex-1 w-full max-w-xs bg-gray-800">
+      <div class="absolute top-0 right-0 p-1 -mr-14">
+        <button onclick="window.mobileNav.close()" class="flex items-center justify-center w-12 h-12 rounded-full focus:outline-none focus:bg-gray-600" aria-label="Close sidebar">
+          <svg class="w-6 h-6 text-white" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+        <div class="flex items-center flex-shrink-0 px-4">
+          <h1 class="text-2xl font-extrabold tracking-wider text-white">Utilities</h1>
+        </div>
+        <nav class="px-2 mt-5">
+          <%= link to: Routes.live_path(@conn, UtilityWeb.RegexLive), class: "nav-link active group" do %>
+            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 24 24">
+              <g>
+                <path d="M3 12.045c0-.99.15-1.915.45-2.777A6.886 6.886 0 0 1 4.764 7H6.23a7.923 7.923 0 0 0-1.25 2.374 8.563 8.563 0 0 0 .007 5.314c.29.85.7 1.622 1.23 2.312h-1.45a6.53 6.53 0 0 1-1.314-2.223 8.126 8.126 0 0 1-.45-2.732"/>
+                <path d="M10 16a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                <path d="M14.25 7.013l-.24 2.156 2.187-.61.193 1.47-1.992.14 1.307 1.74-1.33.71-.914-1.833-.8 1.822-1.38-.698 1.296-1.74-1.98-.152.23-1.464 2.14.61-.24-2.158h1.534"/>
+                <path d="M21 12.045c0 .982-.152 1.896-.457 2.744A6.51 6.51 0 0 1 19.236 17h-1.453a8.017 8.017 0 0 0 1.225-2.31c.29-.855.434-1.74.434-2.66 0-.91-.14-1.797-.422-2.66a7.913 7.913 0 0 0-1.248-2.374h1.465a6.764 6.764 0 0 1 1.313 2.28c.3.86.45 1.782.45 2.764"/>
+              </g>
+            </svg>
+            Regex Tester
+          <% end %>
+        </nav>
+      </div>
+    </div>
+    <div class="flex-shrink-0 w-14">
+      <!-- Force sidebar to shrink to fit close icon -->
+    </div>
+  </div>
+</div>

@@ -24,14 +24,14 @@
       <div class="sm:col-span-5">
         <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="relative mt-1 rounded-md shadow-sm">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pr-4 text-gray-500 pointer-events-none">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pr-4 font-normal leading-normal text-gray-500 pointer-events-none">
             ~r/
           </div>
           <%= text_input f, :regex,
                 placeholder: "regex",
                 autocomplete: "off",
-                class: "form-input pl-12 font-mono block w-full sm:text-sm sm:leading-5" %>
-          <div class="absolute inset-y-0 flex items-center pl-3 text-gray-500 pointer-events-none right-4">/</div>
+                class: "form-input pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
+          <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
         </div>
         <%= error_tag f, :regex %>
         <p class="p-1 font-mono text-xs text-gray-700">
@@ -52,173 +52,137 @@
                 placeholder: "flags",
                 phx_hook: "MaskFlags",
                 autocomplete: "off",
-                phx_debounce: "blur",
                 class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
         </div>
         <%= error_tag f, :flags %>
         <p class="p-1 font-mono text-xs text-gray-700">
           U f i m s u x
         </p>
+
       </div>
 
-      <div class="sm:col-span-6">
+      <div class="sm:col-span-5">
         <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="mt-1 rounded-md shadow-sm">
           <%= textarea f, :string, rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
         </div>
         <%= error_tag f, :string %>
+
+        <fieldset class="mt-6">
+          <legend class="text-sm font-medium text-gray-700 leading-5">
+            Function
+            <button type="button" class="inline-block px-1 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="regex-pasta">Copy</button>
+          </legend>
+          <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
+            <input type="text" readonly id="regex-pasta" class="w-full bg-gray-200 cursor-default" value="<%= @pasta %>" />
+          </div>
+          <p class="text-sm text-gray-500 leading-5">Which <a href="https://hexdocs.pm/elixir/Regex.html" target="_BLANK">Regex function</a> to run</p>
+          <div class="flex flex-wrap mt-1 space-x-8">
+            <div class="flex items-center">
+              <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_run" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Run</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button f, :function, "named_captures", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_named_captures" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Named Captures</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button f, :function, "scan", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_scan" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Scan</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="sm:col-span-1">
+        <ul class="text-sm space-y-1">
+          <li class="tooltip <%= if @tooltip[:unicode], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="u" type="button">
+              unicode (<code>u</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:unicode] == true, do: "hidden" %>">
+              enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match</p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:caseless], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="i" type="button">
+              caseless (<code>i</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:caseless], do: "hidden" %>">
+              adds case insensitivity
+            </p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:dotall], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="s" type="button">
+              dotall (<code>s</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:dotall], do: "hidden" %>">
+              causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation
+            </p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:multiline], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="m" type="button">
+              multiline (<code>m</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:multiline], do: "hidden" %>">
+              causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string
+            </p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:extended], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="x" type="button">
+              extended (<code>x</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:extended], do: "hidden" %>">
+              whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments
+            </p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:firstline], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="f" type="button">
+              firstline (<code>f</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:firstline], do: "hidden" %>">
+              forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline
+            </p>
+          </li>
+
+          <li class="tooltip <%= if @tooltip[:ungreedy], do: "active" %>">
+            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="U" type="button">
+              ungreedy (<code>U</code>)
+            </button>
+            <p class="tooltip-desc <%= unless @tooltip[:ungreedy], do: "hidden" %>">
+              inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)
+            </p>
+          </li>
+        </ul>
       </div>
     </div>
 
     <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
     <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
-      <%= inspect(@result, limit: :infinity, pretty: true) %>
+      <pre class="matches"><%
+      %><%# The weird newline joins are intentional to prevent HTML newlines. %><%
+      %><%# These spans need to be side-by-side. %><%
+        %><%= for {type, string} <- @matched do %><%
+ %><span class="<%= if type == :matched, do: "m", else: "u" %>"><%= string %></span><%
+        %><% end %><%
+      %></pre>
+      <pre class="select-all">#=> <%= inspect(@result, limit: :infinity, pretty: true) %></pre>
     </div>
 
-    <fieldset class="mt-6">
-      <legend class="text-sm font-medium text-gray-700 leading-5">Function</legend>
-      <p class="text-sm text-gray-500 leading-5">Which <a href="https://hexdocs.pm/elixir/Regex.html" target="_BLANK">Regex function</a> to run</p>
-      <div class="flex flex-wrap mt-1 space-x-8">
-        <div class="flex items-center">
-          <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
-          <label for="regex_live_function_run" class="ml-2">
-            <span class="text-sm font-medium text-gray-700 leading-5">Run</span>
-          </label>
-        </div>
-        <div class="flex items-center">
-          <%= radio_button f, :function, "named_captures", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
-          <label for="regex_live_function_named_captures" class="ml-2">
-            <span class="text-sm font-medium text-gray-700 leading-5">Named Captures</span>
-          </label>
-        </div>
-        <div class="flex items-center">
-          <%= radio_button f, :function, "scan", class: "form-radio h-4 w-4 text-indigo-600 transition duration-150 ease-in-out" %>
-          <label for="regex_live_function_scan" class="ml-2">
-            <span class="text-sm font-medium text-gray-700 leading-5">Scan</span>
-          </label>
-        </div>
-      </div>
-    </fieldset>
   </form>
 
   <div>
-
-    <h3 class="text-xl font-semibold text-gray-900">Cheatsheet</h3>
-    <dl class="flex flex-wrap -mx-2 text-sm">
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>[abc]</code></dt>
-        <dd>A single character of: a, b, or c</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>[^abc]</code></dt>
-        <dd>Any single character except: a, b, or c</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>[a-z]</code></dt>
-        <dd>Any single character in the range a-z</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>[a-zA-Z]</code></dt>
-        <dd>Any single character in the range a-z or A-Z</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>^</code></dt>
-        <dd>Start of line</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>$</code></dt>
-        <dd>End of line</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\A</code></dt>
-        <dd>Start of string</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\z</code></dt>
-        <dd>End of string</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>.</code></dt>
-        <dd>Any single character</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\s</code></dt>
-        <dd>Any whitespace character</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\S</code></dt>
-        <dd>Any non-whitespace character</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\d</code></dt>
-        <dd>Any digit</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\D</code></dt>
-        <dd>Any non-digit</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\w</code></dt>
-        <dd>Any word character (letter, number, underscore)</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\W</code></dt>
-        <dd>Any non-word character</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>\b</code></dt>
-        <dd>Any word boundary</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>(...)</code></dt>
-        <dd>Capture everything enclosed</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>(a|b)</code></dt>
-        <dd>a or b</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a?</code></dt>
-        <dd>Zero or one of a</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a*</code></dt>
-        <dd>Zero or more of a</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a+</code></dt>
-        <dd>One or more of a</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a{3}</code></dt>
-        <dd>Exactly 3 of a</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a{3,}</code></dt>
-        <dd>3 or more of a</dd>
-      </div>
-      <div class="w-1/3 px-2">
-        <dt class="font-semibold select-all"><code>a{3,6}</code></dt>
-        <dd class="">Between 3 and 6 of a</dd>
-      </div>
-    </dl>
-
-    <h3 class="text-xl font-semibold text-gray-900">Flags</h3>
-    <ul>
-      <li>unicode (<code>u</code>) - enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match</li>
-
-      <li>caseless (<code>i</code>) - adds case insensitivity</li>
-
-      <li>dotall (<code>s</code>) - causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation</li>
-
-      <li>multiline (<code>m</code>) - causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string</li>
-
-      <li>extended (<code>x</code>) - whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments</li>
-
-      <li>firstline (<code>f</code>) - forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline</li>
-
-      <li>ungreedy (<code>U</code>) - inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)</li>
-    </ul>
+    <%= render("_cheatsheet.html") %>
   </div>
 
 </div>

@@ -14,6 +14,7 @@ import "../css/app.css"
 import "phoenix_html"
 import "./socket"
 import topbar from "topbar";
+import mobileNav from "./mobile-nav";
 
 topbar.config({
   barThickness: 2,
@@ -23,3 +24,6 @@ topbar.config({
 
 window.addEventListener("phx:page-loading-start", _info => topbar.show());
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide());
+
+window.mobileNav = new mobileNav
+window.mobileNav.init()

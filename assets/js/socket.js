@@ -8,6 +8,7 @@
 // from the params if you are not using authentication.
 import {Socket} from "phoenix"
 import LiveSocket from "phoenix_live_view"
+import hooks from "./hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
 // let socket = new Socket("/socket", {params: {token: window.userToken}})
@@ -62,27 +63,6 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 //   .receive("ok", resp => { console.log("Joined successfully", resp) })
 //   .receive("error", resp => { console.log("Unable to join", resp) })
 
-let hooks = {};
-hooks.MaskFlags = {
-  mounted() {
-    this.el.addEventListener("input", _event => {
-      let masked = this.el.value
-      masked = masked.replace(/[^Ufimsux]+/g, "");
-      masked = masked.split('').filter((item, i, ar) => ar.indexOf(item) === i).join('');
-      this.el.value = masked;
-    });
-  },
-  unique_char(str1) {
-    var str = str1;
-    var uniql = "";
-    for (var x=0; x < str.length; x++) {
-      if(uniql.indexOf(str.charAt(x))==-1) {
-        uniql += str[x];
-      }
-    }
-    return uniql;
-  }
-}
 
 let liveSocket = new LiveSocket("/live", Socket, {
   hooks,

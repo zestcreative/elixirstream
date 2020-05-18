@@ -1,0 +1,40 @@
+.nav-link {
+  @apply flex items-center px-2 py-2 rounded-md;
+  @apply text-sm font-medium leading-5;
+  @apply transition ease-in-out duration-150;
+  }
+
+.nav-link:focus {
+  @apply bg-gray-700 outline-none;
+}
+
+.nav-link.active {
+  @apply text-white bg-gray-900;
+}
+
+.nav-link.inactive {
+  @apply text-gray-300;
+}
+
+.nav-link.inactive:hover {
+  @apply text-white bg-gray-700;
+}
+
+.nav-link.inactive:focus {
+  @apply text-white;
+}
+
+.tooltip { @apply pb-1 rounded; }
+.tooltip.active { @apply bg-gray-300; }
+
+.tooltip .tooltip-btn { @apply w-full p-1 outline-none appearance-none; }
+
+.tooltip-desc { @apply p-1 mt-1 bg-gray-300; }
+
+.matches span.m {
+  @apply bg-yellow-200;
+}
+.matches span.u + span.m {
+  border-left: 1px dashed red;
+}
+
