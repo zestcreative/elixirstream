@@ -70,7 +70,7 @@ defmodule UtilityWeb.RegexLive do
       nil ->
         {:noreply, socket}
       which ->
-        tooltip = Map.update(socket.assigns.tooltip, which, true, fn x -> !x end) |> IO.inspect
+        tooltip = Map.update(socket.assigns.tooltip, which, true, fn x -> !x end)
         {:noreply, assign(socket, :tooltip, tooltip)}
     end
   end
@@ -154,7 +154,6 @@ defmodule UtilityWeb.RegexLive do
         {_, {:error, {error, pos}}} ->
           {"#{error} (at character #{pos})", []}
       end
-      |> IO.inspect
 
 
     parts =
@@ -162,7 +161,6 @@ defmodule UtilityWeb.RegexLive do
       |> get_parts(string)
       |> List.flatten()
       |> Enum.sort_by(fn {_, x, _} -> x end)
-      |> IO.inspect(label: "SORTED")
       |> Enum.map(fn {result, _, string} -> {result, string} end)
 
 
@@ -178,7 +176,6 @@ defmodule UtilityWeb.RegexLive do
     indexes
     |> List.flatten()
     |> Enum.reduce({nil, []}, fn match, acc ->
-      IO.inspect match, label: "MATCH"
       case {match, acc} do
         {{0, len}, {nil, []}} ->
           {len, [{:matched, 0, binary_part(string, 0, len)}]}
@@ -192,11 +189,10 @@ defmodule UtilityWeb.RegexLive do
             {:matched, start, binary_part(string, start, len)},
             {:unmatched, last, binary_part(string, last, start - last)}
           ] | acc]}
-        {{start, len}, {last, acc}} ->
+        {{start, len}, {_last, acc}} ->
           {start + len, [[{:matched, start, binary_part(string, start, len)}] | acc]}
       end
     end)
-    |> IO.inspect(label: "AFTER")
     |> ensure_last_part(String.length(string), string)
   end
 
@@ -206,7 +202,6 @@ defmodule UtilityWeb.RegexLive do
   defp ensure_last_part({nil, parts}, _last, _string), do: parts
   defp ensure_last_part({last, parts}, last, _string), do: parts
   defp ensure_last_part({last, parts}, string_last, string) when last < string_last do
-    IO.inspect {last, parts, string_last}, label: "ENSURE LAST PART"
     [[{:unmatched, last, binary_part(string, last, string_last - last)}] | parts]
   end
   defp ensure_last_part({_last, parts}, _string_last, _string), do: parts
