@@ -24,14 +24,14 @@
       <div class="sm:col-span-5">
         <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="relative mt-1 rounded-md shadow-sm">
-          <div class="absolute inset-y-0 left-0 flex items-center pb-1 pl-4 pr-4 font-normal leading-normal text-gray-500 pointer-events-none">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pr-4 font-normal leading-normal text-gray-500 pointer-events-none">
             ~r/
           </div>
           <%= text_input f, :regex,
                 placeholder: "regex",
                 autocomplete: "off",
                 class: "form-input pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
-          <div class="absolute inset-y-0 flex items-center pb-1 pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
+          <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
         </div>
         <%= error_tag f, :regex %>
         <p class="p-1 font-mono text-xs text-gray-700">
