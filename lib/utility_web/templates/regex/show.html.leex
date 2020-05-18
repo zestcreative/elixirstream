@@ -169,7 +169,7 @@
 
     <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
     <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
-      <pre class="matches"><%
+      <pre class="overflow-x-scroll matches"><%
       %><%# The weird newline joins are intentional to prevent HTML newlines. %><%
       %><%# These spans need to be side-by-side. %><%
         %><%= for {type, string} <- @matched do %><%
