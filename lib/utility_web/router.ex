@@ -1,6 +1,5 @@
 defmodule UtilityWeb.Router do
   use UtilityWeb, :router
-  import Plug.BasicAuth
   import Phoenix.LiveDashboard.Router
 
   pipeline :browser do
@@ -13,7 +12,7 @@ defmodule UtilityWeb.Router do
   end
 
   pipeline :auth do
-    plug :basic_auth, Application.get_env(:you_meet, :basic_auth)
+    plug :check_auth
   end
 
   scope "/", UtilityWeb do
@@ -39,5 +38,18 @@ defmodule UtilityWeb.Router do
   scope "/" do
     pipe_through [:browser, :auth]
     live_dashboard "/dashboard", metrics: UtilityWeb.Telemetry
+  end
+
+  def check_auth(conn, _opts) do
+    with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
+         true <- user == System.get_env("AUTH_USER"),
+         true <- pass == System.get_env("AUTH_PASS") do
+      conn
+    else
+      _ ->
+        conn
+        |> Plug.BasicAuth.request_basic_auth()
+        |> halt()
+    end
   end
 end
