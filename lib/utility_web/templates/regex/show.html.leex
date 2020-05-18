@@ -64,7 +64,7 @@
       <div class="sm:col-span-5">
         <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="mt-1 rounded-md shadow-sm">
-          <%= textarea f, :string, rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
+          <%= textarea f, :string, spellcheck: "false", rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
         </div>
         <%= error_tag f, :string %>
 

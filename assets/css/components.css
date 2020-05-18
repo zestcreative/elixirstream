@@ -38,3 +38,7 @@
   border-left: 1px dashed red;
 }
 
+.error-input {
+  @apply font-semibold text-red-500;
+}
+

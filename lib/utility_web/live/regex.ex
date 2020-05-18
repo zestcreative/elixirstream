@@ -118,7 +118,6 @@ defmodule UtilityWeb.RegexLive do
     socket
     |> assign(:changeset, Map.put(changeset, :action, :insert))
     |> assign(:function, Changeset.get_field(changeset, :function))
-    |> assign(:string, Changeset.get_field(changeset, :string))
     |> assign(:matched, Changeset.get_field(changeset, :matched))
     |> assign(:pasta, Changeset.get_field(changeset, :pasta))
     |> assign(:result, Changeset.get_field(changeset, :result))
@@ -128,6 +127,7 @@ defmodule UtilityWeb.RegexLive do
   def changeset(record, params) do
     record
     |> Changeset.cast(params, ~w[string flags regex function]a)
+    |> Changeset.validate_length(:regex, max: 6500, message: "must be under 6,500 characters")
     |> Changeset.validate_length(:string, max: @two_mb, message: "must be under 2MB")
     |> Changeset.validate_inclusion(:function, @allowed_functions)
     |> put_result()
@@ -208,13 +208,14 @@ defmodule UtilityWeb.RegexLive do
   end
   defp ensure_last_part({_last, parts}, _string_last, _string), do: parts
 
-  defp put_pasta(changeset) do
+  defp put_pasta(%{valid?: true} = changeset) do
     fun = Changeset.get_field(changeset, :function)
     regex = Changeset.get_field(changeset, :regex)
     flags = Changeset.get_field(changeset, :flags)
     pasta = "Regex.#{fun}(~r/#{regex}/#{flags}, value)"
     Changeset.put_change(changeset, :pasta, pasta)
   end
+  defp put_pasta(changeset), do: changeset
 
   defp cache_key_for(id), do: "regex-#{id}"
 end
