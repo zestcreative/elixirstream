@@ -3,9 +3,10 @@ defmodule Utility.Redix do
 
   def child_spec(_args) do
     # Specs for the Redix connections.
+    redis_url = URI.parse(System.get_env("REDIS_URL") || "redis://127.0.0.1:6379")
     children =
       for i <- 0..(@pool_size - 1) do
-        Supervisor.child_spec({Redix, name: :"redix_#{i}"}, id: {Redix, i})
+        Supervisor.child_spec({Redix, redis_url, name: :"redix_#{i}"}, id: {Redix, i})
       end
 
     # Spec for the supervisor that will supervise the Redix connections.

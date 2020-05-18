@@ -15,6 +15,11 @@ config :utility, UtilityWeb.Endpoint,
   pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
 
+
+config :utility, :basic_auth,
+  auth_user: System.get_env("AUTH_USER", "admin"),
+  auth_pass: System.get_env("AUTH_PASS", "admin")
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
