@@ -1,4 +1,4 @@
-<div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div id="regex-tester" phx-hook="confirmBeforeLeave" data-is-changed="<%= changed?(@changeset) %>" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
   <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
     <div class="mt-2 ml-4">
       <h1 class="text-2xl font-semibold text-gray-900">Regex Tester</h1>
@@ -105,63 +105,64 @@
           <li class="tooltip <%= if @tooltip[:unicode], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="u" type="button">
               unicode (<code>u</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:unicode] == true, do: "hidden" %>">
+                enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:unicode] == true, do: "hidden" %>">
-              enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match</p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:caseless], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="i" type="button">
               caseless (<code>i</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:caseless], do: "hidden" %>">
+                adds case insensitivity
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:caseless], do: "hidden" %>">
-              adds case insensitivity
-            </p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:dotall], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="s" type="button">
               dotall (<code>s</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:dotall], do: "hidden" %>">
+                causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:dotall], do: "hidden" %>">
-              causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation
-            </p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:multiline], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="m" type="button">
               multiline (<code>m</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:multiline], do: "hidden" %>">
+                causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:multiline], do: "hidden" %>">
-              causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string
-            </p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:extended], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="x" type="button">
               extended (<code>x</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:extended], do: "hidden" %>">
+                whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:extended], do: "hidden" %>">
-              whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments
-            </p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:firstline], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="f" type="button">
               firstline (<code>f</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:firstline], do: "hidden" %>">
+                forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:firstline], do: "hidden" %>">
-              forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline
-            </p>
           </li>
 
           <li class="tooltip <%= if @tooltip[:ungreedy], do: "active" %>">
             <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="U" type="button">
               ungreedy (<code>U</code>)
+              <p class="tooltip-desc <%= unless @tooltip[:ungreedy], do: "hidden" %>">
+                inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)
+              </p>
             </button>
-            <p class="tooltip-desc <%= unless @tooltip[:ungreedy], do: "hidden" %>">
-              inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)
-            </p>
           </li>
         </ul>
       </div>

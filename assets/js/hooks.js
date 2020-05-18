@@ -21,6 +21,29 @@ hooks.MaskFlags = {
   }
 }
 
+hooks.confirmBeforeLeave = {
+  mounted() {
+    window.addEventListener("beforeunload", this.confirm(this.el), false);
+  },
+
+  beforeDestroy() {
+    window.removeEventListener(this.confirm);
+  },
+
+  confirm(el) {
+    return function(e) {
+      e.preventDefault();
+      if(el.dataset.isChanged === 'true') {
+        if(!confirm("Are you sure you want to leave?")) {
+          e.returnValue = '';
+        };
+      }
+
+      return;
+    }
+  }
+}
+
 hooks.ClipboardCopy = {
   mounted() {
     const el = this.el;

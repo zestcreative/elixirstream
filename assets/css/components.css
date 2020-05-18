@@ -34,7 +34,7 @@
 .tooltip .tooltip-btn:hover { @apply bg-gray-300; }
 .tooltip .tooltip-btn:focus { @apply bg-gray-300; }
 
-.tooltip-desc { @apply p-1 mt-1 bg-gray-300; }
+.tooltip-desc { @apply p-1 mt-1 bg-gray-300 pointer-events-none; }
 
 .matches span.m {
   @apply bg-yellow-200;

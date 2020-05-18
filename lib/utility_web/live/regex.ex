@@ -28,6 +28,7 @@ defmodule UtilityWeb.RegexLive do
     {:ok,
       socket
       |> assign(:record, record)
+      |> assign(:page_title, "Regex Tester")
       |> assign(:tooltip, %{})
       |> assign_changeset(%{})
     }
