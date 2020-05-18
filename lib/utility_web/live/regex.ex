@@ -6,6 +6,7 @@ defmodule UtilityWeb.RegexLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   alias Ecto.Changeset
+  require Logger
 
   @primary_key false
   embedded_schema do
@@ -101,7 +102,8 @@ defmodule UtilityWeb.RegexLive do
         {:noreply,
           socket
           |> push_patch(to: "/regex/#{record.id}")}
-      _ ->
+      error ->
+        Logger.error(inspect(error))
         {:noreply, put_flash(socket, :error, "Could not save regex")}
     end
   end
