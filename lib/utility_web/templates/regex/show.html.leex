@@ -61,7 +61,7 @@
 
       </div>
 
-      <div class="sm:col-span-5">
+      <div class="sm:col-span-6">
         <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
         <div class="mt-1 rounded-md shadow-sm">
           <%= textarea f, :string, spellcheck: "false", rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
@@ -99,73 +99,6 @@
           </div>
         </fieldset>
       </div>
-
-      <div class="sm:col-span-1">
-        <ul class="text-sm space-y-1">
-          <li class="tooltip <%= if @tooltip[:unicode], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="u" type="button">
-              unicode (<code>u</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:unicode] == true, do: "hidden" %>">
-                enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:caseless], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="i" type="button">
-              caseless (<code>i</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:caseless], do: "hidden" %>">
-                adds case insensitivity
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:dotall], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="s" type="button">
-              dotall (<code>s</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:dotall], do: "hidden" %>">
-                causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:multiline], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="m" type="button">
-              multiline (<code>m</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:multiline], do: "hidden" %>">
-                causes <code>^</code> and <code>$</code> to mark the beginning and end of each line; use <code>\A</code> and <code>\z</code> to match the end or beginning of the string
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:extended], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="x" type="button">
-              extended (<code>x</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:extended], do: "hidden" %>">
-                whitespace characters are ignored except when escaped and allow <code>#</code> to delimit comments
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:firstline], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="f" type="button">
-              firstline (<code>f</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:firstline], do: "hidden" %>">
-                forces the unanchored pattern to match before or at the first newline, though the matched text may continue over the newline
-              </p>
-            </button>
-          </li>
-
-          <li class="tooltip <%= if @tooltip[:ungreedy], do: "active" %>">
-            <button title="show info" class="tooltip-btn" phx-click="toggle-tooltip" phx-value-tooltip="U" type="button">
-              ungreedy (<code>U</code>)
-              <p class="tooltip-desc <%= unless @tooltip[:ungreedy], do: "hidden" %>">
-                inverts the "greediness" of the regexp (the previous <code>r</code> option is deprecated in favor of <code>U</code>)
-              </p>
-            </button>
-          </li>
-        </ul>
-      </div>
     </div>
 
     <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
@@ -180,10 +113,36 @@
       <pre class="select-all">#=> <%= inspect(@result, limit: :infinity, pretty: true) %></pre>
     </div>
 
+    <div>
+      <div class="sm:hidden">
+        <%= label f, :help_tab, "Help", class: "block text-sm font-medium leading-5 text-gray-700" %>
+        <%= select f,
+          :help_tab,
+          [{"Cheatsheet", "cheatsheet"}, {"Flags", "flags"}],
+          aria_label: "Selected help tab",
+          class: "mt-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
+        %>
+      </div>
+      <div class="hidden sm:block">
+        <div class="border-b border-gray-200">
+          <nav class="flex -mb-px">
+            <button type="button" phx-click="help-tab" phx-value-tab="cheatsheet" class="px-1 py-4 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-2 border-transparent leading-5 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300">
+              Cheatsheet
+            </button>
+            <button type="button" phx-click="help-tab" phx-value-tab="flags" class="px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-2 border-transparent leading-5 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300">
+              Flags
+            </button>
+          </nav>
+        </div>
+      </div>
+
+      <div class="<%= unless @help_tab == "cheatsheet", do: "hidden" %> p-4">
+        <%= render("_cheatsheet.html") %>
+      </div>
+      <div class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
+        <%= render("_flags.html", assigns) %>
+      </div>
+    </div>
+
   </form>
-
-  <div>
-    <%= render("_cheatsheet.html") %>
-  </div>
-
 </div>
