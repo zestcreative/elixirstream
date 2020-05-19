@@ -187,8 +187,11 @@ defmodule UtilityWeb.RegexLive do
   defp get_parts(indexes, string) when is_list(indexes) do
     indexes
     |> List.flatten()
+    |> Enum.uniq()
     |> Enum.reduce({nil, []}, fn match, acc ->
       case {match, acc} do
+        {{-1, 0}, {_, acc}} ->
+          {0, acc}
         {{0, len}, {nil, []}} ->
           {len, [{:matched, 0, binary_part(string, 0, len)}]}
         {{start, len}, {nil, []}} ->
@@ -212,6 +215,7 @@ defmodule UtilityWeb.RegexLive do
   defp ensure_last_part({nil, nil}, _last, string), do: [{:unmatched, 0, string}]
   defp ensure_last_part({nil, []}, _last, string), do: [{:unmatched, 0, string}]
   defp ensure_last_part({nil, parts}, _last, _string), do: parts
+  defp ensure_last_part({0, parts}, _last, _string), do: parts
   defp ensure_last_part({last, parts}, last, _string), do: parts
   defp ensure_last_part({last, parts}, string_last, string) when last < string_last do
     [[{:unmatched, last, binary_part(string, last, string_last - last)}] | parts]
