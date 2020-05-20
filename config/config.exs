@@ -7,6 +7,9 @@
 # General application configuration
 use Mix.Config
 
+config :utility,
+  cache: Utility.Cache.RedisImplementation
+
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
   url: [host: "localhost"],
@@ -14,7 +17,6 @@ config :utility, UtilityWeb.Endpoint,
   render_errors: [view: UtilityWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
-
 
 config :utility, :basic_auth,
   auth_user: System.get_env("AUTH_USER", "admin"),

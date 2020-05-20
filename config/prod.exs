@@ -11,9 +11,11 @@ use Mix.Config
 # before starting your production server.
 
 host = System.get_env("HOST")
-heroku_host = if System.get_env("HEROKU_APP_NAME") do
-  System.get_env("HEROKU_APP_NAME") <> ".herokuapp.com"
-end
+
+heroku_host =
+  if System.get_env("HEROKU_APP_NAME") do
+    System.get_env("HEROKU_APP_NAME") <> ".herokuapp.com"
+  end
 
 config :utility, UtilityWeb.Endpoint,
   http: [port: {:system, "PORT"}, compress: true],
@@ -57,4 +59,3 @@ config :logger, level: :info
 #       force_ssl: [hsts: true]
 #
 # Check `Plug.SSL` for all available options in `force_ssl`.
-

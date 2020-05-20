@@ -6,19 +6,20 @@ defmodule UtilityWeb.RegexLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   alias Ecto.Changeset
+  alias Utility.Cache
   require Logger
 
   @primary_key false
   embedded_schema do
-    field :id, Ecto.UUID
-    field :string, :string, default: ""
-    field :flags, :string, default: ""
-    field :regex, :string, default: ""
-    field :function, :string, default: "scan"
-    field :result, :any, virtual: true, default: ""
-    field :matched, :any, virtual: true, default: []
-    field :help_tab, :string, default: "cheatsheet"
-    field :pasta, :string, virtual: true, default: ""
+    field(:id, Ecto.UUID)
+    field(:string, :string, default: "")
+    field(:flags, :string, default: "")
+    field(:regex, :string, default: "")
+    field(:function, :string, default: "scan")
+    field(:result, :any, virtual: true, default: "")
+    field(:matched, :any, virtual: true, default: [])
+    field(:help_tab, :string, default: "cheatsheet")
+    field(:pasta, :string, virtual: true, default: "")
   end
 
   @allowed_functions ~w[scan named_captures run]
@@ -27,30 +28,31 @@ defmodule UtilityWeb.RegexLive do
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
     record = %__MODULE__{}
+
     {:ok,
-      socket
-      |> assign(:record, record)
-      |> assign(:page_title, "Regex Tester")
-      |> assign(:tooltip, %{})
-      |> assign_changeset(%{})
-    }
+     socket
+     |> assign(:record, record)
+     |> assign(:page_title, "Regex Tester")
+     |> assign_changeset(%{})}
   end
 
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _uri, socket) do
-    with {:ok, regex} <- Utility.Redix.command(["HGET", cache_key_for(id), "regex"]),
-         {:ok, string} <- Utility.Redix.command(["HGET", cache_key_for(id), "string"]),
-         {:ok, function} <- Utility.Redix.command(["HGET", cache_key_for(id), "function"]),
-         {:ok, flags} <- Utility.Redix.command(["HGET", cache_key_for(id), "flags"]) do
+    with {:ok, regex} <- Cache.hash_get(cache_key_for(id), "regex"),
+         {:ok, string} <- Cache.hash_get(cache_key_for(id), "string"),
+         {:ok, function} <- Cache.hash_get(cache_key_for(id), "function"),
+         {:ok, flags} <- Cache.hash_get(cache_key_for(id), "flags") do
       record = %__MODULE__{id: id, function: function, regex: regex, string: string, flags: flags}
+
       {:noreply,
-        socket
-        |> assign(:record, record)
-        |> assign_changeset(%{})}
+       socket
+       |> assign(:record, record)
+       |> assign_changeset(%{})}
     else
       _ -> {:noreply, put_flash(socket, :error, "Could not find saved regex")}
     end
   end
+
   def handle_params(_params, _uri, socket), do: {:noreply, socket}
 
   @impl Phoenix.LiveView
@@ -60,56 +62,31 @@ defmodule UtilityWeb.RegexLive do
 
   @impl Phoenix.LiveView
   def handle_event("help-tab", %{"tab" => tab}, socket) do
-    {:noreply, assign_changeset(socket, Map.merge(socket.assigns.changeset.params, %{"help_tab" => tab}))}
-  end
-
-  @impl Phoenix.LiveView
-  @tooltips %{
-    "U" => :ungreedy,
-    "f" => :firstline,
-    "i" => :caseless,
-    "m" => :multiline,
-    "s" => :dotall,
-    "u" => :unicode,
-    "x" => :extended,
-  }
-
-  def handle_event("toggle-tooltip", %{"tooltip" => which_raw}, socket) do
-    case Map.get(@tooltips, which_raw) do
-      nil ->
-        {:noreply, socket}
-      which ->
-        tooltip = Map.update(socket.assigns.tooltip, which, true, fn x -> !x end)
-        {:noreply, assign(socket, :tooltip, tooltip)}
-    end
-  end
-
-  @impl Phoenix.LiveView
-  def handle_event("clear", _content, socket) do
     {:noreply,
-      socket
-      |> assign(:record, %__MODULE__{})
-      |> assign_changeset(%{})
-    }
+     assign_changeset(socket, Map.merge(socket.assigns.changeset.params, %{"help_tab" => tab}))}
   end
 
   @one_year 60 * 60 * 24 * 365
   @impl Phoenix.LiveView
   def handle_event("permalink", _content, socket) do
-    {:ok, record} = Changeset.apply_action(socket.assigns.changeset, :insert)
-    record = %{record | id: Ecto.UUID.generate()}
+    with {:ok, record} <- Changeset.apply_action(socket.assigns.changeset, :insert),
+         record <- %{record | id: Ecto.UUID.generate()},
+         {:ok, _} <-
+           Cache.multi([
+             [:hash_set, cache_key_for(record.id), "string", record.string],
+             [:hash_set, cache_key_for(record.id), "regex", record.regex],
+             [:hash_set, cache_key_for(record.id), "function", record.function],
+             [:hash_set, cache_key_for(record.id), "flags", record.flags],
+             [:expire, cache_key_for(record.id), @one_year]
+           ]) do
+      {:noreply,
+       socket
+       |> put_flash(:info, "Saved regex. See browser URL")
+       |> push_patch(to: "/regex/#{record.id}")}
+    else
+      {:error, %Changeset{}} ->
+        {:noreply, put_flash(socket, :error, "You may only save a valid regex")}
 
-    case Utility.Redix.pipeline([
-      ["HSET", cache_key_for(record.id), "string", record.string],
-      ["HSET", cache_key_for(record.id), "regex", record.regex],
-      ["HSET", cache_key_for(record.id), "function", record.function],
-      ["HSET", cache_key_for(record.id), "flags", record.flags],
-      ["EXPIRE", cache_key_for(record.id), @one_year]
-    ]) do
-      {:ok, _} ->
-        {:noreply,
-          socket
-          |> push_patch(to: "/regex/#{record.id}")}
       error ->
         Logger.error(inspect(error))
         {:noreply, put_flash(socket, :error, "Could not save regex")}
@@ -123,6 +100,7 @@ defmodule UtilityWeb.RegexLive do
 
   defp assign_changeset(socket, params) do
     changeset = changeset(socket.assigns.record, params)
+
     socket
     |> assign(:changeset, Map.put(changeset, :action, :insert))
     |> assign(:help_tab, Changeset.get_field(changeset, :help_tab))
@@ -132,7 +110,7 @@ defmodule UtilityWeb.RegexLive do
     |> assign(:result, Changeset.get_field(changeset, :result))
   end
 
-  @two_mb 1_024 * 10 * 2
+  @two_mb 2_000_000
   def changeset(record, params) do
     record
     |> Changeset.cast(params, ~w[help_tab string flags regex function]a)
@@ -144,29 +122,29 @@ defmodule UtilityWeb.RegexLive do
     |> put_pasta()
   end
 
+  defp put_pasta(%{valid?: true} = changeset) do
+    fun = Changeset.get_field(changeset, :function)
+    regex = Changeset.get_field(changeset, :regex)
+    flags = Changeset.get_field(changeset, :flags)
+    pasta = "Regex.#{fun}(~r/#{regex}/#{flags}, value)"
+    Changeset.put_change(changeset, :pasta, pasta)
+  end
+
+  defp put_pasta(changeset), do: changeset
+
   defp put_result(%{valid?: true} = changeset) do
     string = Changeset.get_field(changeset, :string)
-    {result, indexes} =
-      case {Changeset.get_field(changeset, :function), Regex.compile(Changeset.get_field(changeset, :regex), Changeset.get_field(changeset, :flags))} do
-        {"run", {:ok, regex}} ->
-          {
-            Regex.run(regex, string),
-            Regex.run(regex, string, return: :index)
-          }
-        {"scan", {:ok, regex}} ->
-          {
-            Regex.scan(regex, string),
-            Regex.scan(regex, string, return: :index)
-          }
-        {"named_captures", {:ok, regex}} ->
-          {
-            Regex.named_captures(regex, string),
-            Regex.named_captures(regex, string, return: :index)
-          }
-        {_, {:error, {error, pos}}} ->
-          {"#{error} (at character #{pos})", []}
-      end
 
+    {result, indexes, changeset} =
+      do_result(
+        Changeset.get_field(changeset, :function),
+        Regex.compile(
+          Changeset.get_field(changeset, :regex),
+          Changeset.get_field(changeset, :flags)
+        ),
+        string,
+        changeset
+      )
 
     parts =
       indexes
@@ -175,61 +153,108 @@ defmodule UtilityWeb.RegexLive do
       |> Enum.sort_by(fn {_, x, _} -> x end)
       |> Enum.map(fn {result, _, string} -> {result, string} end)
 
-
     changeset
     |> Changeset.put_change(:result, result)
     |> Changeset.put_change(:matched, parts)
   end
+
   defp put_result(changeset), do: changeset
+
+  defp do_result("run", {:ok, regex}, string, changeset) do
+    {
+      Regex.run(regex, string),
+      Regex.run(regex, string, return: :index),
+      changeset
+    }
+  end
+
+  defp do_result("scan", {:ok, regex}, string, changeset) do
+    {
+      Regex.scan(regex, string),
+      Regex.scan(regex, string, return: :index),
+      changeset
+    }
+  end
+
+  defp do_result("named_captures", {:ok, regex}, string, changeset) do
+    {
+      Regex.named_captures(regex, string),
+      Regex.named_captures(regex, string, return: :index),
+      changeset
+    }
+  end
+
+  defp do_result(_, {:error, {error, pos}}, _string, changeset) do
+    {
+      "#{error} (at character #{pos})",
+      [],
+      Changeset.add_error(changeset, :regex, "is invalid")
+    }
+  end
 
   defp get_parts(nil, _string), do: []
   defp get_parts(%{} = indexes, string), do: indexes |> Map.values() |> get_parts(string)
+
   defp get_parts(indexes, string) when is_list(indexes) do
     indexes
     |> List.flatten()
-    |> Enum.uniq()
-    |> Enum.reduce({nil, []}, fn match, acc ->
-      case {match, acc} do
-        {{-1, 0}, {_, acc}} ->
-          {0, acc}
-        {{0, len}, {nil, []}} ->
-          {len, [{:matched, 0, binary_part(string, 0, len)}]}
-        {{start, len}, {nil, []}} ->
-          {start + len, [
-            {:unmatched, 0, binary_part(string, 0, start)},
-            {:matched, start, binary_part(string, start, len)},
-          ]}
-        {{start, len}, {last, acc}} when start + len != last ->
-          {start + len, [[
-            {:matched, start, binary_part(string, start, len)},
-            {:unmatched, last, binary_part(string, last, start - last)}
-          ] | acc]}
-        {{start, len}, {_last, acc}} ->
-          {start + len, [[{:matched, start, binary_part(string, start, len)}] | acc]}
-      end
-    end)
-    |> ensure_last_part(String.length(string), string)
+    |> Enum.sort_by(fn {start, length} -> {start, -(start + length)} end)
+    |> Enum.reduce({string, 0, []}, &to_matches/2)
+    |> ensure_last_part(byte_size(string))
   end
 
-  defp ensure_last_part({_last, parts}, nil, _string), do: parts
-  defp ensure_last_part({nil, nil}, _last, string), do: [{:unmatched, 0, string}]
-  defp ensure_last_part({nil, []}, _last, string), do: [{:unmatched, 0, string}]
-  defp ensure_last_part({nil, parts}, _last, _string), do: parts
-  defp ensure_last_part({0, parts}, _last, _string), do: parts
-  defp ensure_last_part({last, parts}, last, _string), do: parts
-  defp ensure_last_part({last, parts}, string_last, string) when last < string_last do
-    [[{:unmatched, last, binary_part(string, last, string_last - last)}] | parts]
+  # subpatterns that were not assigned a value in the match are returned as the tuple {-1,0}
+  # ignoring for now
+  defp to_matches({-1, 0}, {string, last_pos, acc}) do
+    {string, last_pos, acc}
   end
-  defp ensure_last_part({_last, parts}, _string_last, _string), do: parts
 
-  defp put_pasta(%{valid?: true} = changeset) do
-    fun = Changeset.get_field(changeset, :function)
-    regex = Changeset.get_field(changeset, :regex)
-    flags = Changeset.get_field(changeset, :flags)
-    pasta = "Regex.#{fun}(~r/#{regex}/#{flags}, value)"
-    Changeset.put_change(changeset, :pasta, pasta)
+  # These are matches that have already been processed. Eg, Sub-group matches included in the
+  # bigger group.
+  defp to_matches({start, length}, {string, last_pos, acc}) when start + length <= last_pos do
+    {string, last_pos, acc}
   end
-  defp put_pasta(changeset), do: changeset
+
+  # the first match at the beginning of the string
+  defp to_matches({0 = start, len}, {string, 0 = start, acc}) do
+    {string, start + len, [{:matched, start, binary_part(string, start, len)} | acc]}
+  end
+
+  # the first match in the middle of the string
+  defp to_matches({start, len}, {string, 0, acc}) do
+    {string, start + len,
+     [
+       {:unmatched, 0, binary_part(string, 0, start)},
+       {:matched, start, binary_part(string, start, len)}
+       | acc
+     ]}
+  end
+
+  # a match with a gap from the last match
+  defp to_matches({start, len}, {string, last, acc}) when start + len > last do
+    {string, start + len,
+     [
+       {:unmatched, last, binary_part(string, last, start - last)},
+       {:matched, start, binary_part(string, start, len)}
+       | acc
+     ]}
+  end
+
+  # rest
+  defp to_matches({start, len}, {string, _last, acc}) do
+    {string, start + len, [{:matched, start, binary_part(string, start, len)} | acc]}
+  end
+
+  defp ensure_last_part({_string, _last_pos, parts}, 0), do: parts
+  defp ensure_last_part({string, 0, []}, _total_size), do: [{:unmatched, 0, string}]
+  defp ensure_last_part({_string, 0, parts}, _string_size), do: parts
+  defp ensure_last_part({_string, string_size, parts}, string_size), do: parts
+
+  defp ensure_last_part({string, last_pos, parts}, string_last) when last_pos < string_last do
+    [[{:unmatched, last_pos, binary_part(string, last_pos, string_last - last_pos)}] | parts]
+  end
+
+  defp ensure_last_part({_string, _last_pos, parts}, _string_last), do: parts
 
   defp cache_key_for(id), do: "regex-#{id}"
 end

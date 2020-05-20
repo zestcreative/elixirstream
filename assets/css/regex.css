@@ -1,0 +1,6 @@
+.matches span.m {
+  @apply bg-yellow-200;
+}
+.matches span.u + span.m {
+  border-left: 1px dashed red;
+}

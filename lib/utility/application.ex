@@ -11,17 +11,17 @@ defmodule Utility.Application do
       %Vapor.Provider.Env{
         bindings: [
           {:auth_user, "AUTH_USER"},
-          {:auth_pass, "AUTH_PASS"},
+          {:auth_pass, "AUTH_PASS"}
         ]
       }
     ]
 
     config = Vapor.load!(providers)
 
-    Application.put_env(:you_meet, :basic_auth, [
+    Application.put_env(:you_meet, :basic_auth,
       username: config[:auth_user],
-      password: config[:auth_pass],
-    ])
+      password: config[:auth_pass]
+    )
 
     children = [
       # Start the Telemetry supervisor
@@ -30,7 +30,7 @@ defmodule Utility.Application do
       {Phoenix.PubSub, name: Utility.PubSub},
       # Start the Endpoint (http/https)
       UtilityWeb.Endpoint,
-      Utility.Redix,
+      Utility.Redix
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}
     ]

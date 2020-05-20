@@ -17,11 +17,13 @@ defmodule Utility.MixProject do
   def application do
     [
       mod: {Utility.Application, []},
-      extra_applications: [:logger, :runtime_tools, :os_mon]
+      extra_applications: extra_applications(Mix.env())
     ]
   end
 
   # Specifies which paths to compile per environment.
+  defp extra_applications(:test), do: [:logger]
+  defp extra_applications(_), do: [:logger, :runtime_tools, :os_mon]
   defp elixirc_paths(:test), do: ["lib", "test/support"]
   defp elixirc_paths(_), do: ["lib"]
 
@@ -46,6 +48,7 @@ defmodule Utility.MixProject do
       {:castore, ">= 0.0.0"},
       # Test
       {:floki, ">= 0.0.0", only: :test},
+      {:fast_html, "~> 1.0", only: :test},
       # Dev
       {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]

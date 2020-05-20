@@ -24,26 +24,12 @@
   @apply text-white;
 }
 
-.tooltip { @apply pb-1 rounded; }
-.tooltip.active { @apply bg-gray-300; }
-
-.tooltip .tooltip-btn {
-  @apply w-full p-1 outline-none appearance-none;
-  @apply transition-colors ease-in-out duration-100;
+.info-flash {
 }
-.tooltip .tooltip-btn:hover { @apply bg-gray-300; }
-.tooltip .tooltip-btn:focus { @apply bg-gray-300; }
 
-.tooltip-desc { @apply p-1 mt-1 bg-gray-300 pointer-events-none; }
-
-.matches span.m {
-  @apply bg-yellow-200;
-}
-.matches span.u + span.m {
-  border-left: 1px dashed red;
+.error-flash {
 }
 
 .error-input {
   @apply font-semibold text-red-500;
 }
-

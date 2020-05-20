@@ -30,7 +30,7 @@
           <%= text_input f, :regex,
                 placeholder: "regex",
                 autocomplete: "off",
-                class: "form-input pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
+                class: "form-input pr-8 pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
           <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
         </div>
         <%= error_tag f, :regex %>
@@ -136,10 +136,10 @@
         </div>
       </div>
 
-      <div class="<%= unless @help_tab == "cheatsheet", do: "hidden" %> p-4">
+      <div data-test-cheatsheet class="<%= unless @help_tab == "cheatsheet", do: "hidden" %> p-4">
         <%= render("_cheatsheet.html") %>
       </div>
-      <div class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
+      <div data-test-flags class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
         <%= render("_flags.html") %>
       </div>
     </div>

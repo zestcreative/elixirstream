@@ -4,5 +4,6 @@
 /*! purgecss end ignore */
 
 @import "components.css";
+@import "regex.css";
 
 @import "tailwindcss/utilities";
