@@ -23,7 +23,7 @@ defmodule UtilityWeb.RegexLive do
   end
 
   @allowed_functions ~w[scan named_captures run]
-  @allowed_tabs ~w[cheatseet flags]
+  @allowed_tabs ~w[cheatseet flags recipes]
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do

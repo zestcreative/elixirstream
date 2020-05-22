@@ -118,7 +118,7 @@
         <%= label f, :help_tab, "Help", class: "block text-sm font-medium leading-5 text-gray-700" %>
         <%= select f,
           :help_tab,
-          [{"Cheatsheet", "cheatsheet"}, {"Flags", "flags"}],
+          help_tab_options(),
           aria_label: "Selected help tab",
           class: "mt-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-blue focus:border-blue-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
         %>
@@ -132,6 +132,9 @@
             <button type="button" phx-click="help-tab" phx-value-tab="flags" class="px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-2 border-transparent leading-5 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300">
               Flags
             </button>
+            <button type="button" phx-click="help-tab" phx-value-tab="recipes" class="px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-2 border-transparent leading-5 hover:text-gray-700 hover:border-gray-300 focus:outline-none focus:text-gray-700 focus:border-gray-300">
+              Recipes
+            </button>
           </nav>
         </div>
       </div>
@@ -141,6 +144,9 @@
       </div>
       <div data-test-flags class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
         <%= render("_flags.html") %>
+      </div>
+      <div data-test-flags class="<%= unless @help_tab == "recipes", do: "hidden" %> p-4">
+        <%= render("_recipes.html") %>
       </div>
     </div>
 

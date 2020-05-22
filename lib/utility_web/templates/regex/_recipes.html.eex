@@ -1,24 +1,55 @@
-<%# _receipes.html. eex template %>
+<%# _receipes.html.eex template %>
 <dl class="flex flex-wrap -mx-2 text-sm">
-  <div class="w-full p-2 md:w-1/3">
+  <div class="w-full p-2 md:w-1/2">
     <dt class="font-semibold">
       US Phone Number
     </dt>
     <dd>
-      <code class="select-all">\A(\+?1(-| )?)?(\(?\d{3}\)?(-| )?)?\d{3}(-| )?\d{4}\z</code>
+      <code class="select-all">
+        \(?\d{3}\)?-? *\d{3}-? *-?\d{4}
+      </code>
     </dd>
+  </div>
 
+  <div class="w-full p-2 md:w-1/2">
     <dt class="font-semibold">
-      Unix Epoch Time with named captures
+      Unix Epoch Time (named captures)
     </dt>
     <dd>
-      <code class="select-all">\A(?<sign>-)?(?<seconds>\d{10,11})(?:\.(?<subseconds>\d{1,10}))?\z</code>
+      <code class="select-all">
+        \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z
+      </code>
     </dd>
+  </div>
+
+  <div class="w-full p-2 md:w-1/2">
     <dt class="font-semibold">
-      Numbers Only
+      Entire string is only numbers
     </dt>
     <dd>
-      <code class="select-all">\A[0-9]*\z</code>
+      <code class="select-all">
+        \A[0-9]*\z
+      </code>
+    </dd>
+  </div>
+
+  <div class="w-full p-2 md:w-1/2">
+    <dt class="font-semibold">
+      HTML attribute (eg: class)
+    </dt>
+    <dd>
+      <code class="select-all">
+        (?&lt;=class=)(?:'|").*?(?:'|")(?=.*?&gt;)
+      </code>
+    </dd>
+  </div>
+
+  <div class="w-full p-2 md:w-1/2">
+    <dt class="font-semibold">
+      Simple Email Address
+    </dt>
+    <dd>
+      <code class="select-all">.+\@.+\..+</code>
     </dd>
   </div>
 </dl>
