@@ -49,7 +49,16 @@
       Simple Email Address
     </dt>
     <dd>
-      <code class="select-all">.+\@.+\..+</code>
+      <code class="select-all">\A.+\@.+\..+\z</code>
+    </dd>
+  </div>
+
+  <div class="w-full p-2 md:w-1/2">
+    <dt class="font-semibold">
+      Only alpha-numeric, underscore, and dash characters
+    </dt>
+    <dd>
+      <code class="select-all">\A[\w-]+\z</code>
     </dd>
   </div>
 </dl>
