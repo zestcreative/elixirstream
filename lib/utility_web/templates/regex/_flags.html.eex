@@ -24,7 +24,7 @@
       dotall (<code>s</code>)
     </dt>
     <dd>
-      causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re</code></a> documentation
+      causes dot to match newlines and also set newline to anycrlf; the new line setting can be overridden by setting (*CR) or (*LF) or (*CRLF) or (*ANY) according to <a class="link" href="https://erlang.org/doc/man/re.html" target="_BLANK"><code>:re documentation</code></a>
     </dd>
   </div>
 
