@@ -94,6 +94,6 @@
   </div>
   <div class="w-full p-2 md:w-1/3">
     <dt class="font-semibold select-all"><code>a{3,6}</code></dt>
-    <dd class="">Between 3 and 6 of a</dd>
+    <dd>Between 3 and 6 of a</dd>
   </div>
 </dl>

@@ -39,7 +39,7 @@
     </dt>
     <dd>
       <code class="select-all">
-        (?&lt;=class=)(?:'|").*?(?:'|")(?=.*?&gt;)
+        (?&lt;=class=(?:'|")).*?(?=(?:'|").*?&gt;)
       </code>
     </dd>
   </div>
