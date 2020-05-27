@@ -49,7 +49,7 @@
       Simple Email Address
     </dt>
     <dd>
-      <code class="select-all">\A.+\@.+\..+\z</code>
+      <code class="select-all">\A[^\s]+@[^\s]+\z</code>
     </dd>
   </div>
 
