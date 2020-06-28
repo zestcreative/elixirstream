@@ -1,0 +1,46 @@
+<div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+  <ul class="space-y-4">
+    <li>
+      Made with 💚💙💜💛❤️ by <%= link "@dbernheisel", to: "https://twitter.com/bernheisel", class: "link" %>
+    </li>
+
+    <li>
+      If you're interested in the source code, <%= link "check it out", to: "https://github.com/dbernheisel/elixir-utilities-web", class: "link" %>
+    </li>
+
+    <li>
+      <p>
+        Have any ideas on what would be helpful here?
+      </p>
+      <p>
+        Drop me a line by
+        <%= link "creating an issue on GitHub", to: "https://github.com/dbernheisel/elixir-utilities-web/issues", class: "link" %>.
+      </p>
+    </li>
+
+    <li>
+      <p>What does this site use?</p>
+      <ul class="ml-4 list-disc">
+        <li><%= link "Elixir", to: "https://elixir-lang.org", class: "link" %></li>
+        <li><%= link "Phoenix Framework", to: "https://phoenixframework.org", class: "link" %></li>
+        <li><%= link "Phoenix LiveView", to: "https://github.com/phoenixframework/phoenix_live_view", class: "link" %></li>
+        <li><%= link "Tailwind CSS", to: "https://tailwindcss.com", class: "link" %></li>
+      </ul>
+    </li>
+
+    <li>
+      <p class="font-bold">How does Phoenix LiveView make this awesome?</p>
+      <p>Before we get to Phoenix LiveView, let's start at the beginning:</p>
+      <ul class="ml-4 list-disc">
+        <li>Elixir is an awesome language to work with to write web applications (and more like embedded devices!).</li>
+        <li>Phoenix is a wonderful web framework which is quickly productive for handling web requests.</li>
+        <li>Phoenix LiveView is a welcome addition that enables normally-backend-developers like me produce reactive Web UIs like the <%= link "Regex Tester", to: Routes.live_path(@conn, UtilityWeb.RegexLive), class: "link" %> without having to split the codebase into "backend" and "frontend" so much. This isn't a knock on frontend frameworks; this is just another highly-efficient tool in the developer's toolbelt to rapidly produce good web applications.</li>
+      </ul>
+    </li>
+
+    <li>
+      <p class="font-bold">How do you deploy the app?</p>
+      <p>I'm using a free Heroku dyno with a free Heroku-provided Redis instance. Heroku is connected to the GitHub repo and automatically deploys any changes to the main branch. Redis is used to store regex permalinks.</p>
+    </li>
+  </div>
+</div>

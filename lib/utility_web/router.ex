@@ -18,7 +18,8 @@ defmodule UtilityWeb.Router do
   scope "/", UtilityWeb do
     pipe_through [:browser]
 
-    get "/", DashboardController, :show
+    get "/", PageController, :show
+    get "/about", PageController, :about
     live "/regex", RegexLive
     live "/regex/:id", RegexLive
   end

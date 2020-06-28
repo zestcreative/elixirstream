@@ -1,6 +1,6 @@
 defmodule UtilityWeb.RegexLive do
   @moduledoc """
-  Manage the view of the user's calendar. Defaults to the month view.
+  Perform regex on a given string, and visualize the matches back to the user
   """
 
   use UtilityWeb, :live_view

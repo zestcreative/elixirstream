@@ -1,11 +1,15 @@
 .nav-link {
   @apply flex items-center px-2 py-2 rounded-md;
-  @apply text-sm font-medium leading-5;
+  @apply text-white text-sm font-medium leading-5;
   @apply transition ease-in-out duration-150;
-  }
+}
 
 .nav-link:focus {
   @apply bg-gray-700 outline-none;
+}
+
+.nav-link:hover {
+  @apply text-white bg-gray-900;
 }
 
 .nav-link.active {
