@@ -42,5 +42,11 @@
       <p class="font-bold">How do you deploy the app?</p>
       <p>I'm using a free Heroku dyno with a free Heroku-provided Redis instance. Heroku is connected to the GitHub repo and automatically deploys any changes to the main branch. Redis is used to store regex permalinks.</p>
     </li>
+
+    <li>
+      <p class="font-bold">While I have you here...</p>
+      <p>Check out <%= link "Thinking |> Elixir", to: "https://thinkingelixir.com", class: "link" %> and the <%= link "podcast", to: "https://thinkingelixir.com/the-podcast", class: "link" %>.</p>
+      <p>Remember to stay positive!</p>
+    </li>
   </div>
 </div>
