@@ -1,5 +1,5 @@
 <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-  <ul class="space-y-4">
+  <ul class="space-y-6">
     <li>
       Made with 💚💙💜💛❤️ by <%= link "@dbernheisel", to: "https://twitter.com/bernheisel", class: "link" %>
     </li>
@@ -20,7 +20,7 @@
 
     <li>
       <p>What does this site use?</p>
-      <ul class="ml-4 list-disc">
+      <ul class="ml-4 mt-1 space-y-1 list-disc">
         <li><%= link "Elixir", to: "https://elixir-lang.org", class: "link" %></li>
         <li><%= link "Phoenix Framework", to: "https://phoenixframework.org", class: "link" %></li>
         <li><%= link "Phoenix LiveView", to: "https://github.com/phoenixframework/phoenix_live_view", class: "link" %></li>
