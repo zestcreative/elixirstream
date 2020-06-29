@@ -31,11 +31,17 @@
     <li>
       <p class="font-bold">How does Phoenix LiveView make this awesome?</p>
       <p>Before we get to Phoenix LiveView, let's start at the beginning:</p>
-      <ul class="ml-4 list-disc">
+      <ul class="mt-2 ml-4 space-y-1 list-disc">
         <li>Elixir is an awesome language to work with to write web applications (and more like embedded devices!).</li>
         <li>Phoenix is a wonderful web framework which is quickly productive for handling web requests.</li>
         <li>Phoenix LiveView is a welcome addition that enables normally-backend-developers like me produce reactive Web UIs like the <%= link "Regex Tester", to: Routes.live_path(@conn, UtilityWeb.RegexLive), class: "link" %> without having to split the codebase into "backend" and "frontend" so much. This isn't a knock on frontend frameworks; this is just another highly-efficient tool in the developer's toolbelt to rapidly produce good web applications.</li>
       </ul>
+
+      <p class="mt-2">Phoenix LiveView is performing server-side HTML diffing before sending it over the wire to
+      your browser. "The wire" in this case is not AJAX or even an HTTP request, no, instead it's
+      using websockets. Once the changed bits are received in the browser, Phoenix LiveView's
+      JavaScript (with a lot of help from morphdom) is patching those changed bits to the HTML DOM,
+      rendering what you see.</p>
     </li>
 
     <li>
