@@ -11,6 +11,10 @@ defmodule UtilityWeb.Router do
     plug :put_root_layout, {UtilityWeb.LayoutView, :root}
   end
 
+  pipeline :crawlers do
+    plug :accepts, ["xml", "json", "webmanifest"]
+  end
+
   pipeline :auth do
     plug :check_auth
   end
@@ -22,6 +26,13 @@ defmodule UtilityWeb.Router do
     get "/about", PageController, :about
     live "/regex", RegexLive
     live "/regex/:id", RegexLive
+  end
+
+  scope "/", UtilityWeb do
+    pipe_through [:crawlers]
+
+    get "/site.webmanifest", PageController, :site_manifest
+    get "/browserconfig.xml", PageController, :browserconfig
   end
 
   # Other scopes may use custom stacks.

@@ -22,6 +22,11 @@ config :utility, :basic_auth,
   auth_user: System.get_env("AUTH_USER", "admin"),
   auth_pass: System.get_env("AUTH_PASS", "admin")
 
+config :mime, :types, %{
+  "application/xml" => ["xml"],
+  "application/manifest+json" => ["webmanifest"]
+}
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
