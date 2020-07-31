@@ -10,6 +10,15 @@ module.exports = {
     "./js/**/*.js"
   ],
   theme: {
+    typography: (_theme) => ({
+      default: {
+        css: {
+          a: {
+            textDecoration: 'none'
+          }
+        }
+      }
+    }),
     extend: {
       colors: {
         brand: {
@@ -39,6 +48,7 @@ module.exports = {
   },
   variants: {},
   plugins: [
+    require('@tailwindcss/typography'),
     require('@tailwindcss/ui')({
       layout: 'sidebar',
     })

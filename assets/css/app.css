@@ -3,7 +3,8 @@
 @import "tailwindcss/components";
 /*! purgecss end ignore */
 
-@import "components.css";
+@import "navigation.css";
+@import "base.css";
 @import "regex.css";
 
 @import "tailwindcss/utilities";

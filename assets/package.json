@@ -7,6 +7,7 @@
     "watch": "webpack --mode development --watch"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.2.0",
     "@tailwindcss/ui": "^0.3.0",
     "@webcomponents/template": "^1.4.2",
     "child-replace-with-polyfill": "^1.0.1",
@@ -18,7 +19,7 @@
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",
     "shim-keyboard-event-key": "^1.0.3",
-    "tailwindcss": "^1.4.6",
+    "tailwindcss": "^1.6.0",
     "topbar": "^0.1.4",
     "url-search-params-polyfill": "^8.1.0"
   },

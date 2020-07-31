@@ -59,13 +59,6 @@ defmodule UtilityWeb.RegexLiveTest do
       assert %{help_tab: ["is invalid"]} = errors_on(changeset)
     end
 
-    test "does not populate result if invalid" do
-      record = %RegexLive{}
-      changeset = RegexLive.changeset(record, %{regex: "[0-9]+", string: "1234", help_tab: "bad"})
-
-      assert Ecto.Changeset.get_field(changeset, :result) == ""
-    end
-
     test "does not populate result or pasta if invalid" do
       record = %RegexLive{}
       changeset = RegexLive.changeset(record, %{regex: "[0-9]+", string: "1234", help_tab: "bad"})

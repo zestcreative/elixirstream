@@ -8,20 +8,10 @@ hooks.MaskFlags = {
       masked = masked.split('').filter((item, i, ar) => ar.indexOf(item) === i).join('');
       this.el.value = masked;
     });
-  },
-  unique_char(str1) {
-    var str = str1;
-    var uniql = "";
-    for (var x=0; x < str.length; x++) {
-      if(uniql.indexOf(str.charAt(x))==-1) {
-        uniql += str[x];
-      }
-    }
-    return uniql;
   }
 }
 
-hooks.confirmBeforeLeave = {
+hooks.ConfirmBeforeLeave = {
   mounted() {
     window.addEventListener("beforeunload", this.confirm(this.el), false);
   },

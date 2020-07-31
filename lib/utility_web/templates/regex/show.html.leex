@@ -1,4 +1,4 @@
-<div id="regex-tester" phx-hook="confirmBeforeLeave" data-is-changed="<%= changed?(@changeset) %>" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+<div id="regex-tester" phx-hook="ConfirmBeforeLeave" data-is-changed="<%= changed?(@changeset) %>" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
   <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
     <div class="mt-2 ml-4">
       <h1 class="text-2xl font-semibold text-gray-900">Regex Tester</h1>
@@ -91,7 +91,7 @@
         <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
           <input type="text" readonly id="regex-pasta" class="w-full bg-gray-200 cursor-default" value="<%= @pasta %>" />
         </div>
-        <p class="text-sm text-gray-500 leading-5">Which <a class="link" href="https://hexdocs.pm/elixir/Regex.html" target="_BLANK">Regex function</a> to run</p>
+        <p class="text-sm text-gray-500 leading-5">Which <a class="link" href="https://hexdocs.pm/elixir/Regex.html" target="_blank">Regex function</a> to run</p>
         <div class="flex flex-wrap mt-1 space-x-8">
           <div class="flex items-center">
             <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
@@ -148,7 +148,7 @@
       <div data-test-flags class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
         <%= render("_flags.html") %>
       </div>
-      <div data-test-flags class="<%= unless @help_tab == "recipes", do: "hidden" %> p-4">
+      <div data-test-recipes class="<%= unless @help_tab == "recipes", do: "hidden" %> p-4">
         <%= render("_recipes.html") %>
       </div>
     </div>

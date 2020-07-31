@@ -1,0 +1,17 @@
+.error-input {
+  @apply font-semibold text-red-500;
+}
+
+.link {
+  @apply font-medium no-underline border-b border-accent-600 duration-100 ease-in-out transition-colors;
+  transition-property: filter;
+}
+
+.link:visited {
+  filter: brightness(0.8);
+}
+
+.link:hover {
+  @apply border-b border-accent-700;
+  filter: brightness(0.5);
+}

@@ -10,16 +10,17 @@ export default class MobileNav {
   }
 
   shortcuts(event) {
+    // esc
     if (event.code === 27) this.close()
   }
 
   close() {
-    document.getElementById("mobile-nav").classList.add("hidden");
+    this.el.classList.add("hidden");
     this.isOpen = false;
   }
 
   open() {
-    document.getElementById("mobile-nav").classList.remove("hidden")
+    this.el.classList.remove("hidden")
     this.isOpen = true;
   }
 
