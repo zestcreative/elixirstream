@@ -48,7 +48,7 @@ defmodule Utility.MixProject do
       {:phoenix_ecto, "~> 4.0"},
       {:ecto, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.2"},
-      {:phoenix_live_view, "~> 0.13"},
+      {:phoenix_live_view, "~> 0.14"},
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
@@ -57,7 +57,6 @@ defmodule Utility.MixProject do
       {:castore, ">= 0.0.0"},
       # Test
       {:floki, ">= 0.0.0", only: :test},
-      {:fast_html, "~> 1.0", only: :test},
       # Dev
       {:phoenix_live_reload, "~> 1.2", only: :dev}
     ]
