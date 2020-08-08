@@ -2,11 +2,14 @@ import Config
 
 host = System.get_env("HOST")
 
-heroku_host =
-  if heroku_app_name = System.get_env("HEROKU_APP_NAME") do
-    heroku_app_name <> ".herokuapp.com"
-  end
+secret_key_base =
+  System.get_env("SECRET_KEY_BASE") ||
+    raise """
+    environment variable SECRET_KEY_BASE is missing.
+    You can generate one by calling: mix phx.gen.secret
+    """
 
 config :utility, UtilityWeb.Endpoint,
   http: [port: {:system, "PORT"}],
-  url: [scheme: "https", host: host || heroku_host, port: 443]
+  url: [scheme: "https", host: host, port: 443],
+  secret_key_base: secret_key_base
