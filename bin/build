@@ -1,0 +1,11 @@
+#!/bin/sh
+set -e
+
+if command -v docker >/dev/null; then
+  docker build -t utility-build:latest .
+  docker run -v "$(pwd)/releases:/app/releases/artifacts" --rm -it utility-build:latest mix release
+else
+  echo "You must have docker installed to build a release"
+  echo "Visit https://www.docker.com/get-started for more information"
+  exit 1
+fi

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# Works with a file called VERSION in the current directory,
+# the contents of which should be a semantic version number
+# such as "1.2.3"
+
+# this script will display the current version, automatically
+# suggest a "minor" version update, and ask for input to use
+# the suggestion, or use a newly entered value.
+
+set -e
+
+source bin/utils.sh
+
+suggest_version() {
+  local CURRENT_VERSION
+  local CURRENT_MAJOR
+  local CURRENT_MINOR
+
+  CURRENT_VERSION=$(cat VERSION)
+  CURRENT_MAJOR=$(echo "$CURRENT_VERSION" | cut -d. -f1)
+  CURRENT_MINOR=$(echo "$CURRENT_VERSION" | cut -d. -f2)
+
+  SUGGESTED_MINOR=$((CURRENT_MINOR + 1))
+  SUGGESTED_PATCH=0
+
+  echo "$CURRENT_MAJOR.$SUGGESTED_MINOR.$SUGGESTED_PATCH"
+}
+
+update_version() {
+  NEW_VERSION=$1; shift
+  echo "$NEW_VERSION" > VERSION
+  git add VERSION
+}
+
+push_tags() {
+  NEW_VERSION=$1; shift
+
+  echo "Pushing new version to the origin"
+  git commit -m "Bump version to ${NEW_VERSION}."
+  git tag -a -m "Tag version ${NEW_VERSION}." "v$NEW_VERSION"
+  git push origin --tags
+}
+
+exit_if_dirty
+
+if [ -f VERSION ]; then
+  SUGGESTED_VERSION=$(suggest_version)
+
+  echo_notice "Current version: ${WHITE}$(cat VERSION)"
+  NEW_VERSION=$(echo_prompt "Enter a version number" "[$SUGGESTED_VERSION]")
+
+  if [ "$NEW_VERSION" = "" ]; then NEW_VERSION=$SUGGESTED_VERSION; fi
+  echo "Will set new version to be $NEW_VERSION"
+  update_version "$NEW_VERSION"
+  push_tags "$NEW_VERSION"
+else
+  echo_warning "Could not find a ${WHITE}VERSION${YELLOW} file."
+  RESPONSE=$(echo_prompt "Do you want to create a version file and start from scratch?" "(y/n)")
+
+  case "$RESPONSE" in
+    y|Y )
+      update_version "0.1.0"
+      push_tags "0.1.0";;
+    * ) exit 1;;
+  esac
+fi

@@ -13,3 +13,17 @@ To start your Phoenix server:
   * Start Phoenix endpoint with `mix phx.server`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+
+## Deployment
+
+- Configure ~/.ssh/config on your machine to alias the production machine. For
+  example:
+
+  ```
+  Host utility-web
+    HostName 123.45.67.89
+  ```
+
+- `ssh root@utility-web`
+- Ensure SSH access is setup for a user `utility` on the server
+- `bin/deploy production`

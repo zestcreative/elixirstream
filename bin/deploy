@@ -1,0 +1,104 @@
+#!/bin/bash
+set -e
+
+# Example usage:
+#   $ bin/deploy production
+
+# For the below to work, you will need to add your deploy user to not require a
+# password for sudo. Below assumes 'utility' is the user
+#   $ sudo visudo
+#
+# Then append to the end:
+#   utility ALL=NOPASSWD: /bin/systemctl
+#   utility ALL=NOPASSWD: /bin/journalctl
+#
+# If you skip this step, it will not restart the app on your server, but the
+# rest should work. Manually ssh into the server and restart the app to put
+# the new code into effect. `sudo systemctl restart utility-production`
+
+APP=utility
+APP_ENV=${1:-none}
+
+source bin/utils.sh
+
+get_server() {
+  case $APP_ENV in
+    'production') echo "utility@utility-web";;
+    *) echo "none";;
+  esac
+}
+
+SERVER=$(get_server "$APP_ENV")
+if [ "$SERVER" = "none" ]; then
+  echo_warning "Invalid server."
+  echo_notice "Please specify: production"
+  exit 1
+fi
+
+# Don't accidently deploy from non-main branch
+build_release() {
+  if [ "$(git symbolic-ref HEAD --short)" != "main" ]; then
+    echo_warning "You are not on the main branch and trying to build a release"
+    BRANCH_CHOICE=$(echo_prompt "Are you sure you want to continue?" "(y/n)")
+    case "$BRANCH_CHOICE" in
+      y|Y ) echo "Building from non-main";;
+      n|N ) echo "Exiting" && exit 1;;
+      * ) echo "Invalid choice. Exiting" && exit 1;;
+    esac
+  fi
+
+  source ./bin/build
+}
+
+exit_if_dirty
+
+CURRENT_VERSION=$(cat VERSION)
+if [ "$APP_ENV" == "production" ]; then
+  VERSION_CHOICE=$(echo_prompt "Bump the version?" "(y/n)")
+  case "$VERSION_CHOICE" in
+    y|Y ) source bin/bump-version;;
+    n|N ) echo "Skipping version bump";;
+    * ) echo_warning "Invalid choice. Exiting" && exit 1;;
+  esac
+fi
+CURRENT_VERSION=$(cat VERSION)
+
+# Maybe build the release
+BUILD_CHOICE=$(echo_prompt "Build the new version?" "(y/n)")
+case "$BUILD_CHOICE" in
+  y|Y ) echo "Building version" && build_release;;
+  n|N ) echo "Skipping build";;
+  * ) echo_warning "Invalid choice. Exiting" && exit 1;;
+esac
+
+# Ask what version to upload
+echo_notice "Current version: ${WHITE}${CURRENT_VERSION}"
+VERSION=$(echo_prompt "Specify version to upload" "[$CURRENT_VERSION]")
+if [ "$VERSION" = "" ]; then VERSION=$CURRENT_VERSION; fi
+
+# Upload the release
+RELEASE_FILENAME="$APP-$VERSION.tar.gz"
+RELEASE_FILE="releases/$RELEASE_FILENAME"
+if [ -f "$RELEASE_FILE" ]; then
+  echo_notice "Uploading release"
+  echo "$RELEASE_FILE"
+  ssh "$SERVER" /bin/bash << EOF
+  mkdir -p "/home/$APP/app/$APP_ENV/releases"
+EOF
+  scp "$RELEASE_FILE" "$SERVER:app/$APP_ENV/releases/$RELEASE_FILENAME"
+
+  # Backup, unpack, restart the app, and migrate if necessary
+  echo_notice "Restarting the app"
+  ssh "$SERVER" /bin/bash << EOF
+  cd "/home/$APP/app/$APP_ENV/releases"
+  mkdir $VERSION 2> /dev/null
+  tar -C $VERSION -xzf "$RELEASE_FILENAME"
+  ln -snfv "/home/$APP/app/$APP_ENV/releases/$VERSION" "/home/$APP/app/$APP_ENV/current"
+  ln -snfv "/home/$APP/app/$APP_ENV/releases/$VERSION/lib/$APP-$VERSION/priv/static" "/home/$APP/app/$APP_ENV/public"
+  sudo systemctl restart "$APP-$APP_ENV"
+  echo "Success!"
+EOF
+else
+  echo_warning "Could not find the release file: ${WHITE}$RELEASE_FILE"
+  exit 1
+fi
