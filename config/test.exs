@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :utility, cache: Utility.Test.MockCache
 

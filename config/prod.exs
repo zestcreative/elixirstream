@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 # For production, don't forget to configure the url host
 # to something meaningful, Phoenix uses this information
@@ -10,21 +10,12 @@ use Mix.Config
 # which you should run after static files are built and
 # before starting your production server.
 
-host = System.get_env("HOST")
-
-heroku_host =
-  if System.get_env("HEROKU_APP_NAME") do
-    System.get_env("HEROKU_APP_NAME") <> ".herokuapp.com"
-  end
-
-config :utility, UtilityWeb.Endpoint,
-  http: [port: {:system, "PORT"}, compress: true],
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  url: [scheme: "https", host: host || heroku_host, port: 443],
-  cache_static_manifest: "priv/static/cache_manifest.json"
-
 # Do not print debug messages in production
 config :logger, level: :info
+
+config :utility, UtilityWeb.Endpoint,
+  server: true,
+  cache_static_manifest: "priv/static/cache_manifest.json"
 
 # ## SSL Support
 #

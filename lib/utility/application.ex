@@ -18,7 +18,7 @@ defmodule Utility.Application do
 
     config = Vapor.load!(providers)
 
-    Application.put_env(:you_meet, :basic_auth,
+    Application.put_env(:utility, :basic_auth,
       username: config[:auth_user],
       password: config[:auth_pass]
     )

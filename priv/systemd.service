@@ -1,0 +1,25 @@
+# As root:
+# copy this file to /etc/systemd/system/utility-production.service
+# systemctl daemon-reload
+# systemctl start utility-production.service
+
+[Unit]
+Description=UtilityWeb-Prod
+After=network.target
+
+[Service]
+Type=simple
+User=utility
+Group=utility
+WorkingDirectory=/home/utility/app/production/current
+ExecStart=/home/utility/app/production/current/bin/utility start
+ExecStop=/home/utility/app/production/current/bin/utility stop
+Restart=on-failure
+RestartSec=5
+EnvironmentFile=/home/utility/app/env.prod
+SyslogIdentifier=utility_web_prod
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target
+
