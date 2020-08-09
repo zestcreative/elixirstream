@@ -10,6 +10,6 @@ secret_key_base =
     """
 
 config :utility, UtilityWeb.Endpoint,
-  http: [port: {:system, "PORT"}],
+  http: [port: {:system, "PORT"}, compress: true],
   url: [scheme: "https", host: host, port: 443],
   secret_key_base: secret_key_base
