@@ -1,7 +1,7 @@
 export default class MobileNav {
-  constructor() {
+  constructor(id) {
     this.isOpen = false
-    this.el = document.getElementById("mobile-nav");
+    this.el = document.getElementById(id);
   }
 
   init() {
