@@ -19,8 +19,6 @@
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
   </head>
   <body class="antialiased leading-tight text-gray-900" data-version="<%= Application.spec(:utility, :vsn) %>">
-    <%= render UtilityWeb.LayoutView, "moving_banner.html", assigns %>
-
     <div class="flex h-screen overflow-hidden bg-gray-100">
       <!-- Off-canvas menu for mobile -->
       <%= render "_nav-mobile.html", assigns %>
