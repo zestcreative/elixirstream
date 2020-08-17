@@ -47,7 +47,7 @@ defmodule UtilityWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  scope "/" do
+  scope "/admin" do
     pipe_through [:browser, :auth]
     live_dashboard "/dashboard", metrics: UtilityWeb.Telemetry
   end
