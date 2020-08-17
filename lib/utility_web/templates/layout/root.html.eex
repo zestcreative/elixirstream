@@ -17,6 +17,9 @@
     <meta name="theme-color" content="#ffffff">
     <%= csrf_meta_tag() %>
     <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
+    <%= if Application.get_env(:utility, :app_env) == :prod do %>
+      <script async defer data-domain="utils.zest.dev" src="https://plausible.zest.dev/js/index.js"></script>>
+    <% end %>
   </head>
   <body class="antialiased leading-tight text-gray-900" data-version="<%= Application.spec(:utility, :vsn) %>">
     <div class="flex h-screen overflow-hidden bg-gray-100">

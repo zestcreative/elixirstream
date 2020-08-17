@@ -8,7 +8,8 @@
 import Config
 
 config :utility,
-  cache: Utility.Cache.RedisImplementation
+  cache: Utility.Cache.RedisImplementation,
+  app_env: Mix.env()
 
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
