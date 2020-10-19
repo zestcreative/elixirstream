@@ -47,8 +47,7 @@ defmodule UtilityWeb.RegexLive do
       {:noreply,
        socket
        |> assign(:record, record)
-       |> assign_changeset(%{})
-      }
+       |> assign_changeset(%{})}
     else
       _ -> {:noreply, put_flash(socket, :error, "Could not find saved regex")}
     end
