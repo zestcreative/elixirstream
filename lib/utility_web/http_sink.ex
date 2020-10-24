@@ -40,8 +40,7 @@ defmodule UtilityWeb.HttpSink do
     read_body(%{sink | body_params: ""}, Plug.Conn.read_body(conn, length: 1_000_000))
   end
 
-  defp read_body(%{body_params: params} = sink, conn) when is_map(params) do
-    IO.inspect conn, label: "EMPTY"
+  defp read_body(%{body_params: params} = sink, _conn) when is_map(params) do
     %{sink | format: :json}
   end
 
