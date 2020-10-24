@@ -3,7 +3,8 @@
 A series of utilities for developers.
 
 1. Regex Tester
-2. ... that's it for now :)
+1. HTTP Sink. Send a request and see it echo on the UI.
+1. ... that's it for now :)
 
 ## Running Locally
 

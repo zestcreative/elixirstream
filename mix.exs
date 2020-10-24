@@ -47,7 +47,7 @@ defmodule Utility.MixProject do
       {:phoenix_html, "~> 2.11"},
       {:phoenix_ecto, "~> 4.0"},
       {:ecto, "~> 3.0"},
-      {:phoenix_live_dashboard, "~> 0.2"},
+      {:phoenix_live_dashboard, "~> 0.3"},
       {:phoenix_live_view, "~> 0.14"},
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},

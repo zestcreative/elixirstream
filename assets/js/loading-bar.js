@@ -3,7 +3,7 @@ let topbarDelay = null;
 
 // Show progress bar on live navigation and form submits
 topbar.config({
-  barThickness: 2,
+  barThickness: 3,
   shadowBlur: 5,
   barColors: ["#F56565", "#9B2C2C"],
 })

@@ -12,7 +12,8 @@ defmodule UtilityWeb.LayoutView do
 
   def active_link(conn, text, opts) do
     to = Keyword.fetch!(opts, :to)
-    if conn.request_path == to do
+
+    if String.starts_with?(conn.request_path, to) do
       {class, opts} = Keyword.pop(opts, :class, "")
       class = "#{class} active"
       Phoenix.HTML.Link.link(text, opts ++ [class: class])
