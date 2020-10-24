@@ -2,7 +2,7 @@ defmodule UtilityWeb.HttpSink do
   @topic "sink"
 
   defstruct [:id, :method, :received_at, :query_string, :body_params, :headers, format: :text]
-  @reject_headers ~w[host]
+  @reject_headers ~w[host x-forwarded-for x-forwarded-proto x-real-ip]
 
   def build(conn) do
     %__MODULE__{
