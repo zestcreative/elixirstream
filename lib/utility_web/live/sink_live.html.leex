@@ -10,15 +10,20 @@
 <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
   <div class="bg-white rounded-lg">
     <div class="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 md:py-6">
-      <h2 class="text-2xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
-        Send your JSON requests to
-      </h2>
-      <br/>
-      <span class=""></span>
-      <div class="w-full mb-1">
-        <input type="text" readonly id="url-pasta" style="font-size: 1.9vw" class="appearance-none outline-none font-mono text-indigo-600 select-all w-full cursor-default" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
+      <div class="flex flex-row gap-4">
+        <h2 class="text-2xl leading-9 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
+          Send your JSON requests to:
+        </h2>
+        <button type="button" class="text-base inline-block p-2 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="url-pasta">Copy URL</button>
       </div>
-      <button type="button" class="text-base inline-block p-2 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="url-pasta">Copy</button>
+      <div class="w-full my-2">
+        <svg class="font-mono w-full h-full text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
+          <foreignObject class="w-full h-full">
+            <h1><%= Routes.sink_url(@socket, :any, @id) %></h1>
+          </foreignObject>
+        </svg>
+        <input type="text" style="left: 999rem" class="absolute" aria-hidden="true" readonly id="url-pasta" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
+      </div>
 
       <div class="rounded-md bg-red-50 p-4 mt-4">
         <div class="flex">
