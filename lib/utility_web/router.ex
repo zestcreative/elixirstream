@@ -54,8 +54,8 @@ defmodule UtilityWeb.Router do
 
   def check_auth(conn, _opts) do
     with {user, pass} <- Plug.BasicAuth.parse_basic_auth(conn),
-         true <- user == System.get_env("AUTH_USER"),
-         true <- pass == System.get_env("AUTH_PASS") do
+         true <- user == System.get_env("AUTH_USER", "admin"),
+         true <- pass == System.get_env("AUTH_PASS", "admin") do
       conn
     else
       _ ->

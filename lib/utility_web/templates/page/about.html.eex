@@ -1,4 +1,4 @@
-<div class="px-6 -pt-2 prose lg:prose-xl">
+<article class="p-6 prose lg:prose-lg">
   <p>Made with 💚💙💜💛❤️ by <%= link "@dbernheisel", to: "https://twitter.com/bernheisel", class: "link" %></p>
 
   <p>
@@ -36,4 +36,4 @@
   <h3>While I have you here...</h3>
   <p>Check out <%= link "Thinking |> Elixir", to: "https://thinkingelixir.com", class: "link" %> and the <%= link "podcast", to: "https://thinkingelixir.com/the-podcast", class: "link" %>.</p>
   <p>Remember to stay positive!</p>
-</div>
+</article>

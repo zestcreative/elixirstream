@@ -1,157 +1,161 @@
-<div id="regex-tester" phx-hook="ConfirmBeforeLeave" data-is-changed="<%= changed?(@changeset) %>" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-  <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
-    <div class="mt-2 ml-4">
-      <h1 class="text-2xl font-semibold text-gray-900">Regex Tester</h1>
-    </div>
-    <div class="flex-shrink-0 mt-2 ml-4">
-      <span class="inline-flex rounded-md shadow-sm">
-        <% is_disabled = @record.id && !changed?(@changeset) %>
-        <button phx-click="permalink" <%= if is_disabled, do: "disabled=true" %> type="button" class="relative inline-flex items-center <%= if is_disabled, do: "opacity-50 cursor-not-allowed" %> px-4 py-2 font-medium text-white bg-brand-600 border border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700">
+<%# Header %>
+<div class="py-6">
+  <div id="regex-tester" phx-hook="ConfirmBeforeLeave" data-is-changed="<%= changed?(@changeset) %>" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
+      <div class="mt-2 ml-4">
+        <h1 class="text-2xl font-semibold text-gray-900">Regex Tester</h1>
+      </div>
+      <div class="flex-shrink-0 mt-2 ml-4">
+        <span class="inline-flex rounded-md shadow-sm">
+          <% is_disabled = @record.id && !changed?(@changeset) %>
+          <button phx-click="permalink" <%= if is_disabled, do: "disabled=true" %> type="button" class="relative inline-flex items-center <%= if is_disabled, do: "opacity-50 cursor-not-allowed" %> px-4 py-2 font-medium text-white bg-brand-600 border border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700">
 
-          <svg viewBox="0 0 24 24" class="w-4 h-5 mr-2 fill-current">
-            <path d="M19.48 13.03A4 4 0 0 1 16 19h-4a4 4 0 1 1 0-8h1a1 1 0 0 0 0-2h-1a6 6 0 1 0 0 12h4a6 6 0 0 0 5.21-8.98L21.2 12a1 1 0 1 0-1.72 1.03zM4.52 10.97A4 4 0 0 1 8 5h4a4 4 0 1 1 0 8h-1a1 1 0 0 0 0 2h1a6 6 0 1 0 0-12H8a6 6 0 0 0-5.21 8.98l.01.02a1 1 0 1 0 1.72-1.03z"/>
-          </svg>
-          <%= if @record.id && !changed?(@changeset), do: "Saved", else: "Permalink" %>
-        </button>
-      </span>
+            <svg viewBox="0 0 24 24" class="w-4 h-5 mr-2 fill-current">
+              <path d="M19.48 13.03A4 4 0 0 1 16 19h-4a4 4 0 1 1 0-8h1a1 1 0 0 0 0-2h-1a6 6 0 1 0 0 12h4a6 6 0 0 0 5.21-8.98L21.2 12a1 1 0 1 0-1.72 1.03zM4.52 10.97A4 4 0 0 1 8 5h4a4 4 0 1 1 0 8h-1a1 1 0 0 0 0 2h1a6 6 0 1 0 0-12H8a6 6 0 0 0-5.21 8.98l.01.02a1 1 0 1 0 1.72-1.03z"/>
+            </svg>
+            <%= if @record.id && !changed?(@changeset), do: "Saved", else: "Permalink" %>
+          </button>
+        </span>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
-  <%= f = form_for @changeset, "#", [phx_change: :validate] %>
-    <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
-      <div class="sm:col-span-5">
-        <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
-        <div class="relative mt-1 rounded-md shadow-sm">
-          <div class="absolute inset-y-0 left-0 flex items-center pl-4 pr-4 font-normal leading-normal text-gray-500 pointer-events-none">
-            ~r/
+  <%# Body %>
+  <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+    <%= f = form_for @changeset, "#", [phx_change: :validate] %>
+      <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
+        <div class="sm:col-span-5">
+          <%= label f, :regex, class: "block text-sm font-medium leading-5 text-gray-700" %>
+          <div class="relative mt-1 mr-2 rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pr-3 font-normal tracking-widest text-gray-500 pointer-events-none">
+              ~r/
+            </div>
+            <%= text_input f, :regex,
+                  placeholder: "regex",
+                  autocomplete: "off",
+                  class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pr-8 pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
+            <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
           </div>
-          <%= text_input f, :regex,
-                placeholder: "regex",
-                autocomplete: "off",
-                class: "form-input pr-8 pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
-          <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
+          <%= error_tag f, :regex %>
+          <p class="p-1 font-mono text-xs text-gray-700">
+            For example:
+          <%= case @function do %>
+            <% "named_captures" -> %>
+              <code class="select-all">\A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z</code>
+            <% _ -> %>
+              <code class="select-all">\A[a-z0-9-]+\z</code>
+          <% end %>
+          </p>
         </div>
-        <%= error_tag f, :regex %>
-        <p class="p-1 font-mono text-xs text-gray-700">
-          For example:
-        <%= case @function do %>
-          <% "named_captures" -> %>
-            <code class="select-all">\A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z</code>
-          <% _ -> %>
-            <code class="select-all">\A[a-z0-9-]+\z</code>
-        <% end %>
-        </p>
-      </div>
 
-      <div class="sm:col-span-1">
-        <%= label f, :flags, class: "block text-sm font-medium leading-5 text-gray-700" %>
-        <div class="relative mt-1 rounded-md shadow-sm">
-          <%= text_input f, :flags,
-                placeholder: "flags",
-                phx_hook: "MaskFlags",
-                autocomplete: "off",
-                class: "form-input font-mono block w-full sm:text-sm sm:leading-5" %>
-        </div>
-        <%= error_tag f, :flags %>
-        <p class="p-1 font-mono text-xs text-gray-700">
-          U f i m s u x
-        </p>
-
-      </div>
-
-      <div class="sm:col-span-6">
-        <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
-        <div class="mt-1 rounded-md shadow-sm">
-          <%= textarea f, :string, spellcheck: "false", rows: 6, class: "form-textarea font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
-        </div>
-        <%= error_tag f, :string %>
-      </div>
-    </div>
-
-    <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
-    <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
-      <pre class="overflow-x-auto matches"><%
-      %><%# The weird newline joins are intentional to prevent HTML newlines. %><%
-      %><%# These spans need to be side-by-side. %><%
-        %><%= for {type, string} <- @matched do %><%
- %><span class="<%= if type == :matched, do: "m", else: "u" %>"><%= string %></span><%
-        %><% end %><%
-      %></pre>
-      <pre class="whitespace-pre-line select-all">#=> <%= inspect(@result, limit: :infinity, pretty: true) %></pre>
-    </div>
-
-    <div class="w-full my-2 rounded">
-      <fieldset class="mt-6">
-        <legend class="text-sm font-medium text-gray-700 leading-5">
-          Function
-          <button type="button" class="inline-block px-1 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="regex-pasta">Copy</button>
-        </legend>
-        <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
-          <input type="text" readonly id="regex-pasta" class="w-full bg-gray-200 cursor-default" value="<%= @pasta %>" />
-        </div>
-        <p class="text-sm text-gray-500 leading-5">Which <a class="link" href="https://hexdocs.pm/elixir/Regex.html" target="_blank">Regex function</a> to run</p>
-        <div class="flex flex-wrap mt-1 space-x-8">
-          <div class="flex items-center">
-            <%= radio_button f, :function, "run", class: "form-radio h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
-            <label for="regex_live_function_run" class="ml-2">
-              <span class="text-sm font-medium text-gray-700 leading-5">Run</span>
-            </label>
+        <div class="sm:col-span-1">
+          <%= label f, :flags, class: "block text-sm font-medium leading-5 text-gray-700" %>
+          <div class="relative mt-1 rounded-md shadow-sm">
+            <%= text_input f, :flags,
+                  placeholder: "flags",
+                  phx_hook: "MaskFlags",
+                  autocomplete: "off",
+                  class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 font-mono block w-full sm:text-sm sm:leading-5" %>
           </div>
-          <div class="flex items-center">
-            <%= radio_button f, :function, "named_captures", class: "form-radio h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
-            <label for="regex_live_function_named_captures" class="ml-2">
-              <span class="text-sm font-medium text-gray-700 leading-5">Named Captures</span>
-            </label>
-          </div>
-          <div class="flex items-center">
-            <%= radio_button f, :function, "scan", class: "form-radio h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
-            <label for="regex_live_function_scan" class="ml-2">
-              <span class="text-sm font-medium text-gray-700 leading-5">Scan</span>
-            </label>
-          </div>
-        </div>
-      </fieldset>
-    </div>
+          <%= error_tag f, :flags %>
+          <p class="p-1 font-mono text-xs text-gray-700">
+            U f i m s u x
+          </p>
 
-    <div class="mt-2">
-      <div class="sm:hidden">
-        <%= label f, :help_tab, "Help", class: "block text-sm font-medium leading-5 text-gray-700" %>
-        <%= select f,
-          :help_tab,
-          help_tab_options(),
-          aria_label: "Selected help tab",
-          class: "mt-1 form-select block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 focus:outline-none focus:shadow-outline-accent focus:border-accent-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
-        %>
-      </div>
-      <div class="hidden sm:block">
-        <div class="border-b border-gray-200">
-          <nav class="flex -mb-px">
-            <% active_class = "border-brand-300 text-gray-700" %>
-            <button type="button" phx-click="help-tab" phx-value-tab="cheatsheet" class="px-1 py-4 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-300 focus:outline-none focus:text-gray-700 focus:border-brand-300 <%= if @help_tab == "cheatsheet", do: active_class %>">
-              Cheatsheet
-            </button>
-            <button type="button" phx-click="help-tab" phx-value-tab="flags" class="px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-300 focus:outline-none focus:text-gray-700 focus:border-brand-300 <%= if @help_tab == "flags", do: active_class %>">
-              Flags
-            </button>
-            <button type="button" phx-click="help-tab" phx-value-tab="recipes" class="px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-300 focus:outline-none focus:text-gray-700 focus:border-brand-300 <%= if @help_tab == "recipes", do: active_class %>">
-              Recipes
-            </button>
-          </nav>
+        </div>
+
+        <div class="sm:col-span-6">
+          <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
+          <div class="mt-1 rounded-md shadow-sm">
+            <%= textarea f, :string, spellcheck: "false", rows: 6, class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
+          </div>
+          <%= error_tag f, :string %>
         </div>
       </div>
 
-      <div data-test-cheatsheet class="<%= unless @help_tab == "cheatsheet", do: "hidden" %> p-4">
-        <%= render("_cheatsheet.html") %>
+      <p class="block mt-5 text-sm font-medium text-gray-700 leading-5">Result</p>
+      <div class="w-full p-2 my-2 font-mono bg-gray-200 rounded">
+        <pre class="overflow-x-auto matches"><%
+        %><%# The weird newline joins are intentional to prevent HTML newlines. %><%
+        %><%# These spans need to be side-by-side. %><%
+          %><%= for {type, string} <- @matched do %><%
+  %><span class="<%= if type == :matched, do: "m", else: "u" %>"><%= string %></span><%
+          %><% end %><%
+        %></pre>
+        <pre class="whitespace-pre-line select-all">#=> <%= inspect(@result, limit: :infinity, pretty: true) %></pre>
       </div>
-      <div data-test-flags class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
-        <%= render("_flags.html") %>
-      </div>
-      <div data-test-recipes class="<%= unless @help_tab == "recipes", do: "hidden" %> p-4">
-        <%= render("_recipes.html") %>
-      </div>
-    </div>
 
-  </form>
+      <div class="w-full my-2 rounded">
+        <fieldset class="mt-6">
+          <legend class="text-sm font-medium text-gray-700 leading-5">
+            Function
+            <button type="button" class="inline-block px-1 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="regex-pasta">Copy</button>
+          </legend>
+          <div class="w-full my-2 font-mono bg-gray-200 rounded">
+            <input type="text" readonly id="regex-pasta" class="rounded border-none w-full bg-gray-200 cursor-default" value="<%= @pasta %>" />
+          </div>
+          <p class="text-sm text-gray-500 leading-5">Which <a class="link" href="https://hexdocs.pm/elixir/Regex.html" target="_blank">Regex function</a> to run</p>
+          <div class="flex flex-wrap mt-1 space-x-8">
+            <div class="flex items-center">
+              <%= radio_button f, :function, "run", class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_run" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Run</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button f, :function, "named_captures", class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_named_captures" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Named Captures</span>
+              </label>
+            </div>
+            <div class="flex items-center">
+              <%= radio_button f, :function, "scan", class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" %>
+              <label for="regex_live_function_scan" class="ml-2">
+                <span class="text-sm font-medium text-gray-700 leading-5">Scan</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="mt-2">
+        <div class="sm:hidden">
+          <%= label f, :help_tab, "Help", class: "block text-sm font-medium leading-5 text-gray-700" %>
+          <%= select f,
+            :help_tab,
+            help_tab_options(),
+            aria_label: "Selected help tab",
+            class: "mt-1 rounded-md focus:ring focus:ring-blue-500 focus:ring-opacity-50 focus:border-accent-500 block w-full pl-3 pr-10 py-2 text-base leading-6 border-gray-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
+          %>
+        </div>
+        <div class="hidden sm:block">
+          <div class="border-b border-gray-200">
+            <nav class="flex -mb-px">
+              <% active_class = "border-brand-300 text-gray-700" %>
+              <button type="button" phx-click="help-tab" phx-value-tab="cheatsheet" class="ring-brand-900 px-1 py-4 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-500 focus:outline-none focus:text-gray-700 focus:border-brand-500 <%= if @help_tab == "cheatsheet", do: active_class %>">
+                Cheatsheet
+              </button>
+              <button type="button" phx-click="help-tab" phx-value-tab="flags" class="ring-brand-900 px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-500 focus:outline-none focus:text-gray-700 focus:border-brand-500 <%= if @help_tab == "flags", do: active_class %>">
+                Flags
+              </button>
+              <button type="button" phx-click="help-tab" phx-value-tab="recipes" class="ring-brand-900 px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 hover:text-gray-700 hover:border-brand-500 focus:outline-none focus:text-gray-700 focus:border-brand-500 <%= if @help_tab == "recipes", do: active_class %>">
+                Recipes
+              </button>
+            </nav>
+          </div>
+        </div>
+
+        <div data-test-cheatsheet class="<%= unless @help_tab == "cheatsheet", do: "hidden" %> p-4">
+          <%= render("_cheatsheet.html") %>
+        </div>
+        <div data-test-flags class="<%= unless @help_tab == "flags", do: "hidden" %> p-4">
+          <%= render("_flags.html") %>
+        </div>
+        <div data-test-recipes class="<%= unless @help_tab == "recipes", do: "hidden" %> p-4">
+          <%= render("_recipes.html") %>
+        </div>
+      </div>
+
+    </form>
+  </div>
 </div>

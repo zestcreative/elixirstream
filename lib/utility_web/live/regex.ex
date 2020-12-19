@@ -81,7 +81,7 @@ defmodule UtilityWeb.RegexLive do
            ]) do
       {:noreply,
        socket
-       |> put_flash(:info, "Saved regex. See browser URL")
+       |> put_flash(:info, "Saved regex for 1 year. See browser URL")
        |> push_patch(to: "/regex/#{record.id}")}
     else
       {:error, %Changeset{}} ->
@@ -112,14 +112,25 @@ defmodule UtilityWeb.RegexLive do
 
   @two_mb 2_000_000
   def changeset(record, params) do
-    record
-    |> Changeset.cast(params, ~w[help_tab string flags regex function]a)
-    |> Changeset.validate_length(:regex, max: 6500, message: "must be under 6,500 characters")
-    |> Changeset.validate_length(:string, max: @two_mb, message: "must be under 2MB")
-    |> Changeset.validate_inclusion(:function, @allowed_functions)
-    |> Changeset.validate_inclusion(:help_tab, @allowed_tabs)
-    |> put_result()
-    |> put_pasta()
+    start = System.monotonic_time()
+
+    changeset =
+      record
+      |> Changeset.cast(params, ~w[help_tab string flags regex function]a)
+      |> Changeset.validate_length(:regex, max: 6500, message: "must be under 6,500 characters")
+      |> Changeset.validate_length(:string, max: @two_mb, message: "must be under 2MB")
+      |> Changeset.validate_inclusion(:function, @allowed_functions)
+      |> Changeset.validate_inclusion(:help_tab, @allowed_tabs)
+      |> put_result()
+      |> put_pasta()
+
+    :telemetry.execute(
+      [:utility, :regex, :render],
+      %{duration: System.monotonic_time() - start},
+      %{}
+    )
+
+    changeset
   end
 
   defp put_pasta(%{valid?: true} = changeset) do
@@ -134,6 +145,11 @@ defmodule UtilityWeb.RegexLive do
 
   defp put_result(%{valid?: true} = changeset) do
     string = Changeset.get_field(changeset, :string)
+    :telemetry.execute(
+      [:utility, :regex, :payload],
+      %{payload: byte_size(string)},
+      %{}
+    )
 
     {result, indexes, changeset} =
       do_result(

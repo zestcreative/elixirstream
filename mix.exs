@@ -48,11 +48,10 @@ defmodule Utility.MixProject do
       {:phoenix_ecto, "~> 4.0"},
       {:ecto, "~> 3.0"},
       {:phoenix_live_dashboard, "~> 0.3"},
-      {:phoenix_live_view, "~> 0.14"},
+      {:phoenix_live_view, "~> 0.15"},
       {:plug_cowboy, "~> 2.0"},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 0.4"},
-      {:vapor, ">= 0.6.0"},
       {:redix, ">= 0.0.0"},
       {:castore, ">= 0.0.0"},
       # Test
@@ -64,7 +63,8 @@ defmodule Utility.MixProject do
 
   defp aliases do
     [
-      setup: ["deps.get", "cmd npm install --prefix assets"]
+      outdated: ["hex.outdated", "cmd npm --prefix assets outdated || true"],
+      setup: ["deps.get", "cmd npm --prefix assets install"],
     ]
   end
 end

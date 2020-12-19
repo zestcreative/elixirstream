@@ -2,6 +2,9 @@ import Config
 
 host = System.get_env("HOST")
 
+_require_auth_user = System.fetch_env!("AUTH_USER")
+_require_auth_pass = System.fetch_env!("AUTH_PASS")
+
 secret_key_base =
   System.get_env("SECRET_KEY_BASE") ||
     raise """

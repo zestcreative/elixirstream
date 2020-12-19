@@ -36,7 +36,11 @@ defmodule UtilityWeb.Telemetry do
 
       # Utility
       counter("utility.sink.build.duration"),
-      summary("utility.sink.build.duration", unit: {:native, :millisecond})
+      summary("utility.sink.build.duration", unit: {:native, :millisecond}),
+      counter("utility.regex.permalink"),
+      summary("utility.regex.payload", unit: {:byte, :kilobyte}),
+      summary("utility.regex.renders", unit: {:native, :millisecond}),
+      counter("utility.regex.renders")
     ]
   end
 

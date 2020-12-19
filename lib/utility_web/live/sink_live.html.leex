@@ -1,109 +1,111 @@
 <%# sink_live.html.leex template %>
-<div id="http-sink" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 mb-4">
-  <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
-    <div class="mt-2 ml-4">
-      <h1 class="text-2xl font-semibold text-gray-900">HTTP Sink</h1>
+<div class="py-6">
+  <div id="http-sink" class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 mb-4">
+    <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
+      <div class="mt-2 ml-4">
+        <h1 class="text-2xl font-semibold text-gray-900">HTTP Sink</h1>
+      </div>
     </div>
   </div>
-</div>
 
-<div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
-  <div class="bg-white rounded-lg">
-    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 md:py-6">
-      <div class="flex flex-row gap-4">
-        <h2 class="text-2xl leading-9 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
-          Send your JSON requests to:
-        </h2>
-        <button type="button" class="text-base inline-block p-2 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="url-pasta">Copy URL</button>
-      </div>
-      <div class="w-full my-2">
-        <svg class="font-mono w-full h-full text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
-          <foreignObject class="w-full h-full">
-            <h1><%= Routes.sink_url(@socket, :any, @id) %></h1>
-          </foreignObject>
-        </svg>
-        <input type="text" style="left: 999rem" class="absolute" aria-hidden="true" readonly id="url-pasta" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
-      </div>
-
-      <div class="rounded-md bg-red-50 p-4 mt-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <!-- Heroicon name: exclamation -->
-            <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="ml-3">
-            <h3 class="text-sm leading-5 font-medium text-red-800">
-              Heads up!
-            </h3>
-            <div class="mt-2 text-sm leading-5 text-red-700">
-              <ul class="list-disc">
-                <li>Do not send any sensitive information. Do not consider this private.</li>
-                <li>All information will be lost on page reload or navigating away.</li>
-                <li>Maximum size is 5MB</li>
-                <li>The body may not be 100% representative of the raw data sent, and may be be coerced into a map.</li>
-                <li>Not sure how this works? <a class="link" href="https://youtu.be/wO5m1dQI308" target="_blank" rel="nofollow">Watch this video</a></li>
-              </ul>
-            </div>
-          </div>
+  <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
+    <div class="bg-white rounded-lg">
+      <div class="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 md:py-6">
+        <div class="flex flex-row gap-4">
+          <h2 class="text-2xl leading-9 font-bold tracking-tight text-gray-900 sm:text-4xl sm:leading-10">
+            Send your JSON requests to:
+          </h2>
+          <button type="button" class="text-base inline-block p-2 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="url-pasta">Copy URL</button>
         </div>
-      </div>
-    </div>
-  </div>
+        <div class="w-full my-2">
+          <svg class="font-mono w-full h-full text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
+            <foreignObject class="w-full h-full">
+              <h1><%= Routes.sink_url(@socket, :any, @id) %></h1>
+            </foreignObject>
+          </svg>
+          <input type="text" style="left: 999rem" class="absolute" aria-hidden="true" readonly id="url-pasta" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
+        </div>
 
-  <div id="requests" phx-update="prepend">
-    <%= for request <- @requests do %>
-      <div class="my-6 bg-white overflow-hidden shadow sm:rounded-lg" id="<%= request.id %>">
-        <div>
-          <dl>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Method
-              </dt>
-              <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= request.method %>
-              </dd>
-              <dt class="text-right text-sm leading-5 font-medium text-gray-500">
-                Received at
-              </dt>
-              <dd class="text-right mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
-                <%= request.received_at %>
-              </dd>
+        <div class="rounded-md bg-red-50 p-4 mt-4">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <!-- Heroicon name: exclamation -->
+              <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
             </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Headers
-              </dt>
-              <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
-                <ul>
-                  <%= for {header, value} <- request.headers do %>
-                    <li class="p-1 flex items-center justify-between text-sm leading-5">
-                      <%= header %>: <%= value %>
-                    </li>
-                  <% end %>
+            <div class="ml-3">
+              <h3 class="text-sm leading-5 font-medium text-red-800">
+                Heads up!
+              </h3>
+              <div class="mt-2 text-sm leading-5 text-red-700">
+                <ul class="list-disc">
+                  <li>Do not send any sensitive information. Do not consider this private.</li>
+                  <li>All information will be lost on page reload or navigating away.</li>
+                  <li>Maximum size is 5MB</li>
+                  <li>The body may not be 100% representative of the raw data sent, and may be be coerced into a map.</li>
+                  <li>Not sure how this works? <a class="link" href="https://youtu.be/wO5m1dQI308" target="_blank" rel="nofollow">Watch this video</a></li>
                 </ul>
-              </dd>
+              </div>
             </div>
-            <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Query Params
-              </dt>
-              <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
-                <%= request.query_string %>
-              </dd>
-            </div>
-            <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-              <dt class="text-sm leading-5 font-medium text-gray-500">
-                Body
-              </dt>
-              <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
-                <%= render_body(request) %>
-              </dd>
-            </div>
-          </dl>
+          </div>
         </div>
       </div>
-    <% end %>
+    </div>
+
+    <div id="requests" phx-update="prepend">
+      <%= for request <- @requests do %>
+        <div class="my-6 bg-white overflow-hidden shadow sm:rounded-lg" id="<%= request.id %>">
+          <div>
+            <dl>
+              <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Method
+                </dt>
+                <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= request.method %>
+                </dd>
+                <dt class="text-right text-sm leading-5 font-medium text-gray-500">
+                  Received at
+                </dt>
+                <dd class="text-right mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-2">
+                  <%= request.received_at %>
+                </dd>
+              </div>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Headers
+                </dt>
+                <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <ul>
+                    <%= for {header, value} <- request.headers do %>
+                      <li class="p-1 flex items-center justify-between text-sm leading-5">
+                        <%= header %>: <%= value %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </dd>
+              </div>
+              <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Query Params
+                </dt>
+                <dd class="mt-1 font-mono text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <%= request.query_string %>
+                </dd>
+              </div>
+              <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Body
+                </dt>
+                <dd class="mt-1 text-sm leading-5 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <%= render_body(request) %>
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      <% end %>
+    </div>
   </div>
 </div>

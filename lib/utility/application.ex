@@ -6,23 +6,6 @@ defmodule Utility.Application do
   use Application
 
   def start(_type, _args) do
-    providers = [
-      %Vapor.Provider.Dotenv{},
-      %Vapor.Provider.Env{
-        bindings: [
-          {:auth_user, "AUTH_USER"},
-          {:auth_pass, "AUTH_PASS"}
-        ]
-      }
-    ]
-
-    config = Vapor.load!(providers)
-
-    Application.put_env(:utility, :basic_auth,
-      username: config[:auth_user],
-      password: config[:auth_pass]
-    )
-
     children = [
       # Start the Telemetry supervisor
       UtilityWeb.Telemetry,
