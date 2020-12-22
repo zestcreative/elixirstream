@@ -15,3 +15,9 @@
   @apply border-b border-accent-700;
   filter: brightness(0.5);
 }
+
+.hide-away {
+  @apply bg-transparent focus:ring-0 focus:outline-none border-0 m-0 p-0 absolute;
+  width: 1px;
+  height: 1px;
+}

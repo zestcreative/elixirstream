@@ -1,5 +1,5 @@
 <article class="p-6 prose lg:prose-lg">
-  <p>Made with 💚💙💜💛❤️ by <%= link "@dbernheisel", to: "https://twitter.com/bernheisel", class: "link" %></p>
+  <p>Made with 💚💙💜💛❤️ by <%= link "@dbernheisel", to: "https://twitter.com/bernheisel", rel: "nofollow", class: "link" %></p>
 
   <p>
     If you're interested in the source code, <%= link "check it out", to: "https://github.com/zestcreative/elixir-utilities-web", class: "link" %>.
@@ -9,10 +9,10 @@
 
   <h3>What does this site use?</h3>
   <ul>
-    <li><%= link "Elixir", to: "https://elixir-lang.org", class: "link" %></li>
-    <li><%= link "Phoenix Framework", to: "https://phoenixframework.org", class: "link" %></li>
-    <li><%= link "Phoenix LiveView", to: "https://github.com/phoenixframework/phoenix_live_view", class: "link" %></li>
-    <li><%= link "Tailwind CSS", to: "https://tailwindcss.com", class: "link" %></li>
+    <li><%= link "Elixir", to: "https://elixir-lang.org", rel: "nofollow", class: "link" %></li>
+    <li><%= link "Phoenix Framework", to: "https://phoenixframework.org", rel: "nofollow", class: "link" %></li>
+    <li><%= link "Phoenix LiveView", to: "https://github.com/phoenixframework/phoenix_live_view", rel: "nofollow", class: "link" %></li>
+    <li><%= link "Tailwind CSS", to: "https://tailwindcss.com", rel: "nofollow", class: "link" %></li>
   </ul>
 
   <h3>How does Phoenix LiveView make this awesome?</h3>
@@ -30,10 +30,10 @@
   rendering what you see.</p>
 
   <h3>How do you deploy the app?</h3>
-  <p>We're using a <%= link "Linode VM", to: "https://www.linode.com/?r=11f896e75a7bee1316e6a087df9fd77af1a71553", class: "link" %>. When it's time to deploy, we run <code>bin/deploy production</code> and a bash script will prompt me to bump version, commit a version tag, run <code>mix release</code> inside a docker container, and SCP the release up to the VM and restart the service through systemd</p>
-  <p>Since it costs money, it would be wonderful if you considered <%= link "sponsoring us at GitHub", to: "https://github.com/sponsors/dbernheisel", class: "link" %> </p>
+  <p>We're using a <%= link "Linode VM", to: "https://www.linode.com/?r=11f896e75a7bee1316e6a087df9fd77af1a71553", rel: "nofollow", class: "link" %>. When it's time to deploy, we run <code>bin/deploy production</code> and a bash script will prompt me to bump version, commit a version tag, run <code>mix release</code> inside a docker container, and SCP the release up to the VM and restart the service through systemd.</p>
+  <p>Since it costs money, it would be wonderful if you considered <%= link "sponsoring us at GitHub", to: "https://github.com/sponsors/dbernheisel", rel: "nofollow", class: "link" %>.</p>
 
   <h3>While I have you here...</h3>
-  <p>Check out <%= link "Thinking |> Elixir", to: "https://thinkingelixir.com", class: "link" %> and the <%= link "podcast", to: "https://thinkingelixir.com/the-podcast", class: "link" %>.</p>
+  <p>Check out <%= link "Thinking |> Elixir", to: "https://thinkingelixir.com", rel: "nofollow", class: "link" %> and the <%= link "podcast", to: "https://thinkingelixir.com/the-podcast", rel: "nofollow", class: "link" %>.</p>
   <p>Remember to stay positive!</p>
 </article>

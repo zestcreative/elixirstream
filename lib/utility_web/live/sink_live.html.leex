@@ -23,7 +23,7 @@
               <h1><%= Routes.sink_url(@socket, :any, @id) %></h1>
             </foreignObject>
           </svg>
-          <input type="text" style="left: 999rem" class="absolute" aria-hidden="true" readonly id="url-pasta" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
+          <input type="text" class="hide-away" aria-hidden="true" readonly id="url-pasta" value="<%= Routes.sink_url(@socket, :any, @id) %>" />
         </div>
 
         <div class="rounded-md bg-red-50 p-4 mt-4">
