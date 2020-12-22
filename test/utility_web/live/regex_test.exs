@@ -158,7 +158,7 @@ defmodule UtilityWeb.RegexLiveTest do
       {:ok, view, _html} = live(conn)
       send(self(), {:validate, @valid_params})
 
-      assert render_click(view, "permalink") =~ "Saved regex. See browser URL"
+      assert render_click(view, "permalink") =~ "Saved regex for 1 year. See browser URL"
       # I would use assert_patch but the route would include a random UUID
     end
   end
