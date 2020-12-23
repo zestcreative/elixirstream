@@ -46,7 +46,9 @@ defmodule Utility.MixProject do
       {:phoenix, "~> 1.5.1"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_ecto, "~> 4.0"},
-      {:ecto, "~> 3.0"},
+      {:oban, "~> 2.3"},
+      {:ecto_sql, "~> 3.0"},
+      {:postgrex, ">= 0.0.0"},
       {:phoenix_live_dashboard, "~> 0.3"},
       {:phoenix_live_view, "~> 0.15"},
       {:plug_cowboy, "~> 2.0"},
@@ -63,8 +65,11 @@ defmodule Utility.MixProject do
 
   defp aliases do
     [
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       outdated: ["hex.outdated", "cmd npm --prefix assets outdated || true"],
-      setup: ["deps.get", "cmd npm --prefix assets install"],
+      setup: ["deps.get", "ecto.setup", "cmd npm install --prefix assets"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"]
     ]
   end
 end

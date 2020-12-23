@@ -21,6 +21,12 @@ config :utility, UtilityWeb.Endpoint,
     ]
   ]
 
+config :utility, Utility.Repo,
+  database: "utility_dev",
+  hostname: "localhost",
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
 # Watch static and templates for browser reloading.
 config :utility, UtilityWeb.Endpoint,
   live_reload: [

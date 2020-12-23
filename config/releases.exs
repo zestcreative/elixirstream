@@ -16,3 +16,22 @@ config :utility, UtilityWeb.Endpoint,
   http: [port: {:system, "PORT"}, compress: true],
   url: [scheme: "https", host: host, port: 443],
   secret_key_base: secret_key_base
+
+database_url =
+  System.get_env("DATABASE_URL") ||
+    raise """
+    environment variable DATABASE_URL is missing.
+    For example: postgres://USER:PASS@HOST/DATABASE
+    """
+
+docker_bin =
+  System.find_executable("docker") ||
+    raise "needs 'docker' installed."
+
+config :utility,
+  docker_bin: docker_bin
+
+config :utility, Utility.Repo,
+  # ssl: true,
+  url: database_url,
+  pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")

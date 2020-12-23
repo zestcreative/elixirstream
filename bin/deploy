@@ -95,9 +95,34 @@ EOF
   tar -C $VERSION -xzf "$RELEASE_FILENAME"
   ln -snfv "/home/$APP/app/$APP_ENV/releases/$VERSION" "/home/$APP/app/$APP_ENV/current"
   ln -snfv "/home/$APP/app/$APP_ENV/releases/$VERSION/lib/$APP-$VERSION/priv/static" "/home/$APP/app/$APP_ENV/public"
+EOF
+
+  MIGRATE_CHOICE=$(echo_prompt "Run migrations?" "(y/n)")
+  case "$MIGRATE_CHOICE" in
+    y|Y )
+      echo_notice "Stopping the app"
+      ssh "$SERVER" "sudo systemctl stop \"$APP-$APP_ENV\""
+      echo_notice "Running migrations"
+      ssh "$SERVER" /bin/bash << EOF
+  cd /home/$APP/app/$APP_ENV/current
+  (set -a && \
+    source /home/$APP/app/env.prod && \
+    ./bin/utility eval "Utility.ReleaseTasks.migrate()")
+EOF
+      echo_notice "Starting the app"
+      ssh "$SERVER" "sudo systemctl start \"$APP-$APP_ENV\""
+    ;;
+
+    n|N )
+      echo_notice "Restarting the app"
+      ssh "$SERVER" /bin/bash << EOF
   sudo systemctl restart "$APP-$APP_ENV"
   echo "Success!"
 EOF
+    ;;
+
+    * ) echo_warning "Invalid choice. Exiting" && exit 1;;
+  esac
 else
   echo_warning "Could not find the release file: ${WHITE}$RELEASE_FILE"
   exit 1

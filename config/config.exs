@@ -8,8 +8,16 @@
 import Config
 
 config :utility,
+  docker_bin: System.find_executable("docker"),
+  ecto_repos: [Utility.Repo],
+  generators: [binary_id: true],
   cache: Utility.Cache.RedisImplementation,
   app_env: Mix.env()
+
+config :utility, Oban,
+  repo: Utility.Repo,
+  plugins: [Oban.Plugins.Pruner],
+  queues: [builder: 2]
 
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
