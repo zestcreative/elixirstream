@@ -27,6 +27,9 @@ config :utility, Utility.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+config :utility,
+  tmp_dir: Path.expand("tmp/dev")
+
 # Watch static and templates for browser reloading.
 config :utility, UtilityWeb.Endpoint,
   live_reload: [

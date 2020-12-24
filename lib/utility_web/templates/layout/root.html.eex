@@ -1,54 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Developer Utilities</title>
-    <meta name="description" content="Utilities to help the everyday developer. Includes: Regex Tester, HTTP sink. Made with ❤ with Elixir">
-    <link rel="canonical" href="https://utils.zest.dev<%= Phoenix.Controller.current_path(@conn) %>" />
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="<%= Routes.static_path(@conn, "/images/apple-touch-icon.png") %>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<%= Routes.static_path(@conn, "/images/favicon-32x32.png") %>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<%= Routes.static_path(@conn, "/images/favicon-16x16.png") %>">
-    <link rel="mask-icon" href="<%= Routes.static_path(@conn, "/images/safari-pinned-tab.svg") %>" color="#5bbad5">
-    <link rel="manifest" href="/site.webmanifest">
-    <meta name="msapplication-TileColor" content="#603cba">
-    <meta name="theme-color" content="#ffffff">
-    <%= csrf_meta_tag() %>
-    <script defer type="text/javascript" src="<%= Routes.static_path(@conn, "/js/app.js") %>"></script>
-    <%= if Application.get_env(:utility, :app_env) == :prod do %>
-      <script async defer data-domain="utils.zest.dev" src="https://plausible.zest.dev/js/index.js"></script>
-    <% end %>
-  </head>
-  <body class="antialiased leading-tight text-gray-900" data-version="<%= Application.spec(:utility, :vsn) %>">
-    <div class="h-screen flex overflow-hidden bg-gray-100">
-      <!-- Off-canvas menu for mobile -->
-      <%= render "_nav-mobile.html", assigns %>
-
-      <!-- Static sidebar for desktop -->
-      <%= render "_nav.html", assigns %>
-
-      <div class="flex flex-col flex-1 w-0 overflow-hidden">
-        <div class="md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3">
-          <button onclick="window.mobileNav.open()" class="-ml-0.5 -mt-0.5 h-12 w-12 inline-flex items-center justify-center rounded-md text-gray-500 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500 transition ease-in-out duration-150">
-            <span class="sr-only">Open sidebar</span>
-            <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
-        </div>
-
-        <main role="main" class="flex-1 relative z-0 overflow-y-auto focus:outline-none" tabindex="0">
-          <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-          <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-          <%= @inner_content %>
-        </main>
-      </div>
-    </div>
-
-  </body>
-</html>
-
-
-
+<%= render "header.html", assigns %>
+<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+<%= @inner_content %>
+<%= render "footer.html", assigns %>

@@ -52,8 +52,12 @@ defmodule UtilityWeb.HttpSink do
   defp read_body(%{body_params: body} = sink, {:more, _, _}) when byte_size(body) > @max_size do
     %{sink | body_params: "Body too large. Maximum size is #{@max_size} bytes"}
   end
+
   defp read_body(sink, {:more, body, conn}) do
-    read_body(%{sink | body_params: sink.body_params <> body}, Plug.Conn.read_body(conn, length: 1_000_000))
+    read_body(
+      %{sink | body_params: sink.body_params <> body},
+      Plug.Conn.read_body(conn, length: 1_000_000)
+    )
   end
 
   defp read_body(sink, _conn), do: sink

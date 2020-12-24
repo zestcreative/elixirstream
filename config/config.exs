@@ -11,7 +11,9 @@ config :utility,
   docker_bin: System.find_executable("docker"),
   ecto_repos: [Utility.Repo],
   generators: [binary_id: true],
+  storage: Utility.Storage.LocalImplementation,
   cache: Utility.Cache.RedisImplementation,
+  cache_version: 1,
   app_env: Mix.env()
 
 config :utility, Oban,

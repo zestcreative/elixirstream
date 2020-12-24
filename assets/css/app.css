@@ -6,5 +6,6 @@
 @import "navigation.css";
 @import "base.css";
 @import "regex.css";
+@import "diff.css";
 
 @import "tailwindcss/utilities";
