@@ -9,17 +9,22 @@ defmodule Utility.Application do
     children = [
       # Start the Telemetry supervisor
       Utility.Repo,
+      Utility.PackageRepo,
       UtilityWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Utility.PubSub},
       # Start the Endpoint (http/https)
       UtilityWeb.Endpoint,
       Utility.Redix,
+      Utility.Hex.Updater,
       {Oban, oban_config()}
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}
     ]
+
+    events = [[:oban, :job, :exception], [:oban, :circuit, :trip]]
     :ok = Oban.Telemetry.attach_default_logger()
+    :telemetry.attach_many("oban-logger", events, &Utility.Workers.ErrorHandler.handle_event/4, [])
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

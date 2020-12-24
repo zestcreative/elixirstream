@@ -1,0 +1,30 @@
+#!/bin/bash
+mkdir -p /cache/phx_archives
+
+while read -r URL; do
+  FILE=$(basename $URL)
+  wget -nv -O "/cache/phx_archives/$FILE" $URL
+done <<EOF
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.0.0.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.0.1.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.0.2.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.0.3.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.0.4.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.0.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.1.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.2.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.3.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.4.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.5.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.6.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.1.9.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.2.0.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.2.1.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.2.4.ez
+https://github.com/phoenixframework/archives/raw/master/phoenix_new-1.2.5.ez
+https://github.com/phoenixframework/archives/raw/master/phx_new-1.3.0.ez
+https://github.com/phoenixframework/archives/raw/master/phx_new-1.3.1.ez
+https://github.com/phoenixframework/archives/raw/master/phx_new-1.3.2.ez
+https://github.com/phoenixframework/archives/raw/master/phx_new-1.3.3.ez
+https://github.com/phoenixframework/archives/raw/master/phx_new-1.3.4.ez
+EOF

@@ -1,0 +1,16 @@
+<div class="bg-gray-200 overflow-hidden rounded-lg">
+  <div class="px-4 py-5 sm:p-6">
+    <ul>
+      <li>
+        <code class="ghd-line-type-remove">VERSION=<%= @generator.from_version %> mix <%= @generator.command %> <%= Enum.join(@generator.default_flags || [], " ") %> <%= Enum.join(@generator.from_flags || [], " ") %></code>
+      </li>
+
+      <li>
+        <code class="ghd-line-type-add">VERSION=<%= @generator.to_version %> mix <%= @generator.command %> <%= Enum.join(@generator.default_flags || [], " ") %> <%= Enum.join(@generator.to_flags || [], " ") %></code>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div id="diff-content">
+  <div class="ghd-container">

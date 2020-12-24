@@ -1,0 +1,141 @@
+.ghd-container {
+  font-family: Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: #333;
+  border-radius: 5px;
+  margin-bottom: 50px;
+}
+
+.ghd-file {
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin-bottom: 1em;
+  background-color: white;
+}
+
+.ghd-file-header {
+  padding: 10px;
+  border-bottom: 0.1rem solid #e1e1e1;
+  cursor: pointer;
+  background: #fff;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  z-index: 1;
+}
+
+.ghd-file-header .reveal-diff {
+  display: none;
+  float: right;
+  color: #999;
+}
+
+.ghd-file-header .reveal-diff path {
+  fill: #999;
+}
+
+.ghd-file-header.collapsed .reveal-diff {
+  display: block;
+}
+
+.ghd-file-header .collapse-diff {
+  display: block;
+  float: right;
+  color: #999;
+}
+
+.ghd-file-header .collapse-diff path {
+  fill: #999;
+}
+
+.ghd-file-header.collapsed .collapse-diff {
+  display: none;
+}
+
+.ghd-chunk-header .ghd-line-number {
+  background-color: #f8fafd;
+}
+
+.ghd-file-status {
+  color: #999;
+  border: 1px solid #999;
+  border-radius: 3px;
+  padding: 0 3px;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.ghd-file-status-removed {
+  color: red;
+  border-color: red;
+}
+
+.ghd-file-status-added {
+  color: rgb(115, 148, 115);
+  border-color: rgb(115, 148, 115);
+}
+
+.ghd-diff {
+  overflow-y: hidden;
+}
+
+.ghd-diff.hidden{
+  display: none;
+}
+
+.ghd-chunk-header {
+  background-color: #f8fafd;
+  color: rgba(0,0,0,.3);
+}
+
+.ghd-line-number {
+  position: absolute;
+  width: 80px;
+  background-color: white;
+  display: flex;
+  color: rgba(0,0,0,.3);
+  cursor: pointer;
+}
+
+
+.ghd-line.selected .ghd-line-number,
+.ghd-line.selected .ghd-line-number,
+.ghd-line.selected .ghd-text {
+  background-color: rgb(255, 251, 194);
+}
+
+.ghd-line-number-from {
+  padding-left: 10px;
+}
+
+.ghd-line-number-to {
+  padding: 0 10px;
+}
+
+.ghd-line-type-add {
+  background-color: #dfd;
+}
+
+.ghd-line-type-add .ghd-line-number {
+  background-color: #bdffbd;
+}
+
+.ghd-line-type-remove {
+  background-color: #fee8e9;
+}
+
+.ghd-line-type-remove .ghd-line-number {
+  background-color: #ffd7d9;
+}
+
+.ghd-line-number div {
+  width: 35px;
+}
+
+.ghd-text-internal {
+  white-space: pre;
+}
+
+.ghd-text-internal {
+  padding: 0 90px;
+}

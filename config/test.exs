@@ -13,6 +13,9 @@ config :utility, UtilityWeb.Endpoint,
   http: [port: 4002],
   server: false
 
+config :utility,
+  tmp_dir: Path.expand("tmp/test")
+
 config :utility, Oban,
   crontab: false,
   queues: false,

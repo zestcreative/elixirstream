@@ -1,4 +1,4 @@
-FROM hexpm/elixir:1.11.1-erlang-23.2.1-debian-stretch-20201012
+FROM hexpm/elixir:1.3.4-erlang-18.3.4.11-debian-stretch-20200511
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

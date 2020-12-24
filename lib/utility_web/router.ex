@@ -32,6 +32,8 @@ defmodule UtilityWeb.Router do
     live "/regex/:id", RegexLive
     live "/sink", SinkLive
     live "/sink/view/:id", SinkLive
+    live "/gendiff", GenDiffLive
+    get "/gendiff/:project/:id", GenDiffController, :show
   end
 
   scope "/", UtilityWeb do
@@ -40,7 +42,7 @@ defmodule UtilityWeb.Router do
     match :*, "/sink/:foo_sink_id", SinkController, :any
   end
 
-  scope "/", UtilityWeb do
+  scope "/", UtilityWeb, log: false do
     pipe_through [:crawlers]
 
     get "/site.webmanifest", PageController, :site_manifest

@@ -145,6 +145,7 @@ defmodule UtilityWeb.RegexLive do
 
   defp put_result(%{valid?: true} = changeset) do
     string = Changeset.get_field(changeset, :string)
+
     :telemetry.execute(
       [:utility, :regex, :payload],
       %{payload: byte_size(string)},
