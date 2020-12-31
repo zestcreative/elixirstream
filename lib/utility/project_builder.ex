@@ -14,6 +14,7 @@ defmodule Utility.ProjectBuilder do
 
   def default_broadcaster(_payload), do: :ok
 
+  @timeout :timer.minutes(10)
   def diff(%Generator{} = generator, opts \\ []) do
     Logger.debug("Starting a diff #{inspect(generator)}")
     %{project: project, from_version: from, to_version: to} = generator
@@ -28,7 +29,7 @@ defmodule Utility.ProjectBuilder do
 
       with {:ok, runner_from, generated_from} <- generate_app(generator, :from, path_from, opts),
            {:ok, runner_to, generated_to} <- generate_app(generator, :to, path_to, opts),
-           results <- Task.await_many([runner_from, runner_to], :timer.minutes(5)),
+           results <- Task.await_many([runner_from, runner_to], @timeout),
            results <- Enum.group_by(results, &elem(&1, 0), &elem(&1, 1)),
            {nil, _success} <- Map.pop(results, :error),
            {:ok, any?} <- git_diff(generated_from, generated_to, path_diff),
@@ -74,7 +75,7 @@ defmodule Utility.ProjectBuilder do
            "--output=#{path_out}",
            path_from,
            path_to
-    ]) |> IO.inspect(label: "GIT DIFF") do
+    ]) do
       {"", 1} ->
         {:ok, true}
 
@@ -101,7 +102,7 @@ defmodule Utility.ProjectBuilder do
 
       task =
         Task.async(fn ->
-          ProjectRunner.run(runner, commands, timeout: :timer.minutes(5), tag: tag_for(command, version), mount: path)
+          ProjectRunner.run(runner, commands, timeout: @timeout, tag: tag_for(command, version), mount: path)
         end)
 
       {:ok, task, Path.join([path, "my_app"])}
@@ -122,8 +123,23 @@ defmodule Utility.ProjectBuilder do
     end
   end
 
+  def install_archive("phx_gen_auth", _version) do
+    "mix archive.install --force hex phx_new 1.5.7"
+  end
+
   def install_archive(package, version) do
     "mix archive.install --force hex #{package} #{version}"
+  end
+
+  def run_command("phx.gen.auth", version_string, flags) do
+    """
+    #{run_command("phx.new", "1.5.7", ["my_app"])} &&
+      sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
+      cd my_app &&
+      mix deps.get &&
+      mix phx.gen.auth #{Enum.join(flags, " ")} &&
+      rm -rf _build deps mix.lock
+    """ |> String.trim()
   end
 
   def run_command("phx.new", version_string, [where | _] = flags) do
@@ -132,38 +148,40 @@ defmodule Utility.ProjectBuilder do
       {:lt, _} ->
         """
         yes n | mix phoenix.new #{Enum.join(flags, " ")} &&
-          sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &&
-          sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}/lib/#{where}/endpoint.ex
-        """
+          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &&
+          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}/endpoint.ex
+        """ |> String.trim()
       {_, false} ->
         """
         yes n | mix phx.new #{Enum.join(flags, " ")} &&
-          sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &&
-          sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}/lib/#{where}_web/endpoint.ex
-        """
+          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &&
+          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}_web/endpoint.ex
+        """ |> String.trim()
       {_, true} ->
         """
         yes n | mix phx.new #{Enum.join(flags, " ")} &&
-          (sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}_umbrella/config/prod.secret.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-          (sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/prod.secret.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base:.*/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-          (sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-          sed -i 's/signing_salt:.*/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{where}_web/endpoint.ex
-        """
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/prod.secret.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
+          (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/prod.secret.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
+          (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{where}_web/endpoint.ex
+        """ |> String.trim()
     end
   end
+
   def run_command("nerves.new", _version_string, [where | _] = flags) do
     """
     mix nerves.new #{Enum.join(flags, " ")} &&
       (sed -i 's/-setcookie.*/-setcookie foo/g' #{where}/rel/vm.args &> /dev/null || true)
-    """
+    """ |> String.trim()
   end
+
   def run_command(command, _version_string, flags), do: "mix #{command} #{Enum.join(flags, " ")}"
 
   @phx_latest_at Version.parse!("1.3.0")

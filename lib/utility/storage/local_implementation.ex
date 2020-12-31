@@ -28,6 +28,6 @@ defmodule Utility.Storage.LocalImplementation do
   end
 
   defp dir() do
-    Path.join(Application.get_env(:utility, :tmp_dir), "storage")
+    Path.join(Application.get_env(:utility, :storage_dir), "diff-html")
   end
 end

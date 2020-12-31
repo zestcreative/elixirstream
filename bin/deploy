@@ -88,7 +88,7 @@ EOF
   scp "$RELEASE_FILE" "$SERVER:app/$APP_ENV/releases/$RELEASE_FILENAME"
 
   # Backup, unpack, restart the app, and migrate if necessary
-  echo_notice "Restarting the app"
+  echo_notice "Linking the release"
   ssh "$SERVER" /bin/bash << EOF
   cd "/home/$APP/app/$APP_ENV/releases"
   mkdir $VERSION 2> /dev/null

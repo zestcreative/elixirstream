@@ -19,7 +19,7 @@ config :utility,
 config :utility, Oban,
   repo: Utility.Repo,
   plugins: [Oban.Plugins.Pruner],
-  queues: [builder: 2]
+  queues: [builder: 1]
 
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
@@ -37,6 +37,9 @@ config :mime, :types, %{
   "application/xml" => ["xml"],
   "application/manifest+json" => ["webmanifest"]
 }
+
+config :logger,
+  backends: [:console, Sentry.LoggerBackend]
 
 # Configures Elixir's Logger
 config :logger, :console,

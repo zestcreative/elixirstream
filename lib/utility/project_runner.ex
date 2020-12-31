@@ -2,8 +2,6 @@ defmodule Utility.ProjectRunner do
   use GenServer
   require Logger
 
-  @antizombie "./bin/external.sh"
-
   def start_link(opts) do
     GenServer.start_link(__MODULE__, opts)
   end
@@ -50,6 +48,7 @@ defmodule Utility.ProjectRunner do
     {:reply, output(state.output), state}
   end
 
+  @antizombie "bin/external.sh"
   @impl GenServer
   def handle_call({:run, command, run_opts}, from, state) do
     args =
@@ -64,7 +63,7 @@ defmodule Utility.ProjectRunner do
     end
 
     port =
-      Port.open({:spawn_executable, @antizombie}, [
+      Port.open({:spawn_executable, path_for(@antizombie)}, [
         :binary,
         :exit_status,
         :stderr_to_stdout,
@@ -81,7 +80,7 @@ defmodule Utility.ProjectRunner do
     Logger.debug("Building runner")
 
     port =
-      Port.open({:spawn_executable, @antizombie}, [
+      Port.open({:spawn_executable, path_for(@antizombie)}, [
         :binary,
         :exit_status,
         args:
@@ -95,8 +94,8 @@ defmodule Utility.ProjectRunner do
             "--build-arg",
             "GROUP_ID=#{String.trim(group_id)}",
             "-f",
-            "diffbuilder/#{dockerfile}",
-            "diffbuilder/."
+            path_for("diffbuilder/#{dockerfile}"),
+            path_for("diffbuilder/.")
           ]
       ])
 
@@ -141,6 +140,14 @@ defmodule Utility.ProjectRunner do
 
   defp add_command(cmd, command, opts) do
     tag = Keyword.get(opts, :tag, "latest")
-    cmd ++ ["--rm", "diff-builder:#{tag}", "/bin/bash", "-c", command]
+    cmd ++ ["--cpus=.5", "--rm", "diff-builder:#{tag}", "/bin/bash", "-c", command]
+  end
+
+  defp path_for(relative_path) do
+    if Application.get_env(:utility, :app_env) == :prod do
+      relative_path
+    else
+      Path.join(["rel", "overlays", relative_path])
+    end
   end
 end

@@ -59,6 +59,7 @@ defmodule UtilityWeb.RegexLive do
   def handle_event("validate", %{"regex_live" => params}, socket) do
     {:noreply, assign_changeset(socket, params)}
   end
+  def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   @impl Phoenix.LiveView
   def handle_event("help-tab", %{"tab" => tab}, socket) do

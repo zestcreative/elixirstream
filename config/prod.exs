@@ -13,12 +13,6 @@ import Config
 # Do not print debug messages in production
 config :logger, level: :info
 
-cache_dir = Path.join([System.user_home!(), ".cache", "utility"])
-File.mkdir_p!(cache_dir)
-
-config :utility,
-  tmp_dir: cache_dir
-
 config :utility, UtilityWeb.Endpoint,
   server: true,
   cache_static_manifest: "priv/static/cache_manifest.json"

@@ -1,109 +1,130 @@
 <div class="py-6">
-  <%= f = form_for @changeset, "#", [phx_submit: :diff, phx_change: :validate, class: "bg-white px-4 py-5 border-b border-gray-200 sm:px-6 mx-6"] %>
-    <div class="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
-      <div class="ml-4 mt-2">
-        <h3 class="text-lg leading-6 font-medium text-gray-900">
-          Generator Diff
-        </h3>
-      </div>
+  <%= f = form_for @changeset, "#", [phx_submit: :diff, phx_change: :validate] %>
+    <div class="px-4 mx-auto mb-6 max-w-7xl sm:px-6 lg:px-8">
+      <div class="flex flex-wrap items-center justify-between -mt-2 -ml-4 sm:flex-no-wrap">
+        <div class="mt-2 ml-4">
+          <h1 class="text-2xl font-semibold text-gray-900">Generator Diff</h1>
+        </div>
+        <div class="flex-shrink-0 mt-2 ml-4">
+          <span class="inline-flex rounded-md shadow-sm">
+            <%= submit class: "relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150", id: "submit-diff", disabled: @building && !@finished_building do %>
 
-      <div class="ml-4 mt-2 flex-shrink-0">
-        <%= submit "Diff", class: "relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50", id: "submit-diff", disabled: @building && !@finished_building %>
+            <svg class="w-4 h-4 mr-2 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 896 1024">
+                <path d="M448 256H320v128H192v128h128v128h128V512h128V384H448V256zM192 896h384V768H192V896zM640 0H128v64h480l224 224v608h64V256L640 0zM0 128v896h768V320L576 128H0zM704 960H64V192h480l160 160V960z"/>
+            </svg>
+            Git Diff
+            <% end %>
+
+          </span>
+        </div>
       </div>
     </div>
 
-    <div>
+    <div class="px-4 mx-auto max-w-7xl sm:px-6 md:px-8">
       <div>
-        <%= label f, :project, "Project", class: "block text-sm font-medium text-gray-700" %>
-        <div class="mt-1">
-          <%= select f, :project, generator_package_options(), autocomplete: "off", autofocus: true, placeholder: "Select Package...", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-        </div>
-      </div>
-
-      <%= error_tag f, :project %>
-    </div>
-
-    <div class="flex my-4 -space-x-px shadow-sm">
-      <div class="w-1/2 flex-1 min-w-0">
-        <%= label f, :from_version, "From Version", class: "block text-sm font-medium text-gray-700" %>
-        <%= select f, :from_version, version_options(@from_versions), autocomplete: "off", placeholder: "From version...", class: "focus:ring-indigo-500 focus:border-indigo-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300" %>
-        <%= error_tag f, :from_version %>
-      </div>
-
-      <div class="flex-1 min-w-0">
-        <%= label f, :to_version, "To Version", class: "block text-sm font-medium text-gray-700" %>
-        <%= select f, :to_version, version_options(@to_versions), autocomplete: "off", placeholder: "From version...", class: "focus:ring-indigo-500 focus:border-indigo-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300" %>
-        <%= error_tag f, :to_version %>
-      </div>
-    </div>
-
-    <div>
-      <%= label f, :command, "Command", class: "block text-sm font-medium text-gray-700" %>
-      <%= select f, :command, generator_options(@project), autocomplete: "off", class: "shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-      <%= error_tag f, :command %>
-      <%= if @command_help do %>
-        <p class="mt-2 text-sm text-gray-500"><%= @command_help %></p>
-      <% end %>
-    </div>
-
-    <div>
-      <% available_flags = flags_for_command(@command) %>
-      <% is_flags_hidden = !Enum.any?(available_flags) %>
-      <div class="my-4 <%= if is_flags_hidden, do: "hidden" %>">
         <div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <%= label f, :from_flags, "From #{@from_version} Flags", class: "block text-sm font-medium text-gray-700" %>
-              <%= multiple_select f, :from_flags, available_flags, class: "focus:ring-indigo-500 focus:border-indigo-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
-              <%= error_tag f, :from_flags %>
-            </div>
-
-            <div>
-              <%= label f, :to_flags, "To #{@to_version} Flags", class: "block text-sm font-medium text-gray-700" %>
-              <%= multiple_select f, :to_flags, available_flags, class: "focus:ring-indigo-500 focus:border-indigo-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
-              <%= error_tag f, :to_flags %>
-            </div>
+          <%= label f, :project, class: "block text-sm font-medium text-gray-700" do %>
+            Project
+            <%= if @project_url do %>
+              <a rel="nofollow" target="_blank" href="<%= @project_url %>" class="mt-2 text-xs link">Hex</a>
+            <% end %>
+          <% end %>
+          <div class="mt-1">
+            <%= select f, :project, generator_package_options(), autocomplete: "off", autofocus: true, placeholder: "Select Package...", class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
           </div>
+
+        </div>
+
+        <%= error_tag f, :project %>
+      </div>
+
+      <div class="flex my-4 -space-x-px shadow-sm">
+        <div class="w-1/2 flex-1 min-w-0">
+          <%= label f, :from_version, "From Version", class: "block text-sm font-medium text-gray-700" %>
+          <%= select f, :from_version, version_options(@from_versions), autocomplete: "off", placeholder: "From version...", class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300" %>
+          <%= error_tag f, :from_version %>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <%= label f, :to_version, "To Version", class: "block text-sm font-medium text-gray-700" %>
+          <%= select f, :to_version, version_options(@to_versions), autocomplete: "off", placeholder: "From version...", class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300" %>
+          <%= error_tag f, :to_version %>
         </div>
       </div>
 
-      <%= if @command && is_flags_hidden do %>
-        <p class="my-4 block text-sm font-medium text-gray-700">No flags for generator</p>
-      <% end %>
-    </div>
-  </form>
-
-  <%= if @building do %>
-    <div class="relative">
-
-      <%= unless @finished_building do %>
-        <div class="absolute container flex -top-16">
-          <div class="rounded-full bg-white mx-auto">
-          <svg class="w-12 h-12 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          </div>
-        </div>
-      <% end %>
-
-      <div class="mt-10" id="output-main" phx-update="append">
-        <%= for {line, id} <- @lines_main do %>
-          <span id="line-<%= id %>"><%= raw(line) %></span>
+      <div>
+        <%= label f, :command, class: "block text-sm font-medium text-gray-700" do %>
+          Command
+          <%= if @docs_url do %>
+            <a rel="nofollow" target="_blank" href="<%= @docs_url %>" class="mt-2 text-xs link">Docs</a>
+          <% end %>
+        <% end %>
+        <%= select f, :command, generator_options(@project), autocomplete: "off", class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+        <%= error_tag f, :command %>
+        <%= if @command_help do %>
+          <p class="mt-2 text-sm text-gray-500"><%= @command_help %></p>
         <% end %>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2">
-        <div class="sm:border-none md:border-r-4 border-gray-700 md:border-dashed bg-black overflow-x-auto" id="output-runner-1" phx-update="append">
-          <%= for {line, id} <- @lines_1 do %>
+      <div>
+        <% available_flags = flags_for_command(@command) %>
+        <% is_flags_hidden = !Enum.any?(available_flags) %>
+        <div class="my-4 <%= if is_flags_hidden, do: "hidden" %>">
+          <div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <%= label f, :from_flags, "From #{@from_version} Flags", class: "block text-sm font-medium text-gray-700" %>
+                <%= multiple_select f, :from_flags, available_flags, class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
+                <%= error_tag f, :from_flags %>
+              </div>
+
+              <div>
+                <%= label f, :to_flags, "To #{@to_version} Flags", class: "block text-sm font-medium text-gray-700" %>
+                <%= multiple_select f, :to_flags, available_flags, class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
+                <%= error_tag f, :to_flags %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <%= if @command && is_flags_hidden do %>
+          <p class="my-4 block text-sm font-medium text-gray-700">No flags for generator</p>
+        <% end %>
+      </div>
+    </form>
+
+    <%= if @building do %>
+      <div class="relative">
+
+        <%= unless @finished_building do %>
+          <div class="absolute container flex -top-4 -right-4 justify-end">
+            <div class="rounded-full bg-white">
+            <svg class="w-12 h-12 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="mt-10" id="output-main" phx-update="append">
+          <%= for {line, id} <- @lines_main do %>
             <span id="line-<%= id %>"><%= raw(line) %></span>
           <% end %>
         </div>
 
-        <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="append">
-          <%= for {line, id} <- @lines_2 do %>
-            <span id="line-<%= id %>"><%= raw(line) %></span>
-          <% end %>
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          <div class="sm:border-none md:border-r-4 border-gray-700 md:border-dashed bg-black overflow-x-auto" id="output-runner-1" phx-update="append">
+            <%= for {line, id} <- @lines_1 do %>
+              <span id="line-<%= id %>"><%= raw(line) %></span>
+            <% end %>
+          </div>
+
+          <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="append">
+            <%= for {line, id} <- @lines_2 do %>
+              <span id="line-<%= id %>"><%= raw(line) %></span>
+            <% end %>
+          </div>
         </div>
       </div>
     </div>

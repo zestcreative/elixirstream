@@ -47,7 +47,10 @@ defmodule UtilityWeb.Telemetry do
       counter("utility.regex.permalink"),
       summary("utility.regex.payload", unit: {:byte, :kilobyte}),
       summary("utility.regex.renders", unit: {:native, :millisecond}),
-      counter("utility.regex.renders")
+      counter("utility.regex.renders"),
+
+      # Oban
+      summary("oban.job", unit: {:native, :second})
     ]
   end
 

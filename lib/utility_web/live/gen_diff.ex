@@ -14,10 +14,10 @@ defmodule UtilityWeb.GenDiffLive do
 
     {:ok,
      socket
+     |> assign(page_title: "Generator Diff")
      |> assign(record: record, building: false, finished_building: false)
      |> assign(changeset: Generator.changeset(record, %{}))
-     |> assign_changeset(%{}),
-     temporary_assigns: [lines_1: [], lines_2: [], lines_main: []]}
+     |> assign_changeset(%{}), temporary_assigns: [lines_1: [], lines_2: [], lines_main: []]}
   end
 
   @impl Phoenix.LiveView
@@ -25,6 +25,21 @@ defmodule UtilityWeb.GenDiffLive do
     {:noreply, assign_changeset(socket, params)}
   end
 
+  def handle_event("validate", _params, socket), do: {:noreply, socket}
+
+  @runners Keyword.get(Application.compile_env!(:utility, [Oban, :queues]), :builder, 0)
+  @waiting AnsiToHTML.generate_phoenix_html("""
+           I haven't seen this combination of versions and flags before! No worries, I'll generate
+           the diff right now. The result will be stored. I'm limited to #{@runners} runner(s) to
+           help keep the site responsive. Waiting in line now for runner. Just sit tight.
+
+           Once started, you'll be able to see the progress of the project being built. The left
+           side will contain progress of building the FROM combination, and the right side will
+           contain progress of building the TO combination.
+
+           If you navigate away, the diff will still be built but you won't be able to monitor
+           progress.
+           """)
   @impl Phoenix.LiveView
   def handle_event("diff", %{"generator" => params}, socket) do
     with {:ok, generator} <- Generator.apply(params),
@@ -33,13 +48,17 @@ defmodule UtilityWeb.GenDiffLive do
          {:ok, _} <- ProjectBuilder.schedule_diff(generator) do
       topic = "hexgen:progress:#{generator.project}:#{generator.id}"
       UtilityWeb.Endpoint.subscribe(topic)
-      line = AnsiToHTML.generate_phoenix_html("Waiting in line for runner")
+
       {:noreply,
-        socket
-        |> assign(generator: generator, finished_building: false, building: true, lines_main: [{line, "waiting"}])
-        |> runner_to_id(generator, :from)
-        |> runner_to_id(generator, :to)
-      }
+       socket
+       |> assign(
+         generator: generator,
+         finished_building: false,
+         building: true,
+         lines_main: [{@waiting, "waiting"}]
+       )
+       |> runner_to_id(generator, :from)
+       |> runner_to_id(generator, :to)}
     else
       {{:ok, _diff_stream}, generator} ->
         {:noreply, redirect(socket, to: show_path_for(generator))}
@@ -48,6 +67,7 @@ defmodule UtilityWeb.GenDiffLive do
         {:noreply, assign(socket, :changeset, changeset)}
     end
   end
+
   def handle_event("diff", _params, socket) do
     {:noreply, put_flash(socket, :error, "You know... like... fill out stuff")}
   end
@@ -55,26 +75,29 @@ defmodule UtilityWeb.GenDiffLive do
   @impl Phoenix.LiveView
   def handle_info({:progress, _, "all-finished"}, socket) do
     {:noreply,
-      socket
-      |> assign(:finished_building, true)
-      |> redirect(to: show_path_for(socket.assigns.generator))}
+     socket
+     |> assign(:finished_building, true)
+     |> redirect(to: show_path_for(socket.assigns.generator))}
   end
 
   @impl Phoenix.LiveView
   def handle_info({:progress, _, "all-finished-error"}, socket) do
     {:noreply,
-      socket
-      |> assign(:finished_building, true)
-      |> put_flash(:error, "there was an error while building")}
+     socket
+     |> assign(:finished_building, true)
+     |> put_flash(:error, "there was an error while building")}
   end
 
   def handle_info({:progress, line, id}, socket) do
     line = AnsiToHTML.generate_phoenix_html(line)
+
     cond do
       String.starts_with?(id, socket.assigns.runner_from) ->
         {:noreply, assign(socket, :lines_1, [{line, id}])}
+
       String.starts_with?(id, socket.assigns.runner_to) ->
         {:noreply, assign(socket, :lines_2, [{line, id}])}
+
       true ->
         {:noreply, assign(socket, :lines_main, [{line, id}])}
     end
@@ -99,8 +122,10 @@ defmodule UtilityWeb.GenDiffLive do
     socket
     |> assign(:changeset, changeset)
     |> assign(:project, project)
+    |> assign(:project_url, Changeset.get_field(changeset, :url))
     |> assign(:command, Changeset.get_field(changeset, :command))
     |> assign(:command_help, Changeset.get_field(changeset, :help))
+    |> assign(:docs_url, Changeset.get_field(changeset, :docs_url))
     |> assign(:from_version, from)
     |> assign(:to_version, to)
     |> assign(:from_versions, versions_for(project, ceiling: to))
@@ -113,11 +138,11 @@ defmodule UtilityWeb.GenDiffLive do
     do: {params, record}
 
   defp maybe_reset(
-         %{"project" => diff_project} = params,
+         %{"project" => different_project} = params,
          %{params: %{"project" => project}},
          _record
        )
-       when diff_project != project do
+       when different_project != project do
     {
       Map.merge(params, %{"from_version" => nil, "to_version" => nil, "command" => nil}),
       %Generator{}
@@ -155,16 +180,21 @@ defmodule UtilityWeb.GenDiffLive do
   defp generator_options(nil), do: @generator_placeholder
 
   defp generator_options(project) do
-    generators = project |> Data.commands_for_project() |> Enum.map(&[key: &1, value: &1])
-    if length(generators) == 1 do
-      Enum.map(generators, &Keyword.put(&1, :selected, "true"))
-    else
-      @generator_placeholder ++ generators
+    project
+    |> Data.commands_for_project()
+    |> Enum.map(&[key: &1, value: &1])
+    |> case do
+      [generator] ->
+        [Keyword.put(generator, :selected, "true")]
+
+      generators ->
+        @generator_placeholder ++ generators
     end
   end
 
   @version_placeholder [[key: "Select version...", value: "", selected: true, disabled: true]]
   defp version_options([version]), do: [[key: version, value: version, selected: true]]
+
   defp version_options(versions) do
     versions = Enum.map(versions, &[key: &1, value: &1])
     @version_placeholder ++ versions

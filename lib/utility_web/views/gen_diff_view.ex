@@ -4,7 +4,6 @@ defmodule UtilityWeb.GenDiffView do
 
   def render_diff(stream, generator) do
     path = tmp_path("html-#{generator.project}-#{generator.id}-")
-    IO.inspect stream, label: "GIT DIFF STREAM"
 
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
       html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_header.html", generator: generator)

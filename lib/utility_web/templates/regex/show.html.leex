@@ -8,7 +8,7 @@
       <div class="flex-shrink-0 mt-2 ml-4">
         <span class="inline-flex rounded-md shadow-sm">
           <% is_disabled = @record.id && !changed?(@changeset) %>
-          <button phx-click="permalink" <%= if is_disabled, do: "disabled=true" %> type="button" class="relative inline-flex items-center <%= if is_disabled, do: "opacity-50 cursor-not-allowed" %> px-4 py-2 font-medium text-white bg-brand-600 border border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700">
+          <button phx-click="permalink" <%= if is_disabled, do: "disabled=true" %> type="button" class="relative inline-flex items-center <%= if is_disabled, do: "opacity-50 cursor-not-allowed" %> px-4 py-2 font-medium text-white bg-brand-600 border transition ease-in-out duration-150 border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700">
 
             <svg viewBox="0 0 24 24" class="w-4 h-5 mr-2 fill-current">
               <path d="M19.48 13.03A4 4 0 0 1 16 19h-4a4 4 0 1 1 0-8h1a1 1 0 0 0 0-2h-1a6 6 0 1 0 0 12h4a6 6 0 0 0 5.21-8.98L21.2 12a1 1 0 1 0-1.72 1.03zM4.52 10.97A4 4 0 0 1 8 5h4a4 4 0 1 1 0 8h-1a1 1 0 0 0 0 2h1a6 6 0 1 0 0-12H8a6 6 0 0 0-5.21 8.98l.01.02a1 1 0 1 0 1.72-1.03z"/>
@@ -32,8 +32,9 @@
             </div>
             <%= text_input f, :regex,
                   placeholder: "regex",
+                  autofocus: true,
                   autocomplete: "off",
-                  class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 pr-8 pl-10 font-mono block w-full sm:text-sm sm:leading-5" %>
+                  class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5" %>
             <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">/</div>
           </div>
           <%= error_tag f, :regex %>
@@ -55,7 +56,7 @@
                   placeholder: "flags",
                   phx_hook: "MaskFlags",
                   autocomplete: "off",
-                  class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 font-mono block w-full sm:text-sm sm:leading-5" %>
+                  class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md font-mono sm:leading-5" %>
           </div>
           <%= error_tag f, :flags %>
           <p class="p-1 font-mono text-xs text-gray-700">
@@ -67,7 +68,7 @@
         <div class="sm:col-span-6">
           <%= label f, :string, class: "block text-sm font-medium leading-5 text-gray-700" %>
           <div class="mt-1 rounded-md shadow-sm">
-            <%= textarea f, :string, spellcheck: "false", rows: 6, class: "border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 font-mono block w-full transition duration-150 ease-in-out sm:text-sm sm:leading-5" %>
+            <%= textarea f, :string, spellcheck: "false", rows: 6, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm border-gray-300 rounded-md font-mono block w-full sm:leading-5" %>
           </div>
           <%= error_tag f, :string %>
         </div>
@@ -92,7 +93,7 @@
             <button type="button" class="inline-block px-1 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="regex-pasta">Copy</button>
           </legend>
           <div class="w-full my-2 font-mono bg-gray-200 rounded">
-            <input type="text" readonly id="regex-pasta" class="rounded border-none w-full bg-gray-200 cursor-default" value="<%= @pasta %>" />
+            <input type="text" readonly id="regex-pasta" class=" bg-gray-200 cursor-default shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm border-gray-300 rounded-md font-mono block w-full" value="<%= @pasta %>" />
           </div>
           <p class="text-sm text-gray-500 leading-5">Which <a class="link" href="https://hexdocs.pm/elixir/Regex.html" target="_blank">Regex function</a> to run</p>
           <div class="flex flex-wrap mt-1 space-x-8">

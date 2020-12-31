@@ -79,6 +79,10 @@
   overflow-y: hidden;
 }
 
+table.ghd-diff {
+  width: 100%
+}
+
 .ghd-diff.hidden{
   display: none;
 }

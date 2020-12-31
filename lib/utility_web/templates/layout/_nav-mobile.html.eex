@@ -35,12 +35,12 @@
             </svg>
             HTTP Sink
           <% end %>
-          <%# active_link @conn, to: Routes.live_path(@conn, UtilityWeb.GenDiffLive), class: "nav-link" do %>
-            <%# <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 896 1024">
+          <%= active_link @conn, to: Routes.live_path(@conn, UtilityWeb.GenDiffLive), class: "nav-link" do %>
+            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 896 1024">
               <path d="M448 256H320v128H192v128h128v128h128V512h128V384H448V256zM192 896h384V768H192V896zM640 0H128v64h480l224 224v608h64V256L640 0zM0 128v896h768V320L576 128H0zM704 960H64V192h480l160 160V960z"/>
             </svg>
-            Generator Diffs %>
-          <%# end %>
+            Generator Diffs
+          <% end %>
           <%= active_link @conn, to: Routes.page_path(@conn, :about), class: "nav-link" do %>
             <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
               <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

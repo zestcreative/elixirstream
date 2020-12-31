@@ -1,9 +1,10 @@
 defmodule Utility.Storage do
   @type generator :: %Utility.GenDiff.Generator{}
   @type html :: Path.t()
+  @type id :: String.t()
 
-  @callback get(generator) :: {:ok, html} | {:error, term}
-  @callback put(generator, html) :: :ok | {:error, term}
+  @callback get(generator, id) :: {:ok, html} | {:error, term}
+  @callback put(generator, id, html) :: :ok | {:error, term}
 
   defp impl(), do: Application.get_env(:utility, :storage)
 

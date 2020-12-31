@@ -1,55 +1,105 @@
 defmodule Utility.GenDiff.Data do
   @known %{
-    "phx_new" => [
-      %{
-        command: "phx.new",
-        default_flags: ["my_app"],
-        help: "Command is `phoenix.new` prior to 1.3.0. Not all flags exist on all versions.",
-        flags: [
-          "--binary-id",
-          "--database=mssql",
-          "--database=mysql",
-          "--database=postgres",
-          "--live",
-          "--no-dashboard",
-          "--no-ecto",
-          "--no-gettext",
-          "--no-html",
-          "--no-webpack",
-          "--umbrella"
-        ]
-      }
-    ],
-    "nerves_bootstrap" => [
-      %{
-        command: "nerves.new",
-        default_flags: ["my_app"],
-        flags: []
-      }
-    ],
-    "scenic_new" => [
-      %{
-        command: "scenic.new",
-        default_flags: ["my_app"],
-        flags: []
-      }
-    ]
+    "phx_new" => %{
+      url: "https://hex.pm/packages/phx_new",
+      generators: [
+        %{
+          command: "phx.new",
+          docs_url: "https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html",
+          default_flags: ["my_app"],
+          help: "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error.",
+          flags: [
+            "--binary-id",
+            "--database=mssql",
+            "--database=mysql",
+            "--database=postgres",
+            "--live",
+            "--no-dashboard",
+            "--no-ecto",
+            "--no-gettext",
+            "--no-html",
+            "--no-webpack",
+            "--umbrella"
+          ]
+        }
+      ]
+    },
+    "phx_gen_auth" => %{
+      url: "https://hex.pm/packages/phx_gen_auth",
+      generators: [
+        %{
+          command: "phx.gen.auth",
+          docs_url: "https://hexdocs.pm/phx_gen_auth",
+          default_flags: ["Accounts", "User", "users"],
+          help: "Ran on a default Phoenix 1.5.7 project",
+          flags: [
+            "--binary-id",
+            "--no-binary-id"
+          ]
+        }
+      ]
+    },
+    "nerves_bootstrap" => %{
+      url: "https://hex.pm/packages/nerves_bootstrap",
+      generators: [
+        %{
+          command: "nerves.new",
+          docs_url: "https://hexdocs.pm/nerves_bootstrap/Mix.Tasks.Nerves.New.html",
+          default_flags: ["my_app"],
+          flags: []
+        }
+      ]
+    },
+    "scenic_new" => %{
+      url: "https://hex.pm/packages/scenic_new",
+      generators: [
+        %{
+          command: "scenic.new",
+          docs_url: "https://hexdocs.pm/scenic_new/Mix.Tasks.Scenic.New.html",
+          default_flags: ["my_app"],
+          flags: []
+        },
+        %{
+          command: "scenic.new.nerves",
+          docs_url: "https://hexdocs.pm/scenic_new/Mix.Tasks.Scenic.New.Nerves.html",
+          default_flags: ["my_app"],
+          flags: []
+        },
+        %{
+          command: "scenic.new.example",
+          docs_url: "https://hexdocs.pm/scenic_new/Mix.Tasks.Scenic.New.Example.html",
+          default_flags: ["my_app"],
+          flags: []
+        }
+      ]
+    }
   }
 
   def all, do: @known
 
   def projects(), do: all() |> Map.keys()
 
+  def get_by(project: project) do
+    all()[project]
+  end
+
   def get_by(command: command) do
-    Enum.find_value(Map.values(all()), fn generators ->
-      Enum.find(generators, fn generator ->
-        generator[:command] == command
+    Enum.find_value(all(), fn {_project, %{generators: generators}} ->
+      Enum.find_value(generators, fn generator ->
+        generator[:command] == command && generator
       end)
     end)
   end
 
   def commands_for_project(project) do
-    Enum.map(all()[project] || [], & &1[:command])
+    Enum.map(all()[project][:generators] || [], & &1[:command])
+  end
+
+  def url_for_project(project) do
+    case get_by(project: project) do
+      %{url: url} -> url
+      _ -> nil
+    end
   end
 
   def flags_for_command(command) do
@@ -62,6 +112,13 @@ defmodule Utility.GenDiff.Data do
   def help_for_command(command) do
     case get_by(command: command) do
       %{help: help} -> help
+      _ -> nil
+    end
+  end
+
+  def docs_url_for_command(command) do
+    case get_by(command: command) do
+      %{docs_url: url} -> url
       _ -> nil
     end
   end

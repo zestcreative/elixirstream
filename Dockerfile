@@ -10,6 +10,18 @@ ENV LANG=C.UTF-8 \
     TERM=xterm \
     MIX_ENV=prod
 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        make \
+        wget \
+        git \
+        ca-certificates \
+        openssh-client \
+        build-essential \
+        openssl && \
+    update-ca-certificates
+
 RUN mix local.rebar --force && \
     mix local.hex --if-missing --force
 
@@ -38,6 +50,7 @@ RUN npm --prefix ./assets run deploy
 FROM builder AS app
 COPY --from=frontend /app/priv/static ./priv/static
 COPY priv/gettext ./priv/gettext
+COPY priv/repo ./priv/repo
 COPY lib ./lib
 COPY rel ./rel
 RUN mix phx.digest

@@ -18,6 +18,8 @@ defmodule Utility.GenDiff.Generator do
 
     # Populated by Data
     field(:id, :string)
+    field(:url, :string)
+    field(:docs_url, :string)
     field(:default_flags, {:array, :string})
     field(:flags, {:array, :string})
     field(:help, :string)
@@ -30,6 +32,7 @@ defmodule Utility.GenDiff.Generator do
     |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
     |> validate_project()
+    |> put_url()
     |> validate_command()
     |> put_defaults()
     |> validate_flags()
@@ -92,10 +95,19 @@ defmodule Utility.GenDiff.Generator do
       |> put_change(:default_flags, Data.default_flags_for_command(command))
       |> put_change(:flags, Data.flags_for_command(command))
       |> put_change(:help, Data.help_for_command(command))
+      |> put_change(:docs_url, Data.docs_url_for_command(command))
     else
       changeset
       |> put_change(:default_flags, [])
       |> put_change(:flags, [])
+    end
+  end
+
+  def put_url(changeset) do
+    if project = get_field(changeset, :project) do
+      put_change(changeset, :url, Data.url_for_project(project))
+    else
+      put_change(changeset, :url, nil)
     end
   end
 

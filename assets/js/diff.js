@@ -25,17 +25,19 @@ lines.forEach(line => {
 
 const submitBtn = document.getElementById("submit-diff")
 
-submitBtn.addEventListener("click", _e => {
-  const outputMain = document.getElementById("output-main")
-  const outputOne = document.getElementById("output-runner-1")
-  const outputTwo = document.getElementById("output-runner-2")
+if (submitBtn) {
+  submitBtn.addEventListener("click", _e => {
+    const outputMain = document.getElementById("output-main")
+    const outputOne = document.getElementById("output-runner-1")
+    const outputTwo = document.getElementById("output-runner-2")
 
-  if (outputMain) {
-    while (outputTwo.firstChild) { outputTwo.removeChild(outputTwo.firstChild) }
-    while (outputOne.firstChild) { outputOne.removeChild(outputOne.firstChild) }
-    while (outputMain.firstChild) { outputMain.removeChild(outputMain.firstChild) }
-  }
-})
+    if (outputMain) {
+      while (outputTwo.firstChild) { outputTwo.removeChild(outputTwo.firstChild) }
+      while (outputOne.firstChild) { outputOne.removeChild(outputOne.firstChild) }
+      while (outputMain.firstChild) { outputMain.removeChild(outputMain.firstChild) }
+    }
+  })
+}
 
 const fileHeaders = document.querySelectorAll(".ghd-file-header")
 fileHeaders.forEach(header => {

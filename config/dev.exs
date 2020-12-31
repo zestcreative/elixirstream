@@ -28,7 +28,7 @@ config :utility, Utility.Repo,
   pool_size: 10
 
 config :utility,
-  tmp_dir: Path.expand("tmp/dev")
+  storage_dir: Path.expand("tmp/dev")
 
 # Watch static and templates for browser reloading.
 config :utility, UtilityWeb.Endpoint,
