@@ -8,22 +8,7 @@ defmodule UtilityWeb.GenDiffView do
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
       html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_header.html", generator: generator)
       IO.binwrite(file, html_patch)
-
-      if stream do
-        Enum.each(stream, fn
-          {:ok, patch} ->
-            html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff.html", patch: patch)
-            IO.binwrite(file, html_patch)
-
-          {:error, error} ->
-            Logger.error("Failed to parse diff #{inspect(generator)}: #{inspect(error)}")
-            throw({:diff, :invalid_diff})
-        end)
-      else
-        html_patch = Phoenix.View.render_to_iodata(__MODULE__, "no_diff.html", [])
-        IO.binwrite(file, html_patch)
-      end
-
+      render_diff_body(generator, file, stream)
       html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_footer.html", [])
       IO.binwrite(file, html_patch)
     end)
@@ -31,32 +16,22 @@ defmodule UtilityWeb.GenDiffView do
     {:ok, path}
   end
 
-  def parse_versions(input) do
-    with {:ok, [from, to]} <- versions_from_input(input),
-         {:ok, from} <- parse_version(from),
-         {:ok, to} <- parse_version(to) do
-      {:ok, from, to}
-    else
-      _ ->
-        :error
-    end
+  defp render_diff_body(_generator, file, nil) do
+    html_patch = Phoenix.View.render_to_iodata(__MODULE__, "no_diff.html", [])
+    IO.binwrite(file, html_patch)
   end
 
-  def versions_from_input(input) when is_binary(input) do
-    input
-    |> String.split("..")
-    |> case do
-      [from, to] ->
-        {:ok, Enum.map([from, to], &String.trim/1)}
+  defp render_diff_body(generator, file, stream) do
+    Enum.each(stream, fn
+      {:ok, patch} ->
+        html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff.html", patch: patch)
+        IO.binwrite(file, html_patch)
 
-      [_from] ->
-        :error
-    end
+      {:error, error} ->
+        Logger.error("Failed to parse diff #{inspect(generator)}: #{inspect(error)}")
+        throw({:diff, :invalid_diff})
+    end)
   end
-
-  def versions_from_input(_), do: :error
-
-  def parse_version(input), do: Version.parse(input)
 
   defp tmp_path(prefix) do
     random_string = Base.encode16(:crypto.strong_rand_bytes(4))

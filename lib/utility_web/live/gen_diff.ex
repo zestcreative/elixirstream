@@ -27,7 +27,7 @@ defmodule UtilityWeb.GenDiffLive do
 
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
-  @runners Keyword.get(Application.compile_env!(:utility, [Oban, :queues]), :builder, 0)
+  @runners Keyword.get(Application.compile_env!(:utility, Oban)[:queues] || [], :builder, 0)
   @waiting AnsiToHTML.generate_phoenix_html("""
            I haven't seen this combination of versions and flags before! No worries, I'll generate
            the diff right now. The result will be stored. I'm limited to #{@runners} runner(s) to
