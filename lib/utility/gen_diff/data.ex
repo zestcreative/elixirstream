@@ -7,7 +7,7 @@ defmodule Utility.GenDiff.Data do
           command: "phx.new",
           docs_url: "https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html",
           default_flags: ["my_app"],
-          help: "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error.",
+          help: "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error or be ignored.",
           flags: [
             "--binary-id",
             "--database=mssql",

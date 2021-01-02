@@ -39,7 +39,7 @@ defmodule Utility.ProjectBuilder do
         {errors, _good_results} ->
           {:error, errors}
         error ->
-          error
+          {:error, error}
       end
     after
       File.rm_rf(path_from)
