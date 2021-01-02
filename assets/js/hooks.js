@@ -16,10 +16,6 @@ hooks.ConfirmBeforeLeave = {
     window.addEventListener("beforeunload", this.confirm(this.el), false);
   },
 
-  beforeDestroy() {
-    window.removeEventListener(this.confirm);
-  },
-
   confirm(el) {
     return function(e) {
       e.preventDefault();
