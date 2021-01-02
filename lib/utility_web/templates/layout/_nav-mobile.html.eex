@@ -43,14 +43,22 @@
             HTTP Sink
           <% end %>
           <%= active_link @conn, to: Routes.live_path(@conn, UtilityWeb.GenDiffLive), class: "nav-link" do %>
-            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 896 1024">
-              <path d="M448 256H320v128H192v128h128v128h128V512h128V384H448V256zM192 896h384V768H192V896zM640 0H128v64h480l224 224v608h64V256L640 0zM0 128v896h768V320L576 128H0zM704 960H64V192h480l160 160V960z"/>
+            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 512 512">
+              <g>
+                <path d="M451.5,138.6L312.7,5.1c-3.4-3.3-7.9-5.1-12.7-5.1H132.6c-2.5,0-4.6,2.1-4.6,4.6v32c0,2.5,2.1,4.6,4.6,4.6h158.3L416,161.5
+                  v272.8c0,2.5,2.1,4.6,4.6,4.6h32c2.5,0,4.6-2.1,4.6-4.6V151.8C457.1,146.8,455.1,142.1,451.5,138.6z M279.7,78.5
+                  c-3.4-3.4-8.1-5.4-12.9-5.4H73.1c-10.1,0-18.3,8.2-18.3,18.3v402.3c0,10.1,8.2,18.3,18.3,18.3h292.6c10.1,0,18.3-8.2,18.3-18.3
+                  V190.5c0-4.9-1.9-9.5-5.4-12.9L279.7,78.5z M288,393.7c0,2.2-1.9,4-4.3,4H155.1c-2.3,0-4.3-1.8-4.3-4v-24c0-2.2,1.9-4,4.3-4h128.6
+                  c2.3,0,4.3,1.8,4.3,4V393.7z M288,268c0,2.2-1.9,4-4.3,4h-48.3v48.5c0,2.2-1.8,4.1-4,4.1h-24c-2.2,0-4-1.8-4-4.1V272h-48.3
+                  c-2.3,0-4.3-1.8-4.3-4v-24c0-2.2,1.9-4,4.3-4h48.3v-48.5c0-2.2,1.8-4.1,4-4.1h24c2.2,0,4,1.8,4,4.1V240h48.3c2.3,0,4.3,1.8,4.3,4
+                  V268z"/>
+              </g>
             </svg>
             Generator Diffs
           <% end %>
           <%= active_link @conn, to: Routes.page_path(@conn, :about), class: "nav-link" do %>
-            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
             </svg>
             About
           <% end %>
