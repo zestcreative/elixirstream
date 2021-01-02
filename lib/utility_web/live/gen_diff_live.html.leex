@@ -74,13 +74,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <%= label f, :from_flags, "From #{@from_version} Flags", class: "block text-sm font-medium text-gray-700" %>
-                <%= multiple_select f, :from_flags, available_flags, class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
+                <%= multiple_select f, :from_flags, available_flags, class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md overflow-y-hidden", size: length(available_flags) %>
                 <%= error_tag f, :from_flags %>
               </div>
 
               <div>
                 <%= label f, :to_flags, "To #{@to_version} Flags", class: "block text-sm font-medium text-gray-700" %>
-                <%= multiple_select f, :to_flags, available_flags, class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300", size: length(available_flags) %>
+                <%= multiple_select f, :to_flags, available_flags, class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md overflow-y-hidden", size: length(available_flags) %>
                 <%= error_tag f, :to_flags %>
               </div>
             </div>
