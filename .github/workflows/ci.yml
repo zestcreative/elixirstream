@@ -18,6 +18,18 @@ jobs:
       CI: "true"
     container:
       image: hexpm/elixir:1.11.2-erlang-23.1.1-alpine-3.12.0
+    services:
+      postgres:
+        image: postgres:12.2-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: utility_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
     - name: "Alpine setup"
       run: |
