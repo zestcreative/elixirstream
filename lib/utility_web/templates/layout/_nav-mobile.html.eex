@@ -17,7 +17,7 @@
         <div class="flex items-center flex-shrink-0 px-4">
           <h1 class="text-2xl font-extrabold tracking-wider text-white">Utilities</h1>
         </div>
-        <nav class="px-2 mt-5">
+        <nav class="px-2 mt-5 space-y-1">
           <%= active_link @conn, to: Routes.live_path(@conn, UtilityWeb.RegexLive), class: "nav-link group" do %>
             <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="none" fill="currentColor" viewBox="0 0 24 24">
               <g>
@@ -30,8 +30,15 @@
             Regex Tester
           <% end %>
           <%= active_link @conn, to: Routes.live_path(@conn, UtilityWeb.SinkLive), class: "nav-link group" do %>
-            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            <svg class="w-6 h-6 mr-4 text-gray-300 group-hover:text-gray-300 group-focus:text-gray-300 transition ease-in-out duration-150" fill="currentColor" viewBox="0 0 360 360">
+              <g>
+                <path d="M102.342,246.475C99.541,242.42,94.928,240,90,240s-9.541,2.42-12.342,6.475
+                  c-0.32,0.463-7.925,11.497-15.633,24.785C46.765,297.566,45,308.822,45,315c0,24.813,20.187,45,45,45s45-20.187,45-45
+                  c0-6.178-1.765-17.434-17.025-43.74C110.267,257.972,102.662,246.938,102.342,246.475z"/>
+                <path d="M300,60h-60h-15V30h15c8.284,0,15-6.716,15-15s-6.716-15-15-15h-60c-8.284,0-15,6.716-15,15s6.716,15,15,15
+                  h15v30h-15h-60c-41.355,0-75,33.645-75,75v60c0,8.284,6.716,15,15,15h60c8.284,0,15-6.716,15-15v-45h45h60h60
+                  c8.284,0,15-6.716,15-15V75C315,66.716,308.284,60,300,60z"/>
+              </g>
             </svg>
             HTTP Sink
           <% end %>
