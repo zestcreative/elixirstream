@@ -1,11 +1,11 @@
-defmodule Utility.Hex do
-  alias Utility.Hex.Api
+defmodule Utility.Gem do
+  alias Utility.Gem.Api
   alias Utility.Package
   alias Utility.PackageRepo
 
   def cache_versions(:all) do
     Utility.GenDiff.Data.all()
-    |> Stream.filter(fn {_name, project} -> project[:source] == :hex end)
+    |> Stream.filter(fn {_name, project} -> project[:source] == :gem end)
     |> Stream.each(&cache_versions/1)
     |> Stream.run()
   end

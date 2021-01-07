@@ -1,4 +1,4 @@
-defmodule Utility.Hex.Package do
+defmodule Utility.Package do
   use Ecto.Schema
   import Ecto.Changeset
   require Logger

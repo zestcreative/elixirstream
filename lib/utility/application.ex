@@ -16,7 +16,7 @@ defmodule Utility.Application do
       # Start the Endpoint (http/https)
       UtilityWeb.Endpoint,
       Utility.Redix,
-      Utility.Hex.Updater,
+      Utility.Package.Updater,
       {Oban, oban_config()}
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}

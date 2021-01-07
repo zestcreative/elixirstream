@@ -2,6 +2,7 @@ defmodule Utility.GenDiff.Data do
   @known %{
     "phx_new" => %{
       url: "https://hex.pm/packages/phx_new",
+      source: :hex,
       generators: [
         %{
           command: "phx.new",
@@ -26,6 +27,7 @@ defmodule Utility.GenDiff.Data do
     },
     "phx_gen_auth" => %{
       url: "https://hex.pm/packages/phx_gen_auth",
+      source: :hex,
       generators: [
         %{
           command: "phx.gen.auth",
@@ -41,6 +43,7 @@ defmodule Utility.GenDiff.Data do
     },
     "nerves_bootstrap" => %{
       url: "https://hex.pm/packages/nerves_bootstrap",
+      source: :hex,
       generators: [
         %{
           command: "nerves.new",
@@ -52,6 +55,7 @@ defmodule Utility.GenDiff.Data do
     },
     "scenic_new" => %{
       url: "https://hex.pm/packages/scenic_new",
+      source: :hex,
       generators: [
         %{
           command: "scenic.new",
@@ -70,6 +74,58 @@ defmodule Utility.GenDiff.Data do
           docs_url: "https://hexdocs.pm/scenic_new/Mix.Tasks.Scenic.New.Example.html",
           default_flags: ["my_app"],
           flags: []
+        }
+      ]
+    },
+    "rails" => %{
+      url: "https://guides.rubyonrails.org/",
+      source: :gem,
+      generators: [
+        %{
+          command: "rails new",
+          docs_url: "https://guides.rubyonrails.org/command_line.html#rails-new",
+          help: "Not all flags exist on all versions and may result in an error or be ignored.",
+          default_flags: ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"],
+          flags: [
+            "--database=mysql",
+            "--database=postgresql",
+            "--database=sqlite3",
+            "--skip-yarn",
+            "--skip-action-mailer",
+            "--skip-active-record",
+            "--skip-active-storage",
+            "--skip-puma",
+            "--skip-action-cable",
+            "--skip-sprockets",
+            "--skip-spring",
+            "--skip-listen",
+            "--skip-coffee",
+            "--skip-javascript",
+            "--skip-turbolinks",
+            "--skip-test",
+            "--skip-system-test",
+            "--skip-bootsnap",
+            "--api",
+          ]
+        }
+      ]
+    },
+    "webpacker" => %{
+      url: "https://rubygems.org/gems/webpacker",
+      source: :gem,
+      generators: [
+        %{
+          command: "rails webpacker:install",
+          docs_url: "https://github.com/rails/webpacker",
+          help: "Ran on a default Rails 5.2.4 project",
+          default_flags: [],
+          flags: [
+            "react",
+            "vue",
+            "angular",
+            "elm",
+            "stimulus"
+          ]
         }
       ]
     }
@@ -98,6 +154,13 @@ defmodule Utility.GenDiff.Data do
   def url_for_project(project) do
     case get_by(project: project) do
       %{url: url} -> url
+      _ -> nil
+    end
+  end
+
+  def source_for_project(project) do
+    case get_by(project: project) do
+      %{source: source} -> source
       _ -> nil
     end
   end
@@ -138,11 +201,21 @@ defmodule Utility.GenDiff.Data do
   end
 
   def versions_for_project(project) do
-    get_hex_versions(project)
+    case source_for_project(project) do
+      :hex -> get_hex_versions(project)
+      :gem -> get_gem_versions(project)
+    end
   end
 
   def get_hex_versions(project) do
-    case Utility.PackageRepo.get_by(Utility.Hex.Package, name: project) do
+    case Utility.PackageRepo.get_by(Utility.Package, name: project) do
+      %{versions: versions} -> versions
+      _ -> []
+    end
+  end
+
+  def get_gem_versions(project) do
+    case Utility.PackageRepo.get_by(Utility.Package, name: project) do
       %{versions: versions} -> versions
       _ -> []
     end

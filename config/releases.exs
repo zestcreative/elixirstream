@@ -46,8 +46,13 @@ docker_bin =
   System.find_executable("docker") ||
     raise "needs 'docker' installed."
 
+gem_bin =
+  System.find_executable("gem") ||
+    raise "needs 'gem' installed."
+
 config :utility,
-  docker_bin: docker_bin
+  docker_bin: docker_bin,
+  gem_bin: gem_bin
 
 config :utility, Utility.Repo,
   # ssl: true,

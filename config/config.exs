@@ -9,6 +9,7 @@ import Config
 
 config :utility,
   docker_bin: System.find_executable("docker"),
+  gem_bin: System.find_executable("gem"),
   ecto_repos: [Utility.Repo],
   generators: [binary_id: true],
   storage: Utility.Storage.LocalImplementation,

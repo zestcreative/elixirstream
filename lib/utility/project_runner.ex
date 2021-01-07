@@ -15,6 +15,7 @@ defmodule Utility.ProjectRunner do
     {:ok, pid} = start_link([])
     GenServer.call(pid, {:build_runner, "Dockerfile", "latest"}, :timer.minutes(5))
     GenServer.call(pid, {:build_runner, "Dockerfile.old", "old"}, :timer.minutes(5))
+    GenServer.call(pid, {:build_runner, "Dockerfile.rails", "rails"}, :timer.minutes(5))
   end
 
   @impl GenServer
@@ -143,7 +144,7 @@ defmodule Utility.ProjectRunner do
     cmd ++ ["--cpus=.5", "--rm", "diff-builder:#{tag}", "/bin/bash", "-c", command]
   end
 
-  defp path_for(relative_path) do
+  def path_for(relative_path) do
     if Application.get_env(:utility, :app_env) == :prod do
       relative_path
     else

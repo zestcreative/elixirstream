@@ -23,6 +23,7 @@ defmodule Utility.GenDiff.Generator do
     field(:default_flags, {:array, :string})
     field(:flags, {:array, :string})
     field(:help, :string)
+    field(:source, :string)
   end
 
   @required ~w[command project from_version to_version]a
@@ -32,9 +33,9 @@ defmodule Utility.GenDiff.Generator do
     |> cast(attrs, @required ++ @optional)
     |> validate_required(@required)
     |> validate_project()
-    |> put_url()
+    |> put_defaults_for_project()
     |> validate_command()
-    |> put_defaults()
+    |> put_defaults_for_command()
     |> validate_flags()
     |> validate_not_same()
     |> put_id()
@@ -89,7 +90,7 @@ defmodule Utility.GenDiff.Generator do
   def put_id(%{valid?: true} = changeset), do: changeset |> put_change(:id, build_id(changeset))
   def put_id(changeset), do: changeset
 
-  def put_defaults(changeset) do
+  def put_defaults_for_command(changeset) do
     if command = get_field(changeset, :command) do
       changeset
       |> put_change(:default_flags, Data.default_flags_for_command(command))
@@ -103,9 +104,11 @@ defmodule Utility.GenDiff.Generator do
     end
   end
 
-  def put_url(changeset) do
+  def put_defaults_for_project(changeset) do
     if project = get_field(changeset, :project) do
-      put_change(changeset, :url, Data.url_for_project(project))
+      changeset
+      |> put_change(:url, Data.url_for_project(project))
+      |> put_change(:source, Data.source_for_project(project))
     else
       put_change(changeset, :url, nil)
     end

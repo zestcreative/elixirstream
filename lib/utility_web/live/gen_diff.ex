@@ -123,6 +123,7 @@ defmodule UtilityWeb.GenDiffLive do
     |> assign(:changeset, changeset)
     |> assign(:project, project)
     |> assign(:project_url, Changeset.get_field(changeset, :url))
+    |> assign(:project_source, Changeset.get_field(changeset, :source))
     |> assign(:command, Changeset.get_field(changeset, :command))
     |> assign(:command_help, Changeset.get_field(changeset, :help))
     |> assign(:docs_url, Changeset.get_field(changeset, :docs_url))

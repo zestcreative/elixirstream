@@ -127,6 +127,14 @@ defmodule Utility.ProjectBuilder do
     "mix archive.install --force hex phx_new 1.5.7"
   end
 
+  def install_archive("rails", version) do
+    "gem install rails --version #{version}"
+  end
+
+  def install_archive("webpacker", _version) do
+    "gem install rails --version 5.2.4"
+  end
+
   def install_archive(package, version) do
     "mix archive.install --force hex #{package} #{version}"
   end
@@ -175,6 +183,40 @@ defmodule Utility.ProjectBuilder do
     end
   end
 
+  def run_command("rails new", _version_string, [where | _] = flags) do
+    """
+    rails new #{Enum.join(flags, " ")} &&
+      cd #{where} &&
+      (rm -f config/credentials.yml.enc &> /dev/null || true) &&
+      (rm -f config/master.key &> /dev/null || true)
+    """ |> String.trim()
+  end
+
+  def run_command("rails webpacker:install", version_string, [:none]) do
+    """
+    #{run_command("rails new", "5.2.4", ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"])} &&
+      echo "gem 'webpacker', '#{version_string}'" >> Gemfile &&
+      bundle &&
+      bundle exec rails webpacker:install
+    """ |> String.trim()
+  end
+  def run_command("rails webpacker:install", version_string, [framework]) do
+    """
+    #{run_command("rails webpacker:install", version_string, [:none])} &&
+      bundle exec rails webpacker:install:#{framework} &&
+      rm -rf node_modules tmp yarn.lock
+    """ |> String.trim()
+  end
+  def run_command("rails webpacker:install", version_string, []) do
+    """
+    #{run_command("rails webpacker:install", version_string, [:none])} &&
+      rm -rf node_modules tmp yarn.lock
+    """ |> String.trim()
+  end
+  def run_command("rails webpacker:install", _version_string, _) do
+    "echo 'Cannot select multiple frameworks' && exit 1"
+  end
+
   def run_command("nerves.new", _version_string, [where | _] = flags) do
     """
     mix nerves.new #{Enum.join(flags, " ")} &&
@@ -189,6 +231,8 @@ defmodule Utility.ProjectBuilder do
     version = Version.parse!(version)
     if Version.compare(version, @phx_latest_at) == :lt, do: "old", else: "latest"
   end
+  def tag_for("rails new", _version), do: "rails"
+  def tag_for("rails webpacker:install", _version), do: "rails"
   def tag_for(_command, _version), do: "latest"
 
   defp tmp_path(prefix) do

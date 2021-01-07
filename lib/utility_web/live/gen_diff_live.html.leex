@@ -26,7 +26,7 @@
           <%= label f, :project, class: "block text-sm font-medium text-gray-700" do %>
             Project
             <%= if @project_url do %>
-              <a rel="nofollow" target="_blank" href="<%= @project_url %>" class="mt-2 text-xs link">Hex</a>
+              <a rel="nofollow" target="_blank" href="<%= @project_url %>" class="mt-2 text-xs link"><%= Phoenix.Naming.humanize(@project_source) %></a>
             <% end %>
           <% end %>
           <div class="mt-1">
