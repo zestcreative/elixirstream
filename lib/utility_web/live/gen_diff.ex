@@ -27,6 +27,7 @@ defmodule UtilityWeb.GenDiffLive do
 
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
+  @theme AnsiToHTML.Theme.new(%{container: {:pre, [class: "runner-line"]}})
   @runners Keyword.get(Application.compile_env!(:utility, Oban)[:queues] || [], :builder, 0)
   @waiting AnsiToHTML.generate_phoenix_html("""
            I haven't seen this combination of versions and flags before! No worries, I'll generate
@@ -39,7 +40,7 @@ defmodule UtilityWeb.GenDiffLive do
 
            If you navigate away, the diff will still be built but you won't be able to monitor
            progress.
-           """)
+           """, @theme)
   @impl Phoenix.LiveView
   def handle_event("diff", %{"generator" => params}, socket) do
     with {:ok, generator} <- Generator.apply(params),
@@ -89,7 +90,7 @@ defmodule UtilityWeb.GenDiffLive do
   end
 
   def handle_info({:progress, line, id}, socket) do
-    line = AnsiToHTML.generate_phoenix_html(line)
+    line = AnsiToHTML.generate_phoenix_html(line, @theme)
 
     cond do
       String.starts_with?(id, socket.assigns.runner_from) ->

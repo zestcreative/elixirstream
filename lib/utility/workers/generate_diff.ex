@@ -6,9 +6,12 @@ defmodule Utility.Workers.GenerateDiff do
   def perform(%{args: %{"generator" => params} = _args}) do
     record = hydrate(params)
     broadcaster = make_broadcaster(record)
-    broadcaster.({:progress, "Started", "all-started"})
-    case Utility.ProjectBuilder.diff(record, broadcaster: broadcaster) do
-      :ok ->
+    with {:error, :not_found} <- Utility.Storage.get(record.project, record.id),
+         _ <- broadcaster.({:progress, "Started", "all-started"}),
+         :ok <- Utility.ProjectBuilder.diff(record, broadcaster: broadcaster) do
+      broadcaster.({:progress, "Finished", "all-finished"})
+    else
+      {:ok, _stream} ->
         broadcaster.({:progress, "Finished", "all-finished"})
       {:error, _} ->
         broadcaster.({:progress, "Finished", "all-finished-error"})

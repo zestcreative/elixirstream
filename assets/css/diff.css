@@ -1,3 +1,12 @@
+.runner-line {
+  line-height: 18px;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 0 4px;
+  background-color: black;
+  color: white;
+}
+
 .ghd-container {
   font-family: Menlo, Consolas, monospace;
   font-size: 13px;
