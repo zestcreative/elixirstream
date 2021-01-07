@@ -196,7 +196,7 @@ defmodule Utility.ProjectBuilder do
     """
     #{run_command("rails new", "5.2.4", ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"])} &&
       echo "gem 'webpacker', '#{version_string}'" >> Gemfile &&
-      bundle &&
+      bundle --quiet &&
       bundle exec rails webpacker:install
     """ |> String.trim()
   end

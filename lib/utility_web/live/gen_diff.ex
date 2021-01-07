@@ -171,13 +171,13 @@ defmodule UtilityWeb.GenDiffLive do
     end
   end
 
-  @package_placeholder [[key: "Select project...", value: "", selected: true, disabled: true]]
+  @package_placeholder [[key: "Select project...", selected: true, value: "", disabled: true]]
   defp generator_package_options() do
     projects = Data.projects() |> Enum.map(&[key: &1, value: &1])
     @package_placeholder ++ projects
   end
 
-  @generator_placeholder [[key: "Select generator...", value: "", selected: true, disabled: true]]
+  @generator_placeholder [[key: "Select generator...", selected: true, value: "", disabled: true]]
   defp generator_options(nil), do: @generator_placeholder
 
   defp generator_options(project) do
@@ -193,7 +193,7 @@ defmodule UtilityWeb.GenDiffLive do
     end
   end
 
-  @version_placeholder [[key: "Select version...", value: "", selected: true, disabled: true]]
+  @version_placeholder [[key: "Select version...", selected: true, value: "", disabled: true]]
   defp version_options([version]), do: [[key: version, value: version, selected: true]]
 
   defp version_options(versions) do

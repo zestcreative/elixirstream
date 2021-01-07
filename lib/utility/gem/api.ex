@@ -1,7 +1,6 @@
 defmodule Utility.Gem.Api do
   import Utility.ProjectRunner, only: [path_for: 1]
 
-  @rails_limit_before Version.parse!("3.0.0")
   @gem_search "bin/gemsearch.sh"
   def get_versions(package) do
     @gem_search
@@ -24,8 +23,14 @@ defmodule Utility.Gem.Api do
     |> Enum.sort({:desc, Version})
   end
 
+  @rails_limit_before Version.parse!("3.0.0")
   defp allow_package_version("rails", version) do
     Version.compare(version, @rails_limit_before) != :lt
+  end
+
+  @webpacker_limit_before Version.parse!("1.2.0")
+  defp allow_package_version("webpacker", version) do
+    Version.compare(version, @webpacker_limit_before) != :lt
   end
 
   defp allow_package_version(_package, _version), do: true
