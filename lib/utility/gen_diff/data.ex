@@ -193,13 +193,6 @@ defmodule Utility.GenDiff.Data do
     end
   end
 
-  @phoenix_new_versions ~w[1.0.0 1.0.1 1.0.2 1.0.3 1.0.4 1.1.0 1.1.1 1.1.2 1.1.3 1.1.4 1.1.5 1.1.6
-    1.1.9 1.2.0 1.2.1 1.2.4 1.2.5]
-  @phx_new_versions ~w[1.3.0 1.3.1 1.3.2 1.3.3 1.3.4]
-  def versions_for_project("phx_new") do
-    @phoenix_new_versions ++ @phx_new_versions ++ get_hex_versions("phx_new")
-  end
-
   def versions_for_project(project) do
     case source_for_project(project) do
       :hex -> get_hex_versions(project)

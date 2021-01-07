@@ -25,7 +25,17 @@ defmodule Utility.Hex.Api do
     with {:ok, package_versions} <- get_package(package) do
       package_versions
       |> Enum.map(& &1[:version])
+      |> get_nonhex_versions(package)
       |> Enum.sort({:desc, Version})
     end
   end
+
+  @phoenix_new_versions ~w[1.0.0 1.0.1 1.0.2 1.0.3 1.0.4 1.1.0 1.1.1 1.1.2 1.1.3 1.1.4 1.1.5 1.1.6
+    1.1.9 1.2.0 1.2.1 1.2.4 1.2.5]
+  @phx_new_versions ~w[1.3.0 1.3.1 1.3.2 1.3.3 1.3.4]
+  defp get_nonhex_versions(versions, "phx_new") do
+    @phoenix_new_versions ++ @phx_new_versions ++ versions
+  end
+
+  defp get_nonhex_versions(versions, _), do: versions
 end
