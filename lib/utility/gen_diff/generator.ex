@@ -47,9 +47,6 @@ defmodule Utility.GenDiff.Generator do
     |> apply_action(:insert)
   end
 
-  @id_prefix "HexGen"
-  def id_prefix, do: @id_prefix
-
   def build_id(%Ecto.Changeset{} = changeset) do
     command = get_field(changeset, :command)
     from = get_field(changeset, :from_version)
