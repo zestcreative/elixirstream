@@ -36,9 +36,12 @@ defmodule UtilityWeb.SinkLive do
   @png_header <<0x89, 0x50, 0x4E, 0x47>>
   @jpg_header <<0xFF, 0xD8>>
   defp render_body(%{format: :json, body_params: body}) do
-    Phoenix.HTML.Tag.content_tag(:pre, Jason.encode!(body, pretty: true),
-      class: "whitespace-pre select-all"
-    )
+    case Jason.encode(body, pretty: true) do
+      {:ok, parsed} ->
+        Phoenix.HTML.Tag.content_tag(:pre, parsed, class: "whitespace-pre select-all")
+      {:error, _} ->
+        render_body(%{body_params: body})
+    end
   end
 
   defp render_body(%{body_params: @gif_header <> _rest = body}) do
