@@ -11,13 +11,19 @@ defmodule UtilityWeb.GenDiffController do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Diff not found. Please specify diff parameters")
-        |> redirect(to: Routes.live_path(conn, UtilityWeb.GenDiffLive))
+        |> redirect(to: Routes.gen_diff_path(conn, :new))
     end
   end
 
   defp stream_diff(conn, stream) do
-    header = [Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "header.html", conn: conn)]
-    footer = [Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "footer.html", conn: conn)]
+    header = [
+      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_header.html", conn: conn),
+      "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">"
+    ]
+    footer = [
+      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_footer.html", conn: conn),
+      "</body>"
+    ]
     conn = send_chunked(conn, 200)
 
     with {:ok, conn} <- chunk(conn, header),

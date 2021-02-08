@@ -14,7 +14,7 @@ defmodule UtilityWeb.SinkController do
 
     conn
     |> put_status(200)
-    |> text("See sink at #{Routes.live_url(conn, SinkLive, id)}")
+    |> text("See sink at #{Routes.sink_url(conn, :show, id)}\n")
   end
 
   def any(conn, _params) do

@@ -59,7 +59,8 @@ defmodule UtilityWeb.GenDiffLive do
          lines_main: [{@waiting, "waiting"}]
        )
        |> runner_to_id(generator, :from)
-       |> runner_to_id(generator, :to)}
+       |> runner_to_id(generator, :to)
+       |> push_event("scroll", %{to: "#runners"})}
     else
       {{:ok, _diff_stream}, generator} ->
         {:noreply, redirect(socket, to: show_path_for(generator))}

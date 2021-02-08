@@ -1,6 +1,14 @@
 .matches span.m {
-  @apply bg-yellow-200;
+  @apply bg-brand-200;
 }
-.matches span.u + span.m {
-  border-left: 1px dashed red;
+.matches span.m + span.u:empty + span.m {
+  @apply border-l-2 border-dashed border-red-500;
+}
+
+html.dark .matches span.m {
+  @apply bg-brand-800 text-gray-300;
+}
+
+html.dark .matches span.m + span.u:empty + span.m {
+  @apply border-l-2 border-dashed border-red-700;
 }

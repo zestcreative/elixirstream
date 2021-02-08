@@ -21,3 +21,26 @@
   width: 1px;
   height: 1px;
 }
+
+html.dark [type='text'],
+html.dark [type='email'],
+html.dark [type='url'],
+html.dark [type='password'],
+html.dark [type='number'],
+html.dark [type='date'],
+html.dark [type='datetime-local'],
+html.dark [type='month'],
+html.dark [type='search'],
+html.dark [type='tel'],
+html.dark [type='time'],
+html.dark [type='week'],
+html.dark [multiple],
+html.dark textarea,
+html.dark select {
+  @apply bg-gray-900;
+}
+
+html.dark .link:hover {
+  @apply border-b border-accent-700;
+  filter: brightness(1.5);
+}

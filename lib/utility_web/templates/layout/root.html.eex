@@ -1,6 +1,13 @@
 <!DOCTYPE html>
-<%= render "header.html", assigns %>
-<p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-<p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-<%= @inner_content %>
-<%= render "footer.html", assigns %>
+<html lang="en">
+  <%= render "_header.html", assigns %>
+  <body class="antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100" data-version="<%= Application.spec(:utility, :vsn) %>">
+    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+      <%= render "_nav.html", assigns %>
+      <main class="-mt-24 pb-8">
+        <%= @inner_content %>
+      </main>
+      <%= render "_footer.html", assigns %>
+    </div>
+  </body>
+</html>

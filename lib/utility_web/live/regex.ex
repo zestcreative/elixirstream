@@ -136,13 +136,16 @@ defmodule UtilityWeb.RegexLive do
 
   defp put_pasta(%{valid?: true} = changeset) do
     fun = Changeset.get_field(changeset, :function)
-    regex = Changeset.get_field(changeset, :regex)
+    regex = escape(Changeset.get_field(changeset, :regex))
     flags = Changeset.get_field(changeset, :flags)
-    pasta = "Regex.#{fun}(~r/#{regex}/#{flags}, value)"
+    pasta = "Regex.#{fun}(~r/#{regex}/#{flags}, string)"
     Changeset.put_change(changeset, :pasta, pasta)
   end
 
   defp put_pasta(changeset), do: changeset
+
+  defp escape(regex) when is_binary(regex), do: String.replace(regex, "/", "\\/")
+  defp escape(empty), do: empty
 
   defp put_result(%{valid?: true} = changeset) do
     string = Changeset.get_field(changeset, :string)
