@@ -71,6 +71,7 @@ defmodule Utility.GenDiff.Generator do
     validate_inclusion(changeset, :command, valid_commands)
   end
 
+  def validate_not_same(%{valid?: false} = changeset), do: changeset
   def validate_not_same(changeset) do
     from_version = get_field(changeset, :from_version)
     from_flags = (changeset |> get_field(:from_flags) || []) |> Enum.sort()

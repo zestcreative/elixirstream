@@ -1,5 +1,11 @@
 let hooks = {};
 
+hooks.HandleScroll = {
+  mounted() {
+    this.handleEvent("scroll", ({to}) => location.hash = to)
+  }
+}
+
 hooks.MaskFlags = {
   mounted() {
     this.el.addEventListener("input", _event => {

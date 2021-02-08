@@ -84,6 +84,7 @@ defmodule UtilityWeb do
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
+      import UtilityWeb.Views.LinkHelpers
 
       import UtilityWeb.ErrorHelpers
       import UtilityWeb.Gettext

@@ -28,11 +28,11 @@ defmodule UtilityWeb.Router do
 
     get "/", PageController, :show
     get "/about", PageController, :about
-    live "/regex", RegexLive
-    live "/regex/:id", RegexLive
-    live "/sink", SinkLive
-    live "/sink/view/:id", SinkLive
-    live "/gendiff", GenDiffLive
+    live "/regex", RegexLive, :new
+    live "/regex/:id", RegexLive, :show
+    live "/sink", SinkLive, :new
+    live "/sink/view/:id", SinkLive, :show
+    live "/gendiff", GenDiffLive, :new
     get "/gendiff/:project/:id", GenDiffController, :show
   end
 

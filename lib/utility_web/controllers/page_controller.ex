@@ -2,7 +2,7 @@ defmodule UtilityWeb.PageController do
   use UtilityWeb, :controller
 
   def show(conn, _params) do
-    redirect(conn, to: Routes.live_path(conn, UtilityWeb.RegexLive))
+    redirect(conn, to: Routes.regex_path(conn, :new))
   end
 
   def about(conn, _params) do

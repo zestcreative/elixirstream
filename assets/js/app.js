@@ -1,8 +1,6 @@
 import "phoenix_html"
+import "alpinejs"
 import "./socket"
 import "./loading-bar"
 import "./diff"
-import MobileNav from "./mobile-nav";
-
-window.mobileNav = new MobileNav("mobile-nav")
-window.mobileNav.init()
+import "./theme"

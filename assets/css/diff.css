@@ -3,30 +3,32 @@
   font-family: monospace;
   font-size: 12px;
   padding: 0 4px;
-  background-color: black;
-  color: white;
+  @apply bg-black text-white;
 }
 
 .ghd-container {
   font-family: Menlo, Consolas, monospace;
   font-size: 13px;
-  color: #333;
   border-radius: 5px;
   margin-bottom: 50px;
+  @apply text-gray-300 dark:text-gray-700;
 }
 
 .ghd-file {
-  border: 1px solid #ddd;
+  @apply border-gray-300 dark:border-gray-700;
+  @apply bg-white dark:bg-black;
+  @apply text-black dark:text-white;
+  border-width: 1px;
   border-radius: 3px;
   margin-bottom: 1em;
-  background-color: white;
 }
 
 .ghd-file-header {
   padding: 10px;
-  border-bottom: 0.1rem solid #e1e1e1;
+  @apply border-gray-200 dark:border-gray-800;
+  border-bottom-width: 0.1rem;
   cursor: pointer;
-  background: #fff;
+  @apply bg-white dark:bg-black;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
@@ -36,7 +38,7 @@
 .ghd-file-header .reveal-diff {
   display: none;
   float: right;
-  color: #999;
+  @apply text-gray-400 dark:text-gray-600;
 }
 
 .ghd-file-header .reveal-diff path {
@@ -50,7 +52,7 @@
 .ghd-file-header .collapse-diff {
   display: block;
   float: right;
-  color: #999;
+  @apply text-gray-400 dark:text-gray-600;
 }
 
 .ghd-file-header .collapse-diff path {
@@ -62,7 +64,7 @@
 }
 
 .ghd-chunk-header .ghd-line-number {
-  background-color: #f8fafd;
+  @apply bg-gray-50 dark:bg-gray-900;
 }
 
 .ghd-line-status {
@@ -75,8 +77,9 @@
 }
 
 .ghd-file-status {
-  color: #999;
-  border: 1px solid #999;
+  @apply text-gray-400 dark:text-gray-600;
+  @apply border-gray-400 dark:border-gray-600;
+  border-width: 1px;
   border-radius: 3px;
   padding: 0 3px;
   display: inline-block;
@@ -84,16 +87,17 @@
 }
 
 .ghd-file-status-removed {
-  color: red;
-  border-color: red;
+  @apply text-red-500 !important;
+  @apply border-red-500 !important;
 }
 
 .ghd-file-status-added {
-  color: rgb(115, 148, 115);
-  border-color: rgb(115, 148, 115);
+  @apply text-green-800 dark:text-green-200 !important;
+  @apply border-green-800 dark:border-green-200 !important;
 }
 
 .ghd-diff {
+  @apply text-black dark:text-white;
   overflow-y: hidden;
 }
 
@@ -106,16 +110,16 @@ table.ghd-diff {
 }
 
 .ghd-chunk-header {
-  background-color: #f8fafd;
-  color: rgba(0,0,0,.3);
+  @apply bg-gray-100 dark:bg-gray-900;
+  @apply text-gray-500 dark:text-gray-600 text-opacity-30;
 }
 
 .ghd-line-number {
   position: absolute;
   width: 80px;
-  background-color: white;
+  @apply bg-white dark:bg-black;
   display: flex;
-  color: rgba(0,0,0,.3);
+  @apply text-black dark:text-white text-opacity-30;
   cursor: pointer;
 }
 
@@ -131,7 +135,7 @@ table.ghd-diff {
 .ghd-line.selected .ghd-line-number,
 .ghd-line.selected .ghd-line-number,
 .ghd-line.selected .ghd-text {
-  background-color: rgb(255, 251, 194);
+  @apply bg-yellow-100 dark:bg-yellow-700;
 }
 
 .ghd-line-number-from {
@@ -143,19 +147,19 @@ table.ghd-diff {
 }
 
 .ghd-line-type-add {
-  background-color: #dfd;
+  @apply bg-green-50 dark:bg-green-900;
 }
 
 .ghd-line-type-add .ghd-line-number {
-  background-color: #bdffbd;
+  @apply bg-green-100 dark:bg-green-900;
 }
 
 .ghd-line-type-remove {
-  background-color: #fee8e9;
+  @apply bg-red-50 dark:bg-red-900;
 }
 
 .ghd-line-type-remove .ghd-line-number {
-  background-color: #ffd7d9;
+  @apply bg-red-100 dark:bg-red-900;
 }
 
 .ghd-line-number div {
