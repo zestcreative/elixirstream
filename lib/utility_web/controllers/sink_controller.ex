@@ -1,6 +1,6 @@
 defmodule UtilityWeb.SinkController do
   use UtilityWeb, :controller
-  alias UtilityWeb.{HttpSink, SinkLive}
+  alias UtilityWeb.HttpSink
 
   def any(conn, %{"foo_sink_id" => id}) when byte_size(id) == 36 do
     start = System.monotonic_time()
