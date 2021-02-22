@@ -62,12 +62,6 @@ defmodule UtilityWeb.RegexLive do
 
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
-  @impl Phoenix.LiveView
-  def handle_event("help-tab", %{"tab" => tab}, socket) do
-    {:noreply,
-     assign_changeset(socket, Map.merge(socket.assigns.changeset.params, %{"help_tab" => tab}))}
-  end
-
   @one_year 60 * 60 * 24 * 365
   @impl Phoenix.LiveView
   def handle_event("permalink", _content, socket) do
