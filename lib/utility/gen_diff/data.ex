@@ -8,7 +8,8 @@ defmodule Utility.GenDiff.Data do
           command: "phx.new",
           docs_url: "https://hexdocs.pm/phx_new/Mix.Tasks.Phx.New.html",
           default_flags: ["my_app"],
-          help: "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error or be ignored.",
+          help:
+            "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error or be ignored.",
           flags: [
             "--binary-id",
             "--database=mssql",
@@ -85,7 +86,13 @@ defmodule Utility.GenDiff.Data do
           command: "rails new",
           docs_url: "https://guides.rubyonrails.org/command_line.html#rails-new",
           help: "Not all flags exist on all versions and may result in an error or be ignored.",
-          default_flags: ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"],
+          default_flags: [
+            "my_app",
+            "--skip-keeps",
+            "--skip-git",
+            "--skip-bundle",
+            "--skip-webpack-install"
+          ],
           flags: [
             "--database=mysql",
             "--database=postgresql",
@@ -105,7 +112,7 @@ defmodule Utility.GenDiff.Data do
             "--skip-test",
             "--skip-system-test",
             "--skip-bootsnap",
-            "--api",
+            "--api"
           ]
         }
       ]

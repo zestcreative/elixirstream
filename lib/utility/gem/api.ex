@@ -10,6 +10,7 @@ defmodule Utility.Gem.Api do
     |> case do
       {versions, 0} ->
         versions |> String.trim() |> String.split("\n")
+
       {_, _} ->
         []
     end
@@ -38,5 +39,6 @@ defmodule Utility.Gem.Api do
   defp conform_semver(version_string) when byte_size(version_string) == 3 do
     version_string <> ".0"
   end
+
   defp conform_semver(version), do: version
 end

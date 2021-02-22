@@ -29,18 +29,21 @@ defmodule UtilityWeb.GenDiffLive do
 
   @theme AnsiToHTML.Theme.new(%{container: {:pre, [class: "runner-line"]}})
   @runners Keyword.get(Application.compile_env!(:utility, Oban)[:queues] || [], :builder, 0)
-  @waiting AnsiToHTML.generate_phoenix_html("""
-           I haven't seen this combination of versions and flags before! No worries, I'll generate
-           the diff right now. The result will be stored. I'm limited to #{@runners} runner(s) to
-           help keep the site responsive. Waiting in line now for runner. Just sit tight.
+  @waiting AnsiToHTML.generate_phoenix_html(
+             """
+             I haven't seen this combination of versions and flags before! No worries, I'll generate
+             the diff right now. The result will be stored. I'm limited to #{@runners} runner(s) to
+             help keep the site responsive. Waiting in line now for runner. Just sit tight.
 
-           Once started, you'll be able to see the progress of the project being built. The left
-           side will contain progress of building the FROM combination, and the right side will
-           contain progress of building the TO combination.
+             Once started, you'll be able to see the progress of the project being built. The left
+             side will contain progress of building the FROM combination, and the right side will
+             contain progress of building the TO combination.
 
-           If you navigate away, the diff will still be built but you won't be able to monitor
-           progress.
-           """, @theme)
+             If you navigate away, the diff will still be built but you won't be able to monitor
+             progress.
+             """,
+             @theme
+           )
   @impl Phoenix.LiveView
   def handle_event("diff", %{"generator" => params}, socket) do
     with {:ok, generator} <- Generator.apply(params),

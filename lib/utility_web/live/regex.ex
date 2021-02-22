@@ -59,6 +59,7 @@ defmodule UtilityWeb.RegexLive do
   def handle_event("validate", %{"regex_live" => params}, socket) do
     {:noreply, assign_changeset(socket, params)}
   end
+
   def handle_event("validate", _params, socket), do: {:noreply, socket}
 
   @impl Phoenix.LiveView
@@ -149,6 +150,7 @@ defmodule UtilityWeb.RegexLive do
 
   defp put_result(%{valid?: true} = changeset) do
     string = Changeset.get_field(changeset, :string)
+
     if Changeset.get_field(changeset, :regex) == "" do
       changeset
     else

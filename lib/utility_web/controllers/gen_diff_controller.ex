@@ -8,6 +8,7 @@ defmodule UtilityWeb.GenDiffController do
         conn
         |> put_resp_content_type("text/html")
         |> stream_diff(diff_stream)
+
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Diff not found. Please specify diff parameters")
@@ -20,10 +21,12 @@ defmodule UtilityWeb.GenDiffController do
       Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_header.html", conn: conn),
       "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">"
     ]
+
     footer = [
       Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_footer.html", conn: conn),
       "</body>"
     ]
+
     conn = send_chunked(conn, 200)
 
     with {:ok, conn} <- chunk(conn, header),

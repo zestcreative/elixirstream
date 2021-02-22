@@ -6,7 +6,9 @@ defmodule UtilityWeb.GenDiffView do
     path = tmp_path("html-#{generator.project}-#{generator.id}-")
 
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
-      html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_header.html", generator: generator)
+      html_patch =
+        Phoenix.View.render_to_iodata(__MODULE__, "diff_header.html", generator: generator)
+
       IO.binwrite(file, html_patch)
       render_diff_body(generator, file, stream)
       html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_footer.html", [])
@@ -75,8 +77,14 @@ defmodule UtilityWeb.GenDiffView do
 
   def line_type(line), do: to_string(line.type)
 
-  def line_text("+" <> text), do: [content_tag(:span, "+ ", class: "ghd-line-status"), content_tag(:span, text)]
-  def line_text("-" <> text), do: [content_tag(:span, "- ", class: "ghd-line-status"), content_tag(:span, text)]
-  def line_text(" " <> text), do: [content_tag(:span, "  ", class: "ghd-line-status"), content_tag(:span, text)]
+  def line_text("+" <> text),
+    do: [content_tag(:span, "+ ", class: "ghd-line-status"), content_tag(:span, text)]
+
+  def line_text("-" <> text),
+    do: [content_tag(:span, "- ", class: "ghd-line-status"), content_tag(:span, text)]
+
+  def line_text(" " <> text),
+    do: [content_tag(:span, "  ", class: "ghd-line-status"), content_tag(:span, text)]
+
   def line_text(text), do: [content_tag(:span, text)]
 end
