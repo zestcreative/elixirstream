@@ -23,8 +23,7 @@ defmodule UtilityWeb.SinkLive do
 
   @impl Phoenix.LiveView
   def handle_params(_params, _uri, socket) do
-    {:noreply,
-     push_redirect(socket, to: Routes.sink_path(socket, :show, Ecto.UUID.generate()))}
+    {:noreply, push_redirect(socket, to: Routes.sink_path(socket, :show, Ecto.UUID.generate()))}
   end
 
   @impl Phoenix.LiveView
@@ -39,6 +38,7 @@ defmodule UtilityWeb.SinkLive do
     case Jason.encode(body, pretty: true) do
       {:ok, parsed} ->
         Phoenix.HTML.Tag.content_tag(:pre, parsed, class: "whitespace-pre select-all")
+
       {:error, _} ->
         render_body(%{body_params: body})
     end

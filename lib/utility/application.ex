@@ -24,7 +24,13 @@ defmodule Utility.Application do
 
     events = [[:oban, :job, :exception], [:oban, :circuit, :trip]]
     :ok = Oban.Telemetry.attach_default_logger()
-    :telemetry.attach_many("oban-logger", events, &Utility.Workers.ErrorHandler.handle_event/4, [])
+
+    :telemetry.attach_many(
+      "oban-logger",
+      events,
+      &Utility.Workers.ErrorHandler.handle_event/4,
+      []
+    )
 
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options

@@ -58,6 +58,7 @@ defmodule Utility.ProjectRunner do
       |> add_command(command, run_opts)
 
     Logger.debug("Running app generator: #{inspect(args)}")
+
     if broadcaster = state[:opts][:broadcaster] do
       broadcaster.({:progress, "Starting runner", "#{state[:opts][:prefix]}starting"})
       broadcaster.({:progress, "Running: #{command}", "#{state[:opts][:prefix]}starting"})
@@ -106,8 +107,13 @@ defmodule Utility.ProjectRunner do
   @impl GenServer
   def handle_info({_port, {:data, line}}, state) do
     :counters.add(state.line_counter, 1, 1)
+
     if broadcaster = state[:opts][:broadcaster],
-      do: broadcaster.({:progress, line, "#{state[:opts][:prefix]}#{:counters.get(state.line_counter, 1)}"})
+      do:
+        broadcaster.(
+          {:progress, line, "#{state[:opts][:prefix]}#{:counters.get(state.line_counter, 1)}"}
+        )
+
     Logger.debug(line)
     {:noreply, %{state | output: [String.replace(line, "\r", "") | state.output]}}
   end
@@ -115,16 +121,21 @@ defmodule Utility.ProjectRunner do
   @impl GenServer
   def handle_info({_port, {:exit_status, status}}, state) do
     prefix = state[:opts][:prefix]
+
     if status == 0 do
-      if broadcaster = state.opts[:broadcaster], do: broadcaster.({:progress, "Finished", "#{prefix}finished"})
+      if broadcaster = state.opts[:broadcaster],
+        do: broadcaster.({:progress, "Finished", "#{prefix}finished"})
+
       if state.from, do: GenServer.reply(state.from, {:ok, output(state.output)})
     else
-      if broadcaster = state.opts[:broadcaster], do: broadcaster.({:progress, "Finished with error", "#{prefix}finishederror"})
+      if broadcaster = state.opts[:broadcaster],
+        do: broadcaster.({:progress, "Finished with error", "#{prefix}finishederror"})
+
       if state.from, do: GenServer.reply(state.from, {:error, output(state.output)})
     end
 
     new_state = %{state | status: status}
-    Logger.debug("Finished: #{inspect new_state}")
+    Logger.debug("Finished: #{inspect(new_state)}")
 
     {:noreply, new_state, 500}
   end

@@ -38,6 +38,7 @@ defmodule Utility.ProjectBuilder do
       else
         {errors, _good_results} ->
           {:error, errors}
+
         error ->
           {:error, error}
       end
@@ -58,6 +59,7 @@ defmodule Utility.ProjectBuilder do
     )
     |> UtilityWeb.GenDiffView.render_diff(generator)
   end
+
   def render_diff(generator, false, _from, _to, path) do
     File.rm(path)
     UtilityWeb.GenDiffView.render_diff(nil, generator)
@@ -75,7 +77,7 @@ defmodule Utility.ProjectBuilder do
            "--output=#{path_out}",
            path_from,
            path_to
-    ]) do
+         ]) do
       {"", 1} ->
         {:ok, true}
 
@@ -95,14 +97,21 @@ defmodule Utility.ProjectBuilder do
 
     with {:ok, runner} <- ProjectRunner.start_link([prefix: prefix] ++ opts) do
       commands =
-        Enum.join([
-          install_archive(project, version),
-          run_command(command, version, Data.default_flags_for_command(command) ++ flags)
-        ], " && ")
+        Enum.join(
+          [
+            install_archive(project, version),
+            run_command(command, version, Data.default_flags_for_command(command) ++ flags)
+          ],
+          " && "
+        )
 
       task =
         Task.async(fn ->
-          ProjectRunner.run(runner, commands, timeout: @timeout, tag: tag_for(command, version), mount: path)
+          ProjectRunner.run(runner, commands,
+            timeout: @timeout,
+            tag: tag_for(command, version),
+            mount: path
+          )
         end)
 
       {:ok, task, Path.join([path, "my_app"])}
@@ -113,11 +122,14 @@ defmodule Utility.ProjectBuilder do
   @phx_new_github Version.parse!("1.3.0")
   def install_archive("phx_new", version_string) do
     version = Version.parse!(version_string)
+
     cond do
       Version.compare(version, @phx_new_proper) != :lt ->
         "mix archive.install --force hex phx_new #{version_string}"
+
       Version.compare(version, @phx_new_github) != :lt ->
         "mix archive.install --force /cache/phx_archives/phx_new-#{version_string}.ez"
+
       true ->
         "mix archive.install --force /cache/phx_archives/phoenix_new-#{version_string}.ez"
     end
@@ -142,16 +154,20 @@ defmodule Utility.ProjectBuilder do
   def run_command("phx.gen.auth", version_string, flags) do
     """
     #{run_command("phx.new", "1.5.7", ["my_app"])} &&
-      sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
+      sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{
+      version_string
+    }", only: [:dev], runtime: false},/g' my_app/mix.exs &&
       cd my_app &&
       mix deps.get &&
       mix phx.gen.auth #{Enum.join(flags, " ")} &&
       rm -rf _build deps mix.lock
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
 
   def run_command("phx.new", version_string, [where | _] = flags) do
     version = Version.parse!(version_string)
+
     case {Version.compare(version, @phx_new_github), "--umbrella" in flags} do
       {:lt, _} ->
         """
@@ -160,7 +176,9 @@ defmodule Utility.ProjectBuilder do
           sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}/endpoint.ex
-        """ |> String.trim()
+        """
+        |> String.trim()
+
       {_, false} ->
         """
         yes n | mix phx.new #{Enum.join(flags, " ")} &&
@@ -168,18 +186,27 @@ defmodule Utility.ProjectBuilder do
           sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}_web/endpoint.ex
-        """ |> String.trim()
+        """
+        |> String.trim()
+
       {_, true} ->
         """
         yes n | mix phx.new #{Enum.join(flags, " ")} &&
           (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/prod.secret.exs &> /dev/null || true) &&
           (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
           (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/prod.secret.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{
+          where
+        }_web/config/prod.secret.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{
+          where
+        }_web/config/config.exs &> /dev/null || true) &&
           (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{where}_web/endpoint.ex
-        """ |> String.trim()
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{
+          where
+        }_web/endpoint.ex
+        """
+        |> String.trim()
     end
   end
 
@@ -189,30 +216,45 @@ defmodule Utility.ProjectBuilder do
       cd #{where} &&
       (rm -f config/credentials.yml.enc &> /dev/null || true) &&
       (rm -f config/master.key &> /dev/null || true)
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
 
   def run_command("rails webpacker:install", version_string, [:none]) do
     """
-    #{run_command("rails new", "5.2.4", ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"])} &&
+    #{
+      run_command("rails new", "5.2.4", [
+        "my_app",
+        "--skip-keeps",
+        "--skip-git",
+        "--skip-bundle",
+        "--skip-webpack-install"
+      ])
+    } &&
       echo "gem 'webpacker', '#{version_string}'" >> Gemfile &&
       bundle --quiet &&
       bundle exec rails webpacker:install
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
+
   def run_command("rails webpacker:install", version_string, [framework]) do
     """
     #{run_command("rails webpacker:install", version_string, [:none])} &&
       bundle exec rails webpacker:install:#{framework} &&
       rm -rf node_modules tmp yarn.lock
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
+
   def run_command("rails webpacker:install", version_string, []) do
     """
     #{run_command("rails webpacker:install", version_string, [:none])} &&
       rm -rf node_modules tmp yarn.lock
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
+
   def run_command("rails webpacker:install", _version_string, _) do
     "echo 'Cannot select multiple frameworks' && exit 1"
   end
@@ -221,7 +263,8 @@ defmodule Utility.ProjectBuilder do
     """
     mix nerves.new #{Enum.join(flags, " ")} &&
       (sed -i 's/-setcookie.*/-setcookie foo/g' #{where}/rel/vm.args &> /dev/null || true)
-    """ |> String.trim()
+    """
+    |> String.trim()
   end
 
   def run_command(command, _version_string, flags), do: "mix #{command} #{Enum.join(flags, " ")}"
@@ -231,6 +274,7 @@ defmodule Utility.ProjectBuilder do
     version = Version.parse!(version)
     if Version.compare(version, @phx_latest_at) == :lt, do: "old", else: "latest"
   end
+
   def tag_for("rails new", _version), do: "rails"
   def tag_for("rails webpacker:install", _version), do: "rails"
   def tag_for(_command, _version), do: "latest"
