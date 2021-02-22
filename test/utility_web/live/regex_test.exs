@@ -71,7 +71,7 @@ defmodule UtilityWeb.RegexLiveTest do
       record = %RegexLive{}
       changeset = RegexLive.changeset(record, %{function: "scan", flags: "i", regex: "[0-9]+"})
 
-      assert Ecto.Changeset.get_field(changeset, :pasta) == "Regex.scan(~r/[0-9]+/i, value)"
+      assert Ecto.Changeset.get_field(changeset, :pasta) == "Regex.scan(~r/[0-9]+/i, string)"
     end
 
     test "populates result if valid" do
@@ -124,9 +124,9 @@ defmodule UtilityWeb.RegexLiveTest do
   describe "mounting" do
     test "can mount", %{conn: conn} do
       conn = get(conn, @route)
-      assert html_response(conn, 200) =~ "Regex Tester</h1>"
+      assert html_response(conn, 200) =~ "Regex Tester</h2>"
       assert {:ok, _view, html} = live(conn)
-      assert html =~ "Regex Tester</h1>"
+      assert html =~ "Regex Tester</h2>"
     end
 
     test "can load saved record", %{conn: conn} do
@@ -138,7 +138,7 @@ defmodule UtilityWeb.RegexLiveTest do
       ])
 
       conn = get(conn, @route <> "/test-id")
-      assert html_response(conn, 200) =~ "Regex Tester</h1>"
+      assert html_response(conn, 200) =~ "Regex Tester</h2>"
       assert {:ok, _view, html} = live(conn)
       assert html =~ "1234 my test string"
     end
@@ -163,20 +163,6 @@ defmodule UtilityWeb.RegexLiveTest do
     end
   end
 
-  describe "handle_event - help-tab" do
-    test "switches visible tabs", %{conn: conn} do
-      conn = get(conn, @route)
-      {:ok, view, _html} = live(conn)
-
-      assert has_element?(view, "[data-test-flags].hidden")
-      assert has_element?(view, "[data-test-cheatsheet]:not(.hidden)")
-
-      assert render_click(view, "help-tab", %{"tab" => "flags"})
-      assert has_element?(view, "[data-test-flags]:not(.hidden)")
-      assert has_element?(view, "[data-test-cheatsheet].hidden")
-    end
-  end
-
   describe "rendering" do
     test "renders copy-pasta", %{conn: conn} do
       conn = get(conn, @route)
@@ -192,7 +178,7 @@ defmodule UtilityWeb.RegexLiveTest do
         }
       }
 
-      assert render_change(view, :validate, params) =~ "Regex.run(~r/[0-9]+/i, value)"
+      assert render_change(view, :validate, params) =~ "Regex.run(~r/[0-9]+/i, string)"
     end
 
     test "renders result", %{conn: conn} do
@@ -209,7 +195,7 @@ defmodule UtilityWeb.RegexLiveTest do
         }
       }
 
-      assert render_change(view, :validate, params) =~ "#=&gt; [&quot;1234&quot;]"
+      assert render_change(view, :validate, params) =~ "result = [&quot;1234&quot;]"
     end
 
     test "renders error message with invalid regex", %{conn: conn} do
@@ -227,7 +213,7 @@ defmodule UtilityWeb.RegexLiveTest do
       }
 
       assert render_change(view, :validate, params) =~
-               "#=&gt; &quot;missing terminating ] for character class (at character 5)&quot;"
+               "result = &quot;missing terminating ] for character class (at character 5)&quot;"
     end
   end
 end
