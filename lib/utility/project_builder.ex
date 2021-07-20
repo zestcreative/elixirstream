@@ -154,9 +154,7 @@ defmodule Utility.ProjectBuilder do
   def run_command("phx.gen.auth", version_string, flags) do
     """
     #{run_command("phx.new", "1.5.7", ["my_app"])} &&
-      sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{
-      version_string
-    }", only: [:dev], runtime: false},/g' my_app/mix.exs &&
+      sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
       cd my_app &&
       mix deps.get &&
       mix phx.gen.auth #{Enum.join(flags, " ")} &&
@@ -195,16 +193,10 @@ defmodule Utility.ProjectBuilder do
           (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/prod.secret.exs &> /dev/null || true) &&
           (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
           (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{
-          where
-        }_web/config/prod.secret.exs &> /dev/null || true) &&
-          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{
-          where
-        }_web/config/config.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/prod.secret.exs &> /dev/null || true) &&
+          (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
           (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{
-          where
-        }_web/endpoint.ex
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{where}_web/endpoint.ex
         """
         |> String.trim()
     end
@@ -222,15 +214,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("rails webpacker:install", version_string, [:none]) do
     """
-    #{
-      run_command("rails new", "5.2.4", [
-        "my_app",
-        "--skip-keeps",
-        "--skip-git",
-        "--skip-bundle",
-        "--skip-webpack-install"
-      ])
-    } &&
+    #{run_command("rails new", "5.2.4", ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"])} &&
       echo "gem 'webpacker', '#{version_string}'" >> Gemfile &&
       bundle --quiet &&
       bundle exec rails webpacker:install

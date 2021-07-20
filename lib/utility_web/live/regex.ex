@@ -11,15 +11,15 @@ defmodule UtilityWeb.RegexLive do
 
   @primary_key false
   embedded_schema do
-    field(:id, Ecto.UUID)
-    field(:string, :string, default: "")
-    field(:flags, :string, default: "")
-    field(:regex, :string, default: "")
-    field(:function, :string, default: "scan")
-    field(:result, :any, virtual: true, default: "")
-    field(:matched, :any, virtual: true, default: [])
-    field(:help_tab, :string, default: "cheatsheet")
-    field(:pasta, :string, virtual: true, default: "")
+    field :id, Ecto.UUID
+    field :string, :string, default: ""
+    field :flags, :string, default: ""
+    field :regex, :string, default: ""
+    field :function, :string, default: "scan"
+    field :result, :any, virtual: true, default: ""
+    field :matched, :any, virtual: true, default: []
+    field :help_tab, :string, default: "cheatsheet"
+    field :pasta, :string, virtual: true, default: ""
   end
 
   @allowed_functions ~w[scan named_captures run]

@@ -7,23 +7,23 @@ defmodule Utility.GenDiff.Generator do
   @primary_key false
   embedded_schema do
     # Populated by user
-    field(:project, :string)
-    field(:command, :string)
+    field :project, :string
+    field :command, :string
 
-    field(:from_version)
-    field(:to_version)
+    field :from_version
+    field :to_version
 
-    field(:from_flags, {:array, :string})
-    field(:to_flags, {:array, :string})
+    field :from_flags, {:array, :string}
+    field :to_flags, {:array, :string}
 
     # Populated by Data
-    field(:id, :string)
-    field(:url, :string)
-    field(:docs_url, :string)
-    field(:default_flags, {:array, :string})
-    field(:flags, {:array, :string})
-    field(:help, :string)
-    field(:source, :string)
+    field :id, :string
+    field :url, :string
+    field :docs_url, :string
+    field :default_flags, {:array, :string}
+    field :flags, {:array, :string}
+    field :help, :string
+    field :source, :string
   end
 
   @required ~w[command project from_version to_version]a

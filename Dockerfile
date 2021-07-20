@@ -1,6 +1,6 @@
 ## SYSTEM
 
-FROM hexpm/elixir:1.11.2-erlang-23.1.1-ubuntu-focal-20200703 AS builder
+FROM hexpm/elixir:1.12.2-erlang-23.0.3-ubuntu-focal-20201008 AS builder
 WORKDIR /app
 
 ENV LANG=C.UTF-8 \
