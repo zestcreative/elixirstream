@@ -21,6 +21,7 @@ defmodule Utility.GenDiff.Data do
             "--no-gettext",
             "--no-html",
             "--no-webpack",
+            "--no-assets",
             "--umbrella"
           ]
         }
