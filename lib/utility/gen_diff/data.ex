@@ -15,6 +15,7 @@ defmodule Utility.GenDiff.Data do
             "--database=mssql",
             "--database=mysql",
             "--database=postgres",
+            "--database=sqlite3",
             "--live",
             "--no-dashboard",
             "--no-ecto",
