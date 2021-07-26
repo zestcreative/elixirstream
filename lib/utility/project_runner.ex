@@ -14,6 +14,7 @@ defmodule Utility.ProjectRunner do
   def build_runners() do
     {:ok, pid} = start_link([])
     GenServer.call(pid, {:build_runner, "Dockerfile", "latest"}, :timer.minutes(5))
+    GenServer.call(pid, {:build_runner, "Dockerfile.111", "111"}, :timer.minutes(5))
     GenServer.call(pid, {:build_runner, "Dockerfile.old", "old"}, :timer.minutes(5))
     GenServer.call(pid, {:build_runner, "Dockerfile.rails", "rails"}, :timer.minutes(5))
   end

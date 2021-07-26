@@ -37,7 +37,8 @@ defmodule UtilityWeb.GenDiffLive do
 
              Once started, you'll be able to see the progress of the project being built. The left
              side will contain progress of building the FROM combination, and the right side will
-             contain progress of building the TO combination.
+             contain progress of building the TO combination. Diffs against master will only be stored
+             up to 12 hours.
 
              If you navigate away, the diff will still be built but you won't be able to monitor
              progress.
@@ -47,8 +48,7 @@ defmodule UtilityWeb.GenDiffLive do
   @impl Phoenix.LiveView
   def handle_event("diff", %{"generator" => params}, socket) do
     with {:ok, generator} <- Generator.apply(params),
-         %{project: project, id: id} <- generator,
-         {{:error, :not_found}, _} <- {Utility.Storage.get(project, id), generator},
+         {{:error, :not_found}, _} <- {Utility.Storage.get(generator), generator},
          {:ok, _} <- ProjectBuilder.schedule_diff(generator) do
       topic = "hexgen:progress:#{generator.project}:#{generator.id}"
       UtilityWeb.Endpoint.subscribe(topic)
@@ -162,8 +162,13 @@ defmodule UtilityWeb.GenDiffLive do
   defp versions_for(project, opts) do
     {compare, limit} = if floor = opts[:floor], do: {:lt, floor}, else: {nil, nil}
     {compare, limit} = if ceil = opts[:ceiling], do: {:gt, ceil}, else: {compare, limit}
-    limit = if limit, do: Version.parse!(limit), else: limit
 
+    limit = if limit do
+      case Version.parse(limit) do
+        {:ok, version} -> version
+        :error -> limit
+      end
+    end
     case {limit, compare, Data.versions_for_project(project)} do
       {_, _, []} ->
         []
@@ -171,8 +176,19 @@ defmodule UtilityWeb.GenDiffLive do
       {nil, nil, versions} ->
         versions
 
+      {"master", :gt, versions} ->
+        versions
+
+      {"master", :lt, _versions} ->
+        ["master"]
+
       {limit, compare, versions} ->
-        Enum.reject(versions, &(Version.compare(Version.parse!(&1), limit) == compare))
+        Enum.reject(versions, fn version ->
+          case Version.parse(version) do
+            {:ok, version} -> Version.compare(version, limit) == compare
+            :error -> false
+          end
+        end)
     end
   end
 
@@ -206,7 +222,7 @@ defmodule UtilityWeb.GenDiffLive do
     @version_placeholder ++ versions
   end
 
-  defp flags_for_command(command) do
-    Data.flags_for_command(command)
+  defp flags_for_command(project, command) do
+    Data.flags_for_command(project, command)
   end
 end

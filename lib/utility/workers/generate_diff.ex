@@ -7,7 +7,7 @@ defmodule Utility.Workers.GenerateDiff do
     record = hydrate(params)
     broadcaster = make_broadcaster(record)
 
-    with {:error, :not_found} <- Utility.Storage.get(record.project, record.id),
+    with {:error, :not_found} <- Utility.Storage.get(record),
          _ <- broadcaster.({:progress, "Started", "all-started"}),
          :ok <- Utility.ProjectBuilder.diff(record, broadcaster: broadcaster) do
       broadcaster.({:progress, "Finished", "all-finished"})

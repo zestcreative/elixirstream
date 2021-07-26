@@ -1,6 +1,16 @@
 defmodule Utility.Storage.LocalImplementation do
   @behaviour Utility.Storage
 
+  def list(project) do
+    [dir(), project, "*master*"]
+    |> Path.join()
+    |> Path.wildcard()
+  end
+
+  def delete(file) do
+    File.rm(file)
+  end
+
   def get(project, id) do
     hash = :erlang.phash2({Application.get_env(:utility, :cache_version), id})
     filename = key(project, id, hash)

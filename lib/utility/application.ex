@@ -17,6 +17,7 @@ defmodule Utility.Application do
       UtilityWeb.Endpoint,
       Utility.Redix,
       Utility.Package.Updater,
+      Utility.GenDiff.PruneMasterCache,
       {Oban, oban_config()}
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}

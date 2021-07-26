@@ -27,6 +27,7 @@ defmodule Utility.Hex.Api do
       |> Enum.map(& &1[:version])
       |> get_nonhex_versions(package)
       |> Enum.sort({:desc, Version})
+      |> get_nonstandard_versions(package)
     end
   end
 
@@ -38,4 +39,7 @@ defmodule Utility.Hex.Api do
   end
 
   defp get_nonhex_versions(versions, _), do: versions
+
+  defp get_nonstandard_versions(versions, "phx_new"), do: ["master" | versions]
+  defp get_nonstandard_versions(versions, _), do: versions
 end

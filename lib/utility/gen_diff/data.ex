@@ -21,9 +21,23 @@ defmodule Utility.GenDiff.Data do
             "--no-ecto",
             "--no-gettext",
             "--no-html",
+            "--no-mailer",
             "--no-webpack",
             "--no-assets",
             "--umbrella"
+          ]
+        },
+        %{
+          command: "phx.gen.auth",
+          docs_url: "https://hexdocs.pm/phoenix/Mix.Tasks.Phx.Gen.Auth.html",
+          default_flags: ["Accounts", "User", "users"],
+          help: "phx.gen.auth used to be distributed separately as phx_gen_auth, but was merged into Phoenix in 1.6",
+          flags: [
+            "--binary-id",
+            "--no-binary-id",
+            "--hashing-lib=bcrypt",
+            "--hashing-lib=pbkdf2",
+            "--hashing-lib=argon2"
           ]
         }
       ]
@@ -36,7 +50,7 @@ defmodule Utility.GenDiff.Data do
           command: "phx.gen.auth",
           docs_url: "https://hexdocs.pm/phx_gen_auth",
           default_flags: ["Accounts", "User", "users"],
-          help: "Ran on a default Phoenix 1.5.7 project",
+          help: "Ran on a default Phoenix 1.5.7 project. You might consider using phx_new instead.",
           flags: [
             "--binary-id",
             "--no-binary-id"
@@ -148,11 +162,9 @@ defmodule Utility.GenDiff.Data do
     all()[project]
   end
 
-  def get_by(command: command) do
-    Enum.find_value(all(), fn {_project, %{generators: generators}} ->
-      Enum.find_value(generators, fn generator ->
-        generator[:command] == command && generator
-      end)
+  def get_by(project: project, command: command) do
+    Enum.find_value(all()[project][:generators], fn generator ->
+      generator[:command] == command && generator
     end)
   end
 
@@ -174,29 +186,33 @@ defmodule Utility.GenDiff.Data do
     end
   end
 
-  def flags_for_command(command) do
-    case get_by(command: command) do
+  def flags_for_command(nil, _command), do: []
+  def flags_for_command(project, command) do
+    case get_by(project: project, command: command) do
       %{flags: flags} -> flags
       _ -> []
     end
   end
 
-  def help_for_command(command) do
-    case get_by(command: command) do
+  def help_for_command(nil, _command), do: nil
+  def help_for_command(project, command) do
+    case get_by(project: project, command: command) do
       %{help: help} -> help
       _ -> nil
     end
   end
 
-  def docs_url_for_command(command) do
-    case get_by(command: command) do
+  def docs_url_for_command(nil, _command), do: nil
+  def docs_url_for_command(project, command) do
+    case get_by(project: project, command: command) do
       %{docs_url: url} -> url
       _ -> nil
     end
   end
 
-  def default_flags_for_command(command) do
-    case get_by(command: command) do
+  def default_flags_for_command(nil, _), do: []
+  def default_flags_for_command(project, command) do
+    case get_by(project: project, command: command) do
       %{default_flags: default_flags} -> default_flags
       _ -> []
     end

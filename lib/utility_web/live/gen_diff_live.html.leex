@@ -67,7 +67,7 @@
           </div>
 
           <div>
-            <% available_flags = flags_for_command(@command) %>
+            <% available_flags = flags_for_command(@project, @command) %>
             <% is_flags_hidden = !Enum.any?(available_flags) %>
             <div class="my-4 <%= if is_flags_hidden, do: "hidden" %>">
               <div>
