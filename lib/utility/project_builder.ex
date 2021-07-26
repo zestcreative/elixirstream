@@ -123,7 +123,7 @@ defmodule Utility.ProjectBuilder do
   def install_archive("phx_new", "master") do
     """
     git clone https://github.com/phoenixframework/phoenix.git &&
-      (cd phoenix/installer && mix do deps.get, compile, archive.build, archive.install --force) &&
+      (cd phoenix/installer && MIX_ENV=prod mix do deps.get, compile, archive.build, archive.install --force) &&
       rm -rf phoenix
     """
     |> String.trim()

@@ -40,6 +40,6 @@ defmodule Utility.Hex.Api do
 
   defp get_nonhex_versions(versions, _), do: versions
 
-  defp get_nonstandard_versions(versions, "phx_new"), do: ["master" | versions]
+  defp get_nonstandard_versions(versions, "phx_new"), do: versions ++ ["master"]
   defp get_nonstandard_versions(versions, _), do: versions
 end
