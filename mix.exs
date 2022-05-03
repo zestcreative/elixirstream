@@ -7,14 +7,12 @@ defmodule Utility.MixProject do
       version: String.trim(File.read!("VERSION")),
       elixir: "~> 1.9",
       elixirc_paths: elixirc_paths(Mix.env()),
-      compilers: [:phoenix, :gettext] ++ Mix.compilers(),
+      compilers: [:gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
       releases: [
         utility: [
-          steps: [:assemble, :tar],
-          path: "releases/artifacts",
           include_executables_for: [:unix],
           include_erts: true,
           applications: [runtime_tools: :permanent]
@@ -41,9 +39,9 @@ defmodule Utility.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:ansi_to_html, "~> 0.4.0"},
+      {:ansi_to_html, "~> 0.4"},
       {:castore, ">= 0.0.0"},
-      {:ecto_sql, "~> 3.0"},
+      {:ecto_sql, "< 3.8.0", override: true},
       {:etso, "~> 0.1.2"},
       {:gettext, "~> 0.11"},
       {:git_diff, "~> 0.6.3"},
@@ -51,18 +49,22 @@ defmodule Utility.MixProject do
       {:hex_core, "~> 0.7.0"},
       {:jason, "~> 1.1"},
       {:oban, "~> 2.3"},
-      {:phoenix, "~> 1.5.1"},
+      {:phoenix, "~> 1.5"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_html, "~> 2.11"},
-      {:phoenix_live_dashboard, "~> 0.3"},
-      {:phoenix_live_view, "~> 0.15"},
+      {:phoenix_html, "~> 3.0"},
+      {:phoenix_live_dashboard, "~> 0.6"},
+      {:phoenix_live_view, "~> 0.17"},
       {:plug_cowboy, "~> 2.3"},
       {:postgrex, ">= 0.0.0"},
       {:redix, ">= 0.0.0"},
       {:sentry, "~> 8.0"},
+      {:telemetry, "~> 1.1", override: true},
       {:telemetry_metrics, "~> 0.4"},
-      {:telemetry_poller, "~> 0.4"},
+      {:telemetry_poller, "~> 1.0"},
+      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
       # Test
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
       {:floki, ">= 0.0.0", only: :test},
       # Dev
       {:phoenix_live_reload, "~> 1.2", only: :dev}
@@ -71,6 +73,11 @@ defmodule Utility.MixProject do
 
   defp aliases do
     [
+      "assets.deploy": [
+        "tailwind default --minify",
+        "esbuild default --minify",
+        "phx.digest"
+      ],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       outdated: ["hex.outdated", "cmd npm --prefix assets outdated || true"],

@@ -1,3 +1,5 @@
+import theme from "./theme"
+
 let hooks = {};
 
 hooks.HandleScroll = {
@@ -48,6 +50,12 @@ hooks.ClipboardCopy = {
       targetEl.selectionStart = targetEl.selectionEnd;
       setTimeout(() => el.innerText = previousText, 5000)
     });
+  }
+}
+
+hooks.ThemeChooser = {
+  mounted() {
+    theme.init()
   }
 }
 

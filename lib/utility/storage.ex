@@ -6,7 +6,7 @@ defmodule Utility.Storage do
 
   @callback get(project, id) :: {:ok, html} | {:error, term}
   @callback put(project, id, html) :: :ok | {:error, term}
-  @callback list(project) :: list(String.t())
+  @callback list(project, term) :: list(String.t())
   @callback delete(String.t()) :: :ok
 
   defp impl(), do: Application.get_env(:utility, :storage)
@@ -23,8 +23,8 @@ defmodule Utility.Storage do
     impl().delete(file)
   end
 
-  def list(project) do
-    impl().list(project)
+  def list(project, term) do
+    impl().list(project, term)
   end
 
   def put(generator, html) do

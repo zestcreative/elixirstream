@@ -5,6 +5,7 @@ defmodule Utility.Application do
 
   use Application
 
+  @impl true
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
@@ -18,6 +19,7 @@ defmodule Utility.Application do
       Utility.Redix,
       Utility.Package.Updater,
       Utility.GenDiff.PruneMasterCache,
+      Utility.ProjectRunnerBuilder,
       {Oban, oban_config()}
       # Start a worker by calling: Utility.Worker.start_link(arg)
       # {Utility.Worker, arg}
@@ -41,6 +43,7 @@ defmodule Utility.Application do
 
   # Tell Phoenix to update the endpoint configuration
   # whenever the application is updated.
+  @impl true
   def config_change(changed, _new, removed) do
     UtilityWeb.Endpoint.config_change(changed, removed)
     :ok

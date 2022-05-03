@@ -18,12 +18,10 @@ defmodule UtilityWeb.RegexLive do
     field :function, :string, default: "scan"
     field :result, :any, virtual: true, default: ""
     field :matched, :any, virtual: true, default: []
-    field :help_tab, :string, default: "cheatsheet"
     field :pasta, :string, virtual: true, default: ""
   end
 
   @allowed_functions ~w[scan named_captures run]
-  @allowed_tabs ~w[cheatseet flags recipes]
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
@@ -91,7 +89,7 @@ defmodule UtilityWeb.RegexLive do
 
   @impl Phoenix.LiveView
   def render(assigns) do
-    UtilityWeb.RegexView.render("show.html", assigns)
+    Phoenix.View.render(UtilityWeb.RegexView, "show.html", assigns)
   end
 
   defp assign_changeset(socket, params) do
@@ -99,7 +97,6 @@ defmodule UtilityWeb.RegexLive do
 
     socket
     |> assign(:changeset, Map.put(changeset, :action, :insert))
-    |> assign(:help_tab, Changeset.get_field(changeset, :help_tab))
     |> assign(:function, Changeset.get_field(changeset, :function))
     |> assign(:matched, Changeset.get_field(changeset, :matched))
     |> assign(:pasta, Changeset.get_field(changeset, :pasta))
@@ -112,11 +109,10 @@ defmodule UtilityWeb.RegexLive do
 
     changeset =
       record
-      |> Changeset.cast(params, ~w[help_tab string flags regex function]a)
+      |> Changeset.cast(params, ~w[string flags regex function]a)
       |> Changeset.validate_length(:regex, max: 6500, message: "must be under 6,500 characters")
       |> Changeset.validate_length(:string, max: @two_mb, message: "must be under 2MB")
       |> Changeset.validate_inclusion(:function, @allowed_functions)
-      |> Changeset.validate_inclusion(:help_tab, @allowed_tabs)
       |> put_result()
       |> put_pasta()
 

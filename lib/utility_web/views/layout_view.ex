@@ -1,33 +1,41 @@
 defmodule UtilityWeb.LayoutView do
   use UtilityWeb, :view
+  alias Phoenix.LiveView.JS
 
-  @doc """
-  A shim for Phoenix.HTML.Link.link, but adding a class if currently on the page
-  """
-  def active_link(conn, route, text, opts)
+  @themes ["dark", "light", "system"]
+  def themes, do: @themes
 
-  def active_link(conn, route, opts, do: contents) when is_list(opts) do
-    active_link(conn, route, contents, opts)
+  def show_mobile_nav(js \\ %JS{}) do
+    js
+    |> JS.show(
+      to: "#mobileNavShade",
+      transition: {"duration-150 ease-out", "opacity-0", "opacity-100"}
+    )
+    |> JS.show(
+      to: "#mobileNav",
+      transition: {"duration-150 ease-out", "opacity-0 scale-95", "opacity-100 scale-100"}
+    )
+    |> JS.set_attribute({"aria-hidden", "false"}, to: "#mobileNav")
+    |> JS.remove_class("block", to: "#mobileNavIconOpen")
+    |> JS.add_class("hidden", to: "#mobileNavIconOpen")
+    |> JS.remove_class("hidden", to: "#mobileNavIconClose")
+    |> JS.add_class("block", to: "#mobileNavIconClose")
   end
 
-  def active_link(conn, route, text, opts) do
-    to = Keyword.fetch!(opts, :to)
-
-    if String.starts_with?(conn.request_path, to) do
-      {class, opts} = Keyword.pop(opts, :class, "")
-      class = "#{class} active"
-
-      Phoenix.LiveView.Helpers.live_redirect(
-        text,
-        opts ++
-          [
-            "@click": "$dispatch('navigate', '#{route}')",
-            class: class,
-            ":class": "{'active': currentRoute === '#{route}', '': currentRoute !== '#{route}'}"
-          ]
-      )
-    else
-      Phoenix.HTML.Link.link(text, opts)
-    end
+  def hide_mobile_nav(js \\ %JS{}) do
+    js
+    |> JS.hide(
+      to: "#mobileNavShade",
+      transition: {"duration-150 ease-in", "opacity-100", "opacity-0"}
+    )
+    |> JS.hide(
+      to: "#mobileNav",
+      transition: {"duration-150 ease-in", "opacity-100 scale-100", "opacity-0 scale-95"}
+    )
+    |> JS.set_attribute({"aria-hidden", "true"}, to: "#mobileNav")
+    |> JS.remove_class("hidden", to: "#mobileNavIconOpen")
+    |> JS.add_class("block", to: "#mobileNavIconOpen")
+    |> JS.remove_class("block", to: "#mobileNavIconClose")
+    |> JS.add_class("hidden", to: "#mobileNavIconClose")
   end
 end

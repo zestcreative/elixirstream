@@ -1,58 +1,54 @@
-## SYSTEM
+# BUILD LAYER
 
-FROM hexpm/elixir:1.12.2-erlang-23.0.3-ubuntu-focal-20201008 AS builder
+FROM hexpm/elixir:1.13.3-erlang-24.3.3-alpine-3.15.3 AS build
+RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
-ENV LANG=C.UTF-8 \
-    LANGUAGE=C:en \
-    LC_ALL=C.UTF-8 \
-    DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm \
-    MIX_ENV=prod
+## HEX
+ENV HEX_HTTP_TIMEOUT=20
+RUN mix local.hex --if-missing --force && \
+    mix local.rebar
+ENV MIX_ENV=prod
+ENV SECRET_KEY_BASE=nokeyyet
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        curl \
-        make \
-        wget \
-        git \
-        ca-certificates \
-        openssh-client \
-        build-essential \
-        openssl && \
-    update-ca-certificates
-
-RUN mix local.rebar --force && \
-    mix local.hex --if-missing --force
-
-COPY mix.* ./
-COPY config ./config
+## COMPILE
+COPY mix.exs mix.lock ./
+COPY config/config.exs ./config/config.exs
+COPY config/prod.exs ./config/prod.exs
 COPY VERSION .
-RUN mix do deps.get, deps.compile
+RUN mix do deps.get --only prod, deps.compile
 
-## FRONTEND
-
-FROM node:12.18.3-alpine AS frontend
-WORKDIR /app
-# PurgeCSS needs to see the Elixir stuff
-COPY lib ./lib
-COPY assets/package.json assets/package-lock.json ./assets/
-COPY --from=builder /app/deps/phoenix ./deps/phoenix
-COPY --from=builder /app/deps/phoenix_html ./deps/phoenix_html
-COPY --from=builder /app/deps/phoenix_live_view ./deps/phoenix_live_view
-RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
-
+## BUILD RELEASE
 COPY assets ./assets
-RUN npm --prefix ./assets run deploy
-
-## APP
-
-FROM builder AS app
-COPY --from=frontend /app/priv/static ./priv/static
-COPY priv/gettext ./priv/gettext
-COPY priv/repo ./priv/repo
 COPY lib ./lib
+COPY priv ./priv
+RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
+RUN mix assets.deploy
+COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
-RUN mix phx.digest
+RUN mix release
 
-CMD ["/bin/bash"]
+# APP LAYER
+
+FROM docker:20.10.14-alpine3.15 AS app
+RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
+    ip6tables pigz sysstat procps lsof sudo bind-tools
+RUN addgroup -S docker && \
+    addgroup -S --gid 1000 app && \
+    adduser -D -G app --uid 1000 app && \
+    addgroup -S app docker && \
+    echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup" >> /etc/sudoers
+
+## COPY RELEASE
+WORKDIR /app
+RUN chown -R 1000:1000 /app
+COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
+COPY priv/docker-setup /sbin/docker-setup
+COPY priv/docker-daemon.json /etc/docker/daemon.json
+RUN chmod 711 /sbin/docker-setup
+USER app
+WORKDIR /app
+ENV HOME=/app
+ENV MIX_ENV=prod
+
+CMD ["./bin/start.sh"]

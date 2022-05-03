@@ -18,12 +18,13 @@ defmodule UtilityWeb.GenDiffController do
 
   defp stream_diff(conn, stream) do
     header = [
-      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_header.html", conn: conn),
-      "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">"
+      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "head.html", conn: conn),
+      "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">",
+      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "head.html", conn: conn)
     ]
 
     footer = [
-      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "_footer.html", conn: conn),
+      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "footer.html", conn: conn),
       "</body>"
     ]
 

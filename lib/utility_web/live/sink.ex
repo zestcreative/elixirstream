@@ -1,6 +1,7 @@
 defmodule UtilityWeb.SinkLive do
   use UtilityWeb, :live_view
   alias UtilityWeb.HttpSink
+  alias Phoenix.LiveView.JS
 
   @impl Phoenix.LiveView
   def mount(_params, _session, socket) do
@@ -62,5 +63,19 @@ defmodule UtilityWeb.SinkLive do
       inspect(body, limit: :infinity, printable_limit: :infinity),
       class: "whitespace-pre select-all"
     )
+  end
+
+  def hide_warning(js \\ %JS{}) do
+    JS.hide(js,
+      to: "#warning-box",
+      transition: {"ease-in duration-300", "opacity-100", "opacity-0"}
+    )
+  end
+
+  def toggle_help(js \\ %JS{}) do
+    js
+    |> JS.toggle(to: "#help-box")
+    |> JS.remove_class("rotate-180", to: "#help-caret.rotate-180")
+    |> JS.add_class("rotate-180", to: "#help-caret:not(.rotate-180)")
   end
 end

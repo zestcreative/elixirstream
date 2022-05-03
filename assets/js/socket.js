@@ -6,8 +6,9 @@
 //
 // Pass the token on params as below. Or remove it
 // from the params if you are not using authentication.
-import {Socket} from "phoenix"
-import LiveSocket from "phoenix_live_view"
+import { Socket } from "phoenix"
+import { LiveSocket } from "phoenix_live_view"
+import "phoenix_html"
 import hooks from "./hooks"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content");
@@ -64,19 +65,11 @@ let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("
 //   .receive("error", resp => { console.log("Unable to join", resp) })
 
 
-let liveSocket = new LiveSocket("/live", Socket, {
+window.liveSocket = new LiveSocket("/live", Socket, {
   hooks,
-  dom: {
-    onBeforeElUpdated(from, to) {
-      if (from.__x) {
-        window.Alpine.clone(from.__x, to)
-      }
-    }
-  },
   params: {_csrf_token: csrfToken}
 });
-liveSocket.connect()
+window.liveSocket.connect()
 // expose liveSocket on window for web console debug logs and latency simulation:
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)
-window.liveSocket = liveSocket

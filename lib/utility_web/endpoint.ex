@@ -11,10 +11,6 @@ defmodule UtilityWeb.Endpoint do
     signing_salt: "fVIlLyDD"
   ]
 
-  socket "/socket", UtilityWeb.UserSocket,
-    websocket: [timeout: 45_000],
-    longpoll: false
-
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [timeout: 45_000, connect_info: [session: @session_options]],
     longpoll: false
@@ -27,7 +23,7 @@ defmodule UtilityWeb.Endpoint do
     at: "/",
     from: :utility,
     gzip: true,
-    only: ~w(css fonts svg images js site.webmanifest favicon.ico robots.txt)
+    only: ~w(assets fonts svg images site.webmanifest favicon.ico robots.txt)
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

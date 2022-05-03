@@ -2,8 +2,11 @@ defmodule UtilityWeb.GenDiffView do
   use UtilityWeb, :view
   require Logger
 
+  def themes, do: UtilityWeb.LayoutView.themes()
+
   def render_diff(stream, generator) do
     path = tmp_path("html-#{generator.project}-#{generator.id}-")
+    Logger.info("Rendering diff #{generator.id} to #{path}")
 
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
       html_patch =
@@ -37,7 +40,9 @@ defmodule UtilityWeb.GenDiffView do
 
   defp tmp_path(prefix) do
     random_string = Base.encode16(:crypto.strong_rand_bytes(4))
-    Path.join([System.tmp_dir!(), "utility", prefix <> random_string])
+    dir = Path.join([Application.get_env(:utility, :storage_dir), "rendered"])
+    File.mkdir_p(dir)
+    Path.join([dir, prefix <> random_string])
   end
 
   def file_header(patch, status) do

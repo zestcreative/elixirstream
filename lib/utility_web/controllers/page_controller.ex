@@ -5,9 +5,7 @@ defmodule UtilityWeb.PageController do
     redirect(conn, to: Routes.regex_path(conn, :new))
   end
 
-  def about(conn, _params) do
-    render(conn, "about.html")
-  end
+  def healthcheck(conn, _params), do: conn |> send_resp(200, "ok") |> halt()
 
   def site_manifest(conn, _params) do
     json(conn, %{

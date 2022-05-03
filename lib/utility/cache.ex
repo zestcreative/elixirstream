@@ -18,7 +18,7 @@ defmodule Utility.Cache do
   @callback flush(Keyword.t()) :: {:ok, any()} | {:error, any()}
   @callback expire(any(), integer(), Keyword.t()) :: {:ok, any()} | {:error, any()}
 
-  @module Application.get_env(:utility, :cache)
+  @module Application.compile_env(:utility, :cache)
 
   @spec multi(any(), Keyword.t()) :: {:ok, list(any())} | {:error, any()}
   def multi(term, opts \\ []), do: @module.multi(term, opts)

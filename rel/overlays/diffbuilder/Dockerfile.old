@@ -23,23 +23,19 @@ ENV LANG=en_US.UTF-8 \
     HEX_HOME=/cache/.hex \
     DEBIAN_FRONTEND=noninteractive
 
-ARG USER_ID
-ARG GROUP_ID
-
-RUN groupadd --gid $GROUP_ID user && \
-    useradd -m --gid $GROUP_ID --uid $USER_ID user && \
-    mkdir -p /cache && chown user:user /cache
-
-USER user
-WORKDIR /home/user
-
-RUN mkdir app
-RUN mix local.hex --force
-RUN mix local.rebar
+ARG USER_ID=1000
+ARG GROUP_ID=1001
+ARG USER=user
 
 COPY get-old-phx .
-RUN bash get-old-phx
+RUN groupadd --gid $GROUP_ID $USER && \
+    useradd -m --gid $GROUP_ID --uid $USER_ID $USER && \
+    mkdir -p /cache /app && bash get-old-phx && \
+    chown -R $USER_ID:$GROUP_ID /cache /app
 
-WORKDIR /home/user/app
+USER $USER
+WORKDIR /app
+RUN mix local.hex --force
+RUN mix local.rebar
 
 CMD ["/bin/bash"]

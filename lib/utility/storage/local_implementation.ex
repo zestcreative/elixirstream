@@ -1,8 +1,8 @@
 defmodule Utility.Storage.LocalImplementation do
   @behaviour Utility.Storage
 
-  def list(project) do
-    [dir(), project, "*master*"]
+  def list(project, term) do
+    [dir(), project, term]
     |> Path.join()
     |> Path.wildcard()
   end

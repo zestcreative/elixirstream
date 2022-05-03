@@ -27,12 +27,16 @@ defmodule UtilityWeb.Router do
     pipe_through [:browser]
 
     get "/", PageController, :show
-    get "/about", PageController, :about
-    live "/regex", RegexLive, :new
-    live "/regex/:id", RegexLive, :show
-    live "/sink", SinkLive, :new
-    live "/sink/view/:id", SinkLive, :show
-    live "/gendiff", GenDiffLive, :new
+
+    live_session :default, on_mount: UtilityWeb.Nav do
+      live "/about", PageLive, :about
+      live "/regex", RegexLive, :new
+      live "/regex/:id", RegexLive, :show
+      live "/sink", SinkLive, :new
+      live "/sink/view/:id", SinkLive, :show
+      live "/gendiff", GenDiffLive, :new
+    end
+
     get "/gendiff/:project/:id", GenDiffController, :show
   end
 
@@ -47,6 +51,7 @@ defmodule UtilityWeb.Router do
 
     get "/site.webmanifest", PageController, :site_manifest
     get "/browserconfig.xml", PageController, :browserconfig
+    get "/healthcheck", PageController, :healthcheck
   end
 
   scope "/admin" do

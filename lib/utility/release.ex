@@ -1,4 +1,4 @@
-defmodule Utility.ReleaseTasks do
+defmodule Utility.Release do
   @moduledoc """
   This is a module that is involved directly with Mix Release shell commands. It's similar to a Mix
   task, but it's not. Instead, the app is already running, and this opens the running

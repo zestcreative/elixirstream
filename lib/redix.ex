@@ -1,10 +1,13 @@
 defmodule Utility.Redix do
-  @pool_size 5
+  @moduledoc false
+  @pool_size Application.compile_env(:utility, :redis_pool_size)
 
   def child_spec(_args) do
     # Specs for the Redix connections.
-    redis_url = URI.parse(System.get_env("REDIS_URL") || "redis://127.0.0.1:6379")
+    redis_url = URI.parse(Application.get_env(:utility, :redis_url))
     password = redis_url.userinfo && List.last(String.split(redis_url.userinfo, ":"))
+    database = (redis_url.path || "/0") |> String.split("/") |> List.last() |> String.to_integer()
+    maybe_ip6 = if Application.get_env(:utility, :redis_ip6), do: [socket_opts: [:inet6]], else: []
 
     children =
       for i <- 0..(@pool_size - 1) do
@@ -14,8 +17,9 @@ defmodule Utility.Redix do
              host: redis_url.host,
              port: redis_url.port,
              password: password,
-             name: :"redix_#{i}"
-           ]},
+             name: :"redix_#{i}",
+             database: database
+           ] ++ maybe_ip6},
           id: {Redix, i}
         )
       end

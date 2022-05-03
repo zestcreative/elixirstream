@@ -1,13 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%= render "_header.html", assigns %>
+  <%= render "head.html", assigns %>
   <body class="antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100" data-version="<%= Application.spec(:utility, :vsn) %>">
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-      <%= render "_nav.html", assigns %>
-      <main class="-mt-24 pb-8">
-        <%= @inner_content %>
-      </main>
-      <%= render "_footer.html", assigns %>
-    </div>
+    <%= @inner_content %>
   </body>
 </html>

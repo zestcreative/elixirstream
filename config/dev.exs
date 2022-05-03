@@ -7,23 +7,18 @@ import Config
 # watchers to your application. For example, we use it
 # with webpack to recompile .js and .css sources.
 config :utility, UtilityWeb.Endpoint,
-  http: [port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   debug_errors: true,
   code_reloader: true,
   check_origin: false,
   watchers: [
-    node: [
-      "node_modules/webpack/bin/webpack.js",
-      "watch",
-      "--mode",
-      "development",
-      "--watch-options-stdin",
-      cd: Path.expand("../assets", __DIR__)
-    ]
+    esbuild: {Esbuild, :install_and_run, [:default, ~w[--sourcemap=inline --watch]]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w[--watch]]}
   ]
 
 config :utility, Utility.Repo,
   database: "utility_dev",
+  stacktrace: true,
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
   pool_size: 10

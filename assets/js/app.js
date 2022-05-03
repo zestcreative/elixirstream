@@ -1,6 +1,8 @@
-import "phoenix_html"
-import "alpinejs"
 import "./socket"
 import "./loading-bar"
 import "./diff"
-import "./theme"
+import theme from "./theme"
+import "./help-tabs"
+
+theme.watch()
+theme.init()

@@ -21,14 +21,12 @@ defmodule Utility.GenDiff.PruneMasterCache do
   end
 
   @impl GenServer
-  @doc "After starting, possibly warm the cache"
   def handle_continue(:startup, state) do
     handle_call(:prune, self(), state)
     {:noreply, state}
   end
 
   @impl GenServer
-  @doc "Message from timer"
   def handle_call(:prune, _from, %{timer: timer} = state) do
     Process.cancel_timer(timer)
     {:reply, do_prune(), %{state | timer: schedule_prune(state[:prune_every])}}
@@ -39,13 +37,14 @@ defmodule Utility.GenDiff.PruneMasterCache do
 
     Utility.GenDiff.Data.projects()
     |> Enum.map(fn project ->
-      {project, project
-      |> Utility.Storage.list()
-      |> Enum.map(fn cached_diff ->
-        Logger.info("PruneMastercache: pruning #{cached_diff}")
-        Utility.Storage.delete(cached_diff)
-        cached_diff
-      end)}
+      {project,
+       project
+       |> Utility.Storage.list("*master*")
+       |> Enum.map(fn cached_diff ->
+         Logger.info("PruneMastercache: pruning #{cached_diff}")
+         Utility.Storage.delete(cached_diff)
+         cached_diff
+       end)}
     end)
   end
 

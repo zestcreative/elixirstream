@@ -163,12 +163,14 @@ defmodule UtilityWeb.GenDiffLive do
     {compare, limit} = if floor = opts[:floor], do: {:lt, floor}, else: {nil, nil}
     {compare, limit} = if ceil = opts[:ceiling], do: {:gt, ceil}, else: {compare, limit}
 
-    limit = if limit do
-      case Version.parse(limit) do
-        {:ok, version} -> version
-        :error -> limit
+    limit =
+      if limit do
+        case Version.parse(limit) do
+          {:ok, version} -> version
+          :error -> limit
+        end
       end
-    end
+
     case {limit, compare, Data.versions_for_project(project)} do
       {_, _, []} ->
         []

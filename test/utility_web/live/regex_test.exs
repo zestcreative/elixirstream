@@ -7,7 +7,6 @@ defmodule UtilityWeb.RegexLiveTest do
   @route "/regex"
   @valid_params %{
     "regex_live" => %{
-      "help_tab" => "cheatsheet",
       "function" => "scan",
       "string" => "asdf asdf",
       "flags" => "i",
@@ -19,7 +18,6 @@ defmodule UtilityWeb.RegexLiveTest do
     test "record has defaults" do
       record = %RegexLive{}
 
-      assert record.help_tab == "cheatsheet"
       assert record.function == "scan"
       assert record.string == ""
       assert record.flags == ""
@@ -52,16 +50,9 @@ defmodule UtilityWeb.RegexLiveTest do
       assert %{function: ["is invalid"]} = errors_on(changeset)
     end
 
-    test "validates allowed tabs" do
-      record = %RegexLive{}
-      changeset = RegexLive.changeset(record, %{help_tab: "bad"})
-
-      assert %{help_tab: ["is invalid"]} = errors_on(changeset)
-    end
-
     test "does not populate result or pasta if invalid" do
       record = %RegexLive{}
-      changeset = RegexLive.changeset(record, %{regex: "[0-9]+", string: "1234", help_tab: "bad"})
+      changeset = RegexLive.changeset(record, %{function: "foo", regex: "[0-9]+", string: "1234"})
 
       assert Ecto.Changeset.get_field(changeset, :result) == ""
       assert Ecto.Changeset.get_field(changeset, :pasta) == ""
@@ -170,7 +161,6 @@ defmodule UtilityWeb.RegexLiveTest do
 
       params = %{
         "regex_live" => %{
-          "help_tab" => "cheatsheet",
           "function" => "run",
           "string" => "asdf 1234",
           "flags" => "i",
@@ -187,7 +177,6 @@ defmodule UtilityWeb.RegexLiveTest do
 
       params = %{
         "regex_live" => %{
-          "help_tab" => "cheatsheet",
           "function" => "run",
           "string" => "asdf 1234",
           "flags" => "i",
@@ -204,7 +193,6 @@ defmodule UtilityWeb.RegexLiveTest do
 
       params = %{
         "regex_live" => %{
-          "help_tab" => "cheatsheet",
           "function" => "run",
           "string" => "",
           "flags" => "",

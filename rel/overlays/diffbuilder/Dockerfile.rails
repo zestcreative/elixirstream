@@ -25,28 +25,26 @@ RUN apt-get update -qq && \
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
-    MIX_HOME=/cache/.mix \
-    HEX_HOME=/cache/.hex \
+    GEM_HOME=/cache/.gem \
+    GEM_PATH=/cache/.gem \
+    HOME=/home \
+    PATH="/cache/.gem/bin:${PATH}" \
     DEBIAN_FRONTEND=noninteractive
 
-ARG USER_ID
-ARG GROUP_ID
+RUN mkdir -p /cache/.gem && \
+    gem update --system
 
-RUN groupadd --gid $GROUP_ID user && \
-    useradd -m --gid $GROUP_ID --uid $USER_ID user && \
-    mkdir -p /cache/.gem && chown -R user:user /cache
+ARG USER_ID=1000
+ARG GROUP_ID=1001
+ARG USER=user
 
-RUN gem update --system
-USER user
-WORKDIR /home/user
-ENV GEM_HOME=/cache/.gem \
-    GEM_PATH=/cache/.gem
-ENV PATH="${GEM_PATH}/bin:${PATH}"
+RUN groupadd --gid $GROUP_ID $USER && \
+    useradd -m --gid $GROUP_ID --uid $USER_ID $USER && \
+    mkdir -p /cache /home /app && chown -R $USER_ID:$GROUP_ID /cache /home /app
+
+USER $USER
+WORKDIR /app
 RUN echo "gem: --no-document" > $HOME/.gemrc && \
     gem install mysql2 pg sqlite3 bundler
-
-RUN mkdir app
-
-WORKDIR /home/user/app
 
 CMD ["/bin/bash"]

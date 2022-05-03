@@ -1,11 +1,294 @@
-/*! purgecss start ignore */
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-/*! purgecss end ignore */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@import "navigation.css";
-@import "base.css";
-@import "regex.css";
-@import "diff.css";
+@layer base {
+  html.dark [type='text'],
+  html.dark [type='email'],
+  html.dark [type='url'],
+  html.dark [type='password'],
+  html.dark [type='number'],
+  html.dark [type='date'],
+  html.dark [type='datetime-local'],
+  html.dark [type='month'],
+  html.dark [type='search'],
+  html.dark [type='tel'],
+  html.dark [type='time'],
+  html.dark [type='week'],
+  html.dark [multiple],
+  html.dark textarea,
+  html.dark select {
+    @apply bg-gray-900;
+  }
 
-@import "tailwindcss/utilities";
+  html.dark .link:hover {
+    @apply border-b border-accent-700;
+    filter: brightness(1.5);
+  }
+}
+
+@layer components {
+  .nav-link {
+    @apply text-sm font-bold text-brand-50 rounded-md px-3 py-2 bg-white bg-opacity-0;
+    @apply transition-colors duration-75;
+    @apply hover:bg-opacity-80 hover:text-brand-900;
+  }
+
+  .nav-link.active {
+    @apply text-brand-900 bg-brand-50;
+  }
+
+  html.dark .nav-link {
+    @apply bg-black text-brand-50 bg-opacity-0;
+    @apply hover:bg-opacity-30;
+  }
+
+  html.dark .nav-link.active {
+    @apply text-brand-100 bg-brand-900;
+  }
+
+  .error-input {
+    @apply font-semibold text-red-500;
+  }
+
+  .link {
+    @apply font-medium no-underline border-b border-accent-600 duration-100 ease-in-out transition-colors;
+    transition-property: filter;
+  }
+
+  .link:visited {
+    filter: brightness(0.8);
+  }
+
+  .link:hover {
+    @apply border-b border-accent-700;
+    filter: brightness(0.5);
+  }
+
+  .hide-away {
+    @apply bg-transparent focus:ring-0 focus:outline-none border-0 m-0 p-0 absolute;
+    width: 1px;
+    height: 1px;
+  }
+
+  /* REGEX MATCHES */
+
+  .matches span.m {
+    @apply bg-brand-200;
+  }
+  .matches span.m + span.u:empty + span.m {
+    @apply border-l-2 border-dashed border-red-500;
+  }
+
+  html.dark .matches span.m {
+    @apply bg-brand-800 text-gray-300;
+  }
+
+  html.dark .matches span.m + span.u:empty + span.m {
+    @apply border-l-2 border-dashed border-red-700;
+  }
+
+  /* GENDIFF */
+
+  .runner-line {
+    line-height: 18px;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 0 4px;
+    @apply bg-black text-white;
+  }
+
+  .ghd-container {
+    font-family: Menlo, Consolas, monospace;
+    font-size: 13px;
+    border-radius: 5px;
+    margin-bottom: 50px;
+    @apply text-gray-300 dark:text-gray-700;
+  }
+
+  .ghd-file {
+    @apply border-gray-300 dark:border-gray-700;
+    @apply bg-white dark:bg-black;
+    @apply text-black dark:text-gray-200;
+    border-width: 1px;
+    border-radius: 3px;
+    margin-bottom: 1em;
+  }
+
+  .ghd-file-header {
+    padding: 10px;
+    @apply border-gray-200 dark:border-gray-800;
+    border-bottom-width: 0.1rem;
+    cursor: pointer;
+    @apply bg-white dark:bg-black;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0px;
+    z-index: 1;
+  }
+
+  .ghd-file-header .reveal-diff {
+    display: none;
+    float: right;
+    @apply text-gray-400 dark:text-gray-600;
+  }
+
+  .ghd-file-header .reveal-diff path {
+    fill: #999;
+  }
+
+  .ghd-file-header.collapsed .reveal-diff {
+    display: block;
+  }
+
+  .ghd-file-header .collapse-diff {
+    display: block;
+    float: right;
+    @apply text-gray-400 dark:text-gray-600;
+  }
+
+  .ghd-file-header .collapse-diff path {
+    fill: #999;
+  }
+
+  .ghd-file-header.collapsed .collapse-diff {
+    display: none;
+  }
+
+  .ghd-chunk-header .ghd-line-number {
+    @apply bg-gray-50 dark:bg-gray-900;
+  }
+
+  .ghd-line-status {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .ghd-file-status {
+    @apply text-gray-400 dark:text-gray-600;
+    @apply border-gray-400 dark:border-gray-600;
+    border-width: 1px;
+    border-radius: 3px;
+    padding: 0 3px;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+
+  .ghd-file-status-removed {
+    @apply text-red-500 !important;
+    @apply border-red-500 !important;
+  }
+
+  .ghd-file-status-added {
+    @apply text-green-800 dark:text-green-200 !important;
+    @apply border-green-800 dark:border-green-200 !important;
+  }
+
+  .ghd-diff {
+    @apply text-black dark:text-gray-200;
+    overflow-y: hidden;
+  }
+
+  table.ghd-diff {
+    width: 100%
+  }
+
+  .ghd-diff.hidden{
+    display: none;
+  }
+
+  .ghd-chunk-header {
+    @apply bg-gray-100 dark:bg-gray-900;
+    @apply text-gray-500 dark:text-gray-600 text-opacity-30;
+  }
+
+  .ghd-line-number {
+    position: absolute;
+    width: 80px;
+    @apply bg-white dark:bg-black;
+    display: flex;
+    @apply text-black dark:text-gray-200 text-opacity-30;
+    cursor: pointer;
+  }
+
+  .ghd-line-number * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .ghd-line.selected .ghd-line-number,
+  .ghd-line.selected .ghd-line-number,
+  .ghd-line.selected .ghd-text {
+    @apply bg-yellow-100 dark:bg-yellow-700;
+  }
+
+  .ghd-line-number-from {
+    padding-left: 10px;
+  }
+
+  .ghd-line-number-to {
+    padding: 0 10px;
+  }
+
+  .ghd-line-type-add {
+    @apply bg-green-50;
+  }
+
+  .dark .ghd-line-type-add {
+    background-color: rgba(46, 160, 67, 0.2);
+  }
+
+  .dark .ghd-line-type-add .ghd-line-number {
+    background-color: rgba(46, 160, 67, 0.1);
+    color: rgb(126, 231, 135);
+  }
+
+  .ghd-line-type-add .ghd-line-number {
+    @apply bg-green-100;
+  }
+
+  .ghd-line-type-remove {
+    @apply bg-red-50;
+  }
+
+  .dark .ghd-line-type-remove {
+    background-color: rgba(218, 54, 51, 0.2)
+  }
+
+  .ghd-line-type-remove .ghd-line-number {
+    @apply bg-red-100
+  }
+
+  .dark .ghd-line-type-remove .ghd-line-number {
+    color: rgb(248, 81, 73);
+    background-color: rgba(218, 54, 51, 0.1);
+  }
+
+  .ghd-line-number div {
+    width: 35px;
+  }
+
+  .ghd-text-internal {
+    white-space: pre;
+    padding: 0 90px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .ghd-text-user {
+    white-space: pre;
+    padding: 0 90px;
+  }
+}

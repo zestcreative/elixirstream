@@ -11,14 +11,6 @@ defmodule Utility.ProjectRunner do
     GenServer.call(pid, {:run, command, run_opts}, timeout)
   end
 
-  def build_runners() do
-    {:ok, pid} = start_link([])
-    GenServer.call(pid, {:build_runner, "Dockerfile", "latest"}, :timer.minutes(5))
-    GenServer.call(pid, {:build_runner, "Dockerfile.111", "111"}, :timer.minutes(5))
-    GenServer.call(pid, {:build_runner, "Dockerfile.old", "old"}, :timer.minutes(5))
-    GenServer.call(pid, {:build_runner, "Dockerfile.rails", "rails"}, :timer.minutes(5))
-  end
-
   @impl GenServer
   def init(opts) do
     Process.flag(:trap_exit, true)
@@ -50,7 +42,6 @@ defmodule Utility.ProjectRunner do
     {:reply, output(state.output), state}
   end
 
-  @antizombie "bin/external.sh"
   @impl GenServer
   def handle_call({:run, command, run_opts}, from, state) do
     args =
@@ -58,7 +49,7 @@ defmodule Utility.ProjectRunner do
       |> add_mount(run_opts)
       |> add_command(command, run_opts)
 
-    Logger.debug("Running app generator: #{inspect(args)}")
+    Logger.info("Running app generator: #{inspect(args)}")
 
     if broadcaster = state[:opts][:broadcaster] do
       broadcaster.({:progress, "Starting runner", "#{state[:opts][:prefix]}starting"})
@@ -66,7 +57,7 @@ defmodule Utility.ProjectRunner do
     end
 
     port =
-      Port.open({:spawn_executable, path_for(@antizombie)}, [
+      Port.open({:spawn_executable, antizombie()}, [
         :binary,
         :exit_status,
         :stderr_to_stdout,
@@ -76,34 +67,8 @@ defmodule Utility.ProjectRunner do
     {:noreply, %{state | command: Enum.join(args, " "), from: from, port: port}}
   end
 
-  @impl GenServer
-  def handle_call({:build_runner, dockerfile, tag}, from, state) do
-    {user_id, 0} = System.cmd("id", ["-u"])
-    {group_id, 0} = System.cmd("id", ["-g"])
-    Logger.debug("Building runner")
-
-    port =
-      Port.open({:spawn_executable, path_for(@antizombie)}, [
-        :binary,
-        :exit_status,
-        args:
-          args = [
-            Application.get_env(:utility, :docker_bin),
-            "build",
-            "-t",
-            "diff-builder:#{tag}",
-            "--build-arg",
-            "USER_ID=#{String.trim(user_id)}",
-            "--build-arg",
-            "GROUP_ID=#{String.trim(group_id)}",
-            "-f",
-            path_for("diffbuilder/#{dockerfile}"),
-            path_for("diffbuilder/.")
-          ]
-      ])
-
-    {:noreply, %{state | command: Enum.join(args, " "), from: from, port: port}}
-  end
+  @antizombie "bin/external.sh"
+  def antizombie, do: path_for(@antizombie)
 
   @impl GenServer
   def handle_info({_port, {:data, line}}, state) do
@@ -145,7 +110,7 @@ defmodule Utility.ProjectRunner do
 
   defp add_mount(cmd, run_opts) do
     if mount = Keyword.get(run_opts, :mount) do
-      cmd ++ ["-v", "#{mount}:/home/user/app"]
+      cmd ++ ["-v", "#{mount}:/app"]
     else
       cmd
     end
@@ -153,7 +118,7 @@ defmodule Utility.ProjectRunner do
 
   defp add_command(cmd, command, opts) do
     tag = Keyword.get(opts, :tag, "latest")
-    cmd ++ ["--cpus=.5", "--rm", "diff-builder:#{tag}", "/bin/bash", "-c", command]
+    cmd ++ ["--rm", "diff-builder:#{tag}", "/bin/bash", "-c", command]
   end
 
   def path_for(relative_path) do

@@ -16,17 +16,16 @@ defmodule Utility.ProjectBuilder do
 
   @timeout :timer.minutes(20)
   def diff(%Generator{} = generator, opts \\ []) do
-    Logger.debug("Starting a diff #{inspect(generator)}")
+    Logger.info("Starting a diff #{inspect(generator)}")
     %{project: project, from_version: from, to_version: to} = generator
     path_from = tmp_path("package-#{project}-#{from}-")
     path_to = tmp_path("package-#{project}-#{to}-")
+    path_diff = tmp_path("diff-#{project}-#{from}-#{to}-")
     File.mkdir_p!(path_from)
     File.mkdir_p!(path_to)
     opts = Keyword.put_new(opts, :broadcaster, &default_broadcaster/1)
 
     try do
-      path_diff = tmp_path("diff-#{project}-#{from}-#{to}-")
-
       with {:ok, runner_from, generated_from} <- generate_app(generator, :from, path_from, opts),
            {:ok, runner_to, generated_to} <- generate_app(generator, :to, path_to, opts),
            results <- Task.await_many([runner_from, runner_to], @timeout),
@@ -34,7 +33,9 @@ defmodule Utility.ProjectBuilder do
            {nil, _success} <- Map.pop(results, :error),
            {:ok, any?} <- git_diff(generated_from, generated_to, path_diff),
            {:ok, html} <- render_diff(generator, any?, generated_from, generated_to, path_diff) do
-        Utility.Storage.put(generator, html)
+        result = Utility.Storage.put(generator, html)
+        File.rm_rf(html)
+        result
       else
         {errors, _good_results} ->
           {:error, errors}
@@ -45,6 +46,7 @@ defmodule Utility.ProjectBuilder do
     after
       File.rm_rf(path_from)
       File.rm_rf(path_to)
+      File.rm_rf(path_diff)
     end
   end
 
@@ -66,6 +68,8 @@ defmodule Utility.ProjectBuilder do
   end
 
   def git_diff(path_from, path_to, path_out) do
+    Logger.info("Running diff #{path_from}..#{path_to} to #{path_out}")
+
     case System.cmd("git", [
            "-c",
            "core.quotepath=false",
@@ -100,7 +104,11 @@ defmodule Utility.ProjectBuilder do
         Enum.join(
           [
             install_archive(project, version),
-            run_command(command, version, Data.default_flags_for_command(project, command) ++ flags)
+            run_command(
+              command,
+              version,
+              Data.default_flags_for_command(project, command) ++ flags
+            )
           ],
           " && "
         )
@@ -128,6 +136,7 @@ defmodule Utility.ProjectBuilder do
     """
     |> String.trim()
   end
+
   def install_archive("phx_new", version_string) do
     version = Version.parse!(version_string)
 
@@ -162,7 +171,7 @@ defmodule Utility.ProjectBuilder do
   @phx_gen_auth_merged Version.parse!("1.6.0")
   def run_command("phx.gen.auth", version_string, flags) do
     with {:ok, version} <- Version.parse(version_string),
-        :lt <- Version.compare(version, @phx_gen_auth_merged) do
+         :lt <- Version.compare(version, @phx_gen_auth_merged) do
       # This is the separate phx_gen_auth package
       """
       #{run_command("phx.new", "1.5.7", ["my_app"])} &&
@@ -187,39 +196,32 @@ defmodule Utility.ProjectBuilder do
   end
 
   def run_command("phx.new", "master", flags), do: run_command("phx.new", "999.0.0", flags)
+
   def run_command("phx.new", :standard, [where | _] = flags) do
     """
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &> /dev/null || true) &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &> /dev/null || true) &&
-      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &> /dev/null || true) &&
-      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}_web/endpoint.ex &> /dev/null || true)
+      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &> /dev/null || true) &&
+      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex* &> /dev/null || true)
     """
   end
 
   def run_command("phx.new", :umbrella, [where | _] = flags) do
     """
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/prod.secret.exs &> /dev/null || true) &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/config/config.exs &> /dev/null || true) &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/prod.secret.exs &> /dev/null || true) &&
-      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/config/config.exs &> /dev/null || true) &&
-      sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/apps/#{where}_web/lib/#{where}_web/endpoint.ex
+      (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true) &&
+      (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true)
     """
   end
 
   def run_command("phx.new", version_string, [where | _] = flags) do
     version = Version.parse!(version_string)
+
     case {Version.compare(version, @phx_new_github), "--umbrella" in flags} do
       {:lt, _} ->
         """
         yes n | mix phoenix.new #{Enum.join(flags, " ")} &&
-          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/prod.secret.exs &&
-          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/config/config.exs &&
-          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/lib/#{where}/endpoint.ex
+          sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &&
+          sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex*
         """
 
       {_, false} ->
@@ -285,8 +287,10 @@ defmodule Utility.ProjectBuilder do
   @phx_latest_at Version.parse!("1.6.0")
   @phx_111_at Version.parse!("1.3.0")
   def docker_tag_for("phx.new", "master"), do: "latest"
+
   def docker_tag_for("phx.new", version) do
     version = Version.parse!(version)
+
     cond do
       Version.compare(version, @phx_latest_at) -> "latest"
       Version.compare(version, @phx_111_at) -> "111"
@@ -299,7 +303,10 @@ defmodule Utility.ProjectBuilder do
   def docker_tag_for(_command, _version), do: "latest"
 
   defp tmp_path(prefix) do
-    random_string = Base.encode16(:crypto.strong_rand_bytes(4))
-    Path.join([System.tmp_dir!(), "utility", prefix <> random_string])
+    Path.join([
+      Application.get_env(:utility, :storage_dir),
+      "builder",
+      prefix <> Base.encode16(:crypto.strong_rand_bytes(4))
+    ])
   end
 end

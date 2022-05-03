@@ -59,6 +59,7 @@ defmodule Utility.GenDiff.Generator do
   def build_id(command, from, "master", from_flags, to_flags) do
     build_id(command, from, "9999.999.99", from_flags, to_flags) <> "|master"
   end
+
   def build_id(command, from, to, from_flags, to_flags) do
     :md5
     |> :crypto.hash(Enum.join([command, from, to, from_flags, to_flags]))
@@ -95,6 +96,7 @@ defmodule Utility.GenDiff.Generator do
   def put_defaults_for_command(changeset) do
     if command = get_field(changeset, :command) do
       project = get_field(changeset, :project)
+
       changeset
       |> put_change(:default_flags, Data.default_flags_for_command(project, command))
       |> put_change(:flags, Data.flags_for_command(project, command))

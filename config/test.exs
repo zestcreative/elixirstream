@@ -2,22 +2,24 @@ import Config
 
 config :utility, cache: Utility.Test.MockCache
 
+config :utility, Utility.Repo,
+  database: "utility_test#{System.get_env("MIX_TEST_PARTITION")}",
+  show_sensitive_data_on_connection_error: true,
+  hostname: "localhost",
+  pool_size: 10,
+  pool: Ecto.Adapters.SQL.Sandbox
+
 if System.get_env("CI") do
   config :utility, Utility.Repo,
-    url:
-      "postgres://postgres:postgres@postgres:5432/utility_test#{System.get_env("MIX_TEST_PARTITION")}",
-    pool: Ecto.Adapters.SQL.Sandbox
-else
-  config :utility, Utility.Repo,
-    database: "utility_test#{System.get_env("MIX_TEST_PARTITION")}",
-    hostname: "localhost",
-    pool: Ecto.Adapters.SQL.Sandbox
+    hostname: System.get_env("DATABASE_HOST"),
+    username: System.get_env("DATABASE_USER"),
+    password: System.get_env("DATABASE_PASS")
 end
 
-# We don't run a server during test. If one is required,
-# you can enable the server option below.
+config :phoenix, :plug_init_mode, :runtime
+
 config :utility, UtilityWeb.Endpoint,
-  http: [port: 4002],
+  http: [ip: {127, 0, 0, 1}, port: 4002],
   server: false
 
 config :utility,
