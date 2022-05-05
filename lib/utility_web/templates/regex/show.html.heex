@@ -58,7 +58,7 @@
               <%= error_tag(f, :regex) %>
               <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
                 For example:
-                <%= if @function == "name_captures" do %>
+                <%= if @function == "named_captures" do %>
                   <code class="select-all">
                     \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z
                   </code>

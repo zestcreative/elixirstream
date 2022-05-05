@@ -68,20 +68,22 @@ defmodule Utility.ProjectBuilder do
   end
 
   def git_diff(path_from, path_to, path_out) do
-    Logger.info("Running diff #{path_from}..#{path_to} to #{path_out}")
+    args = [
+      "-c",
+      "core.quotepath=false",
+      "-c",
+      "diff.algorithm=histogram",
+      "diff",
+      "--no-index",
+      "--no-color",
+      "--output=#{path_out}",
+      path_from,
+      path_to
+    ]
 
-    case System.cmd("git", [
-           "-c",
-           "core.quotepath=false",
-           "-c",
-           "diff.algorithm=histogram",
-           "diff",
-           "--no-index",
-           "--no-color",
-           "--output=#{path_out}",
-           path_from,
-           path_to
-         ]) do
+    Logger.info("Running diff #{path_from}..#{path_to} to #{path_out}: #{inspect(args)}")
+
+    case System.cmd("git", args) do
       {"", 1} ->
         {:ok, true}
 
@@ -122,7 +124,15 @@ defmodule Utility.ProjectBuilder do
           )
         end)
 
-      {:ok, task, Path.join([path, "my_app"])}
+      {:ok, task, generator_to_output_folder(command, flags, path)}
+    end
+  end
+
+  def generator_to_output_folder(command, flags, path) do
+    if command == "phx.new" && "--umbrella" in flags do
+      Path.join([path, "my_app_umbrella"])
+    else
+      Path.join([path, "my_app"])
     end
   end
 

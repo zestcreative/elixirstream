@@ -9,11 +9,12 @@ if config_env() == :prod do
 
   config :utility,
     redis_ip6: System.get_env("REDIS_IP6") == "true",
-    redis_url: System.get_env("REDIS_URL") ||
-      raise """
-      environment variable REDIS_URL is missing.
-      For example: redis://default:pass@127.0.0.1:6379
-      """
+    redis_url:
+      System.get_env("REDIS_URL") ||
+        raise("""
+        environment variable REDIS_URL is missing.
+        For example: redis://default:pass@127.0.0.1:6379
+        """)
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
@@ -33,7 +34,6 @@ if config_env() == :prod do
         env: "production"
       }
   end
-
 
   config :utility, UtilityWeb.Endpoint,
     http: [port: System.get_env("PORT"), compress: true],
@@ -55,6 +55,7 @@ if config_env() == :prod do
       environment variable DATABASE_URL is missing.
       For example: postgres://USER:PASS@HOST/DATABASE
       """
+
   maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
 
   config :utility, Utility.Repo,

@@ -7,7 +7,9 @@ defmodule Utility.Redix do
     redis_url = URI.parse(Application.get_env(:utility, :redis_url))
     password = redis_url.userinfo && List.last(String.split(redis_url.userinfo, ":"))
     database = (redis_url.path || "/0") |> String.split("/") |> List.last() |> String.to_integer()
-    maybe_ip6 = if Application.get_env(:utility, :redis_ip6), do: [socket_opts: [:inet6]], else: []
+
+    maybe_ip6 =
+      if Application.get_env(:utility, :redis_ip6), do: [socket_opts: [:inet6]], else: []
 
     children =
       for i <- 0..(@pool_size - 1) do
