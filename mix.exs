@@ -41,8 +41,8 @@ defmodule Utility.MixProject do
     [
       {:ansi_to_html, "~> 0.4"},
       {:castore, ">= 0.0.0"},
-      {:ecto_sql, "< 3.8.0", override: true},
-      {:etso, "~> 0.1.2"},
+      {:ecto_sql, "~> 3.8"},
+      {:etso, "~> 1.0"},
       {:gettext, "~> 0.11"},
       {:git_diff, "~> 0.6.3"},
       {:hackney, "~> 1.15"},

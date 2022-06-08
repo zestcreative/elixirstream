@@ -34,7 +34,7 @@ config :utility, UtilityWeb.Endpoint,
   live_view: [signing_salt: "pni4F/on"]
 
 config :esbuild,
-  version: "0.14.38",
+  version: "0.14.41",
   default: [
     args:
       ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
