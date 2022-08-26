@@ -21,6 +21,7 @@ defmodule Utility.GenDiff.Data do
             "--no-ecto",
             "--no-gettext",
             "--no-html",
+            "--no-live",
             "--no-mailer",
             "--no-webpack",
             "--no-assets",
