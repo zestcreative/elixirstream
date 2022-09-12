@@ -31,8 +31,7 @@ defmodule UtilityWeb.Router do
     get "/logout", AuthController, :delete
     delete "/logout", AuthController, :delete
 
-
-    live_session :default, on_mount: UtilityWeb.Nav do
+    live_session :default, on_mount: [UtilityWeb.Nav, UtilityWeb.Live.Defaults] do
       live "/tips", TipLive, :index
       live "/tips/new", TipLive, :new
       live "/tips/:id", TipLive, :show

@@ -2,22 +2,12 @@ defmodule UtilityWeb.Live.Defaults do
   @moduledoc "Helpers to assist with loading the user from the session into the socket"
 
   import Phoenix.LiveView
-  alias Ecto.Changeset
 
   @claims %{"typ" => "access"}
   @token_key "guardian_default_token"
 
-  def defaults(socket, session) do
-    socket
-    |> assign(searching: false, search_changeset: search_changeset(%{}))
-    |> load_user(session)
-  end
-
-  @search_types %{module: :string, q: :string}
-  def search_changeset(params) do
-    {%{}, @search_types}
-    |> Changeset.cast(params, Map.keys(@search_types))
-    |> Changeset.validate_length(:q, max: 75)
+  def on_mount(:default, _params, session, socket) do
+    {:cont, load_user(socket, session)}
   end
 
   def require_user(socket) do

@@ -1,11 +1,13 @@
 defmodule UtilityWeb.GenDiffLive do
   @moduledoc """
-  Perform regex on a given string, and visualize the matches back to the user
+  Perform git diffing for generators' output and store the result HTML into a cache.
   """
 
   use UtilityWeb, :live_view
   alias Utility.ProjectBuilder
-  alias Utility.GenDiff.{Data, Generator}
+  alias Utility.GenDiff.Data
+  alias Utility.GenDiff.Storage
+  alias Utility.GenDiff.Generator
   alias Ecto.Changeset
 
   @impl Phoenix.LiveView
@@ -48,7 +50,7 @@ defmodule UtilityWeb.GenDiffLive do
   @impl Phoenix.LiveView
   def handle_event("diff", %{"generator" => params}, socket) do
     with {:ok, generator} <- Generator.apply(params),
-         {{:error, :not_found}, _} <- {Utility.Storage.get(generator), generator},
+         {{:error, :not_found}, _} <- {Storage.get(generator), generator},
          {:ok, _} <- ProjectBuilder.schedule_diff(generator) do
       topic = "hexgen:progress:#{generator.project}:#{generator.id}"
       UtilityWeb.Endpoint.subscribe(topic)
@@ -73,6 +75,7 @@ defmodule UtilityWeb.GenDiffLive do
     end
   end
 
+  @impl Phoenix.LiveView
   def handle_event("diff", _params, socket) do
     {:noreply, put_flash(socket, :error, "You know... like... fill out stuff")}
   end

@@ -1,13 +1,14 @@
 defmodule Utility.Workers.GenerateDiff do
   use Oban.Worker, queue: :builder
   alias Utility.GenDiff.Generator
+  alias Utility.GenDiff.Storage
 
   @impl Oban.Worker
   def perform(%{args: %{"generator" => params} = _args}) do
     record = hydrate(params)
     broadcaster = make_broadcaster(record)
 
-    with {:error, :not_found} <- Utility.Storage.get(record),
+    with {:error, :not_found} <- Storage.get(record),
          _ <- broadcaster.({:progress, "Started", "all-started"}),
          :ok <- Utility.ProjectBuilder.diff(record, broadcaster: broadcaster) do
       broadcaster.({:progress, "Finished", "all-finished"})

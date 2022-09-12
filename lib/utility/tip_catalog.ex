@@ -1,7 +1,11 @@
 defmodule Utility.TipCatalog do
-  alias Utility.TipCatalog.{Query, Tip, Upvote}
-  alias Utility.Accounts.{User}
-  alias Utility.{Silicon, Storage, Repo}
+  alias Utility.Accounts.User
+  alias Utility.Repo
+  alias Utility.Silicon
+  alias Utility.Storage
+  alias Utility.TipCatalog.Query
+  alias Utility.TipCatalog.Tip
+  alias Utility.TipCatalog.Upvote
   alias Phoenix.PubSub
   import Utility.Accounts, only: [admin?: 1]
   require Ecto.Query

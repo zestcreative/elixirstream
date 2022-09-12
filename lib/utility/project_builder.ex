@@ -1,6 +1,7 @@
 defmodule Utility.ProjectBuilder do
   require Logger
-  alias Utility.GenDiff.{Data, Generator}
+  alias Utility.GenDiff.Data
+  alias Utility.GenDiff.Generator
   alias Utility.ProjectRunner
 
   @known_packages Utility.GenDiff.Data.projects()
@@ -331,7 +332,7 @@ defmodule Utility.ProjectBuilder do
 
   defp tmp_path(prefix) do
     Path.join([
-      Application.get_env(:utility, :storage_dir),
+      Application.get_env(:utility, :gendiff_storage_dir),
       "builder",
       prefix <> Base.encode16(:crypto.strong_rand_bytes(4))
     ])

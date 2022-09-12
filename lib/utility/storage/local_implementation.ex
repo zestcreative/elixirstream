@@ -1,5 +1,5 @@
-defmodule Utility.Storage.LocalImplementation do
-  @behaviour Utility.Storage
+defmodule Utility.GenDiff.Storage.LocalImplementation do
+  @behaviour Utility.GenDiff.Storage
 
   def list(project, term) do
     [dir(), project, term]
@@ -38,6 +38,6 @@ defmodule Utility.Storage.LocalImplementation do
   end
 
   defp dir() do
-    Path.join(Application.get_env(:utility, :storage_dir), "diff-html")
+    Path.join(Application.get_env(:utility, :gendiff_storage_dir), "diff-html")
   end
 end

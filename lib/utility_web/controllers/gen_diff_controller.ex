@@ -3,7 +3,7 @@ defmodule UtilityWeb.GenDiffController do
   require Logger
 
   def show(conn, %{"project" => project, "id" => id} = _params) do
-    case Utility.Storage.get(project, id) do
+    case Utility.GenDiff.Storage.get(project, id) do
       {:ok, diff_stream} ->
         conn
         |> put_resp_content_type("text/html")

@@ -40,7 +40,7 @@ defmodule UtilityWeb.GenDiffView do
 
   defp tmp_path(prefix) do
     random_string = Base.encode16(:crypto.strong_rand_bytes(4))
-    dir = Path.join([Application.get_env(:utility, :storage_dir), "rendered"])
+    dir = Path.join([Application.get_env(:utility, :gendiff_storage_dir), "rendered"])
     File.mkdir_p(dir)
     Path.join([dir, prefix <> random_string])
   end

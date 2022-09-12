@@ -1,4 +1,4 @@
-defmodule Utility.Storage do
+defmodule Utility.GenDiff.Storage do
   @type generator :: %Utility.GenDiff.Generator{}
   @type html :: Path.t()
   @type id :: String.t()
@@ -9,7 +9,7 @@ defmodule Utility.Storage do
   @callback list(project, term) :: list(String.t())
   @callback delete(String.t()) :: :ok
 
-  defp impl(), do: Application.get_env(:utility, :storage)
+  defp impl(), do: Application.get_env(:utility, :gendiff_storage)
 
   def get(generator) do
     get(generator.project, generator.id)

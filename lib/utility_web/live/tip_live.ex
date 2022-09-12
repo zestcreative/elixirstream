@@ -2,7 +2,6 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
-  import UtilityWeb.Live.Defaults
   alias Ecto.Changeset
   alias Utility.TipCatalog
   require Logger
@@ -43,6 +42,13 @@ defmodule UtilityWeb.TipLive do
     |> validate_total_length()
   end
 
+  @search_types %{module: :string, q: :string}
+  def search_changeset(params) do
+    {%{}, @search_types}
+    |> Changeset.cast(params, Map.keys(@search_types))
+    |> Changeset.validate_length(:q, max: 75)
+  end
+
   defp assign_computed(socket) do
     changeset = socket.assigns.changeset
     total_count = Changeset.get_field(changeset, :total_characters)
@@ -67,14 +73,14 @@ defmodule UtilityWeb.TipLive do
   end
 
   @impl true
-  def mount(_params, session, socket) do
+  def mount(_params, _session, socket) do
     if connected?(socket) do
       Phoenix.PubSub.subscribe(Utility.PubSub, "tips")
     end
 
     {:ok,
      socket
-     |> defaults(session)
+     |> assign(searching: false, search_changeset: search_changeset(%{}))
      |> mount_new_tip()}
   end
 
@@ -381,31 +387,6 @@ defmodule UtilityWeb.TipLive do
     else
       Map.put(params, "approved", false)
     end
-  end
-
-  def pagination(assigns) do
-    assigns = assign_new(assigns, :page_metadta, fn -> nil end)
-
-    ~H"""
-    <%= if @page_metadata && (@page_metadata.before || @page_metadata.after) do %>
-      <nav id={@nav_id} aria-label="Pagination" class="px-2 flex-1 flex justify-between sm:justify-end">
-        <button phx-click="prev-page" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white hover:bg-gray-50">
-          <!-- Heroicon name: chevron-left -->
-          <svg class="text-gray-400 h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-          <span class="font-medium text-gray-900">Previous Page</span>
-        </button>
-        <button phx-click="next-page" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white hover:bg-gray-50">
-          <span class="font-medium mr-1 text-gray-900">Next Page</span>
-          <!-- Heroicon name: chevron-right -->
-          <svg class="text-gray-400 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </nav>
-    <% end %>
-    """
   end
 
   def max_characters, do: @character_limit

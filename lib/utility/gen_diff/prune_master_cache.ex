@@ -1,6 +1,7 @@
 defmodule Utility.GenDiff.PruneMasterCache do
   use GenServer
   require Logger
+  alias Utility.GenDiff.Storage
 
   @default_prune_every :timer.hours(12)
 
@@ -39,10 +40,10 @@ defmodule Utility.GenDiff.PruneMasterCache do
     |> Enum.map(fn project ->
       {project,
        project
-       |> Utility.Storage.list("*master*")
+       |> Storage.list("*master*")
        |> Enum.map(fn cached_diff ->
          Logger.info("PruneMastercache: pruning #{cached_diff}")
-         Utility.Storage.delete(cached_diff)
+         Storage.delete(cached_diff)
          cached_diff
        end)}
     end)
