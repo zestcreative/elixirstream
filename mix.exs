@@ -43,9 +43,14 @@ defmodule Utility.MixProject do
       {:castore, ">= 0.0.0"},
       {:ecto_sql, "~> 3.8"},
       {:etso, "~> 1.0"},
+      {:finch, "~> 0.6"},
       {:gettext, "~> 0.11"},
       {:git_diff, "~> 0.6.3"},
+      {:guardian, "~> 2.0"},
+      {:makeup, "~> 1.0"},
+      {:makeup_elixir, "~> 0.14"},
       {:hackney, "~> 1.15"},
+      {:quarto, "~> 1.0"},
       {:hex_core, "~> 0.7.0"},
       {:jason, "~> 1.1"},
       {:oban, "~> 2.3"},
@@ -61,13 +66,15 @@ defmodule Utility.MixProject do
       {:telemetry, "~> 1.1", override: true},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 1.0"},
-      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev},
-      # Test
+      {:ueberauth, "~> 0.6"},
+      {:ueberauth_github, "~> 0.7"},
+      {:ueberauth_twitter, "~> 0.3"},
+      # Test/Dev
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:floki, ">= 0.0.0", only: :test},
-      # Dev
-      {:phoenix_live_reload, "~> 1.2", only: :dev}
+      {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:tailwind, "~> 0.1", runtime: Mix.env() == :dev}
     ]
   end
 

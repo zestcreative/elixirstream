@@ -28,6 +28,12 @@ COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
 RUN mix release
 
+## DEP - SILICON
+RUN apk add --no-cache curl cmake expat-dev libxcb pkgconfig freetype-dev python3 libxcb-dev libxkbcommon-dev
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+RUN cargo install --root /bin silicon
+
 # APP LAYER
 
 FROM docker:20.10.14-alpine3.15 AS app
@@ -43,6 +49,7 @@ RUN addgroup -S docker && \
 WORKDIR /app
 RUN chown -R 1000:1000 /app
 COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
+COPY --from=build /bin/silicon /bin/silicon
 COPY priv/docker-setup /sbin/docker-setup
 COPY priv/docker-daemon.json /etc/docker/daemon.json
 RUN chmod 711 /sbin/docker-setup

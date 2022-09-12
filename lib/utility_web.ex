@@ -77,7 +77,6 @@ defmodule UtilityWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import UtilityWeb.Gettext
     end
   end
 
@@ -94,7 +93,6 @@ defmodule UtilityWeb do
       import UtilityWeb.Views.LinkHelpers
 
       import UtilityWeb.ErrorHelpers
-      import UtilityWeb.Gettext
       alias UtilityWeb.Router.Helpers, as: Routes
     end
   end

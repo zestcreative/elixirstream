@@ -23,10 +23,13 @@ config :utility, Oban,
   plugins: [Oban.Plugins.Pruner],
   queues: [builder: 1]
 
+config :utility, Utility.Repo, migration_timestamps: [type: :utc_datetime]
+
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "gJjLZxqBoWFJVdwbLjZe1v2jd2txjpePiZan9WJrhOZsnKhLGftHdjSDHOmDQ+tP",
+  signing_salt: "foobar",
   render_errors: [view: UtilityWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
@@ -35,7 +38,7 @@ config :esbuild,
   version: "0.14.41",
   default: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.js --bundle --target=es2017 --loader:.ttf=file --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -70,6 +73,29 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :ueberauth, Ueberauth,
+  base_path: "/login",
+  json_library: Jason,
+  providers: [
+    github:
+      {Ueberauth.Strategy.Github,
+       [
+         request_path: "/login/github",
+         callback_methods: ["POST"],
+         callback_path: "/login/github/callback",
+         allow_private_emails: true,
+         send_redirect_uri: true,
+         default_scope: "read:user"
+       ]},
+    twitter:
+      {Ueberauth.Strategy.Twitter,
+       [
+         request_path: "/login/twitter",
+         callback_path: "/login/twitter/callback",
+         callback_methods: ["POST"]
+       ]}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

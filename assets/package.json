@@ -3,6 +3,10 @@
   "description": " ",
   "license": "MIT",
   "dependencies": {
+    "lodash.debounce": "^4.0.8",
+    "monaco-editor": "^0.34.0",
+    "monaco-emacs": "^0.3.0",
+    "monaco-vim": "^0.3.4",
     "phoenix": "file:../deps/phoenix",
     "phoenix_html": "file:../deps/phoenix_html",
     "phoenix_live_view": "file:../deps/phoenix_live_view",

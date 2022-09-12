@@ -8,23 +8,17 @@
             class="inline-flex items-center select-none text-white text font-bold rounded-md bg-white bg-opacity-0"
             aria-current="page"
           >
-            <svg
-              class="w-8 h-8 mr-1"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3.293 1.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L7.586 10 5.293 7.707a1 1 0 010-1.414zM11 12a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            Utilities
+            <%= img_tag Routes.static_path(@socket, "/images/logo.svg"), class: "w-8 h-8 mr-1", alt: "Elixir Stream" %>
+            <span class="leading-none text-md font-brand">Elixir<br>Stream</span>
           </div>
           <!-- Desktop nav -->
           <div class="hidden lg:block lg:col-span-2">
             <nav class="flex space-x-4">
+              <%= live_redirect("Elixir Tips",
+                to: Routes.tip_path(@socket, :index),
+                class: "nav-link #{if @active_tab == :tips, do: "active"}"
+              ) %>
+
               <%= live_redirect("Regex Tester",
                 to: Routes.regex_path(@socket, :new),
                 class: "nav-link #{if @active_tab == :regex, do: "active"}"
@@ -156,6 +150,13 @@
           </div>
         </div>
         <div class="mt-3 px-2 space-y-1">
+          <%= live_redirect("Regex Tester",
+            to: Routes.tip_path(@socket, :index),
+            class:
+              "block rounded-md px-3 py-2 text-base dark:text-gray-100 text-gray-900 font-medium hover:bg-gray-100
+              dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-200 #{if @active_tab == :tips, do: "active"}"
+          ) %>
+
           <%= live_redirect("Regex Tester",
             to: Routes.regex_path(@socket, :new),
             class:
