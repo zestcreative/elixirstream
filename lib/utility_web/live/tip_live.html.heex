@@ -4,31 +4,34 @@
       <!-- Profile dropdown -->
       <div class="flex-shrink-0 relative">
         <div>
-          <button phx-click={toggle_user_menu()} type="button" class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" id="user-menu" aria-expanded="false" aria-haspopup="true">
+          <button phx-click={toggle_user_menu()} type="button"
+            class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
+            id="user-menu" aria-expanded="false" aria-haspopup="true">
             <span class="sr-only">Open user menu</span>
             <img class="h-8 w-8 rounded-full" src={@current_user.avatar} alt="">
           </button>
         </div>
 
         <!-- User menu -->
-        <div id="user-profile" phx-click-away={toggle_user_menu()} class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+        <div id="user-profile" phx-click-away={toggle_user_menu()}
+          class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300"
+          role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
           <div>
-            <.link href={~p"/logout"} method={"delete"}
-              class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+            <.link href={~p"/logout"} method={"delete"} class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
               role="menuitem">Sign out</.link>
           </div>
           <%= if admin?(@current_user) do %>
             <div>
-              <.link href={~p"/admin/dashboard"}
-                class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+              <.link href={~p"/admin/dashboard"} class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
                 role="menuitem">Dashboard</.link>
 
             </div>
-          <% end %>
+            <% end %>
         </div>
       </div>
-    <% end %>
+      <% end %>
   </:title_area>
+
   <:call_to_action>
     <label for="search" class="sr-only">Search</label>
     <div class="relative">
@@ -37,122 +40,94 @@
       </div>
 
       <.form let={f} as={:search} for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
-      <%= search_input f, :q, phx_debounce: "250",
-        class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm",
-        maxlength: "75",
-        phx_hook: "RegisterSlash",
-        placeholder: "Search tips",
-        id: "search"
-      %>
+        <%= search_input f, :q, phx_debounce: "250", class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm", maxlength: "75" , phx_hook: "RegisterSlash" , placeholder: "Search tips" , id: "search" %>
       </.form>
     </div>
 
     <%= if @current_user.id do %>
       <%# Nothing %>
     <% else %>
-      <.link href={~p"/auth/github"} class="ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+      <.link href={~p"/auth/github"}
+        class="ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
         <UtilityWeb.Components.github_icon class="text-white -ml-0.5 mr-2 h-4 w-4" />
         Login
       </.link>
     <% end %>
 
-    <%= if @live_action == :index do %>
-      <.link class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" patch={~p"/tips/new"}>New Tip</.link>
-    <% else %>
-      <.link class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" patch={~p"/tips"}>Back</.link>
-    <% end %>
+    <.link patch={~p"/tips/new"} class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+      New Tip
+    </.link>
 
   </:call_to_action>
 
   <:content>
     <%= if @live_action == :new || @live_action == :edit do %>
-      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form">
-      <%= if @current_user.id do %>
-        <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action == :new , do: "create", else: "update"}>
-          <div>
-            <div class="flex space-x-3">
-              <div class="flex-shrink-0">
-                <img class="h-10 w-10 rounded-full" src={@tip_form.contributor.avatar} alt="">
-              </div>
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-medium text-gray-900">
-                <span><%= @tip_form.contributor.name %></span>
+      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
+        <%= if @current_user.id do %>
+          <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action==:new , do: "create" ,
+            else: "update" }>
+            <div>
+              <div class="flex space-x-3">
+                <div class="flex-shrink-0">
+                  <img class="h-10 w-10 rounded-full" src={@tip_form.contributor.avatar} alt="">
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-medium text-gray-900">
+                    <span>
+                      <%= @tip_form.contributor.name %>
+                    </span>
 
-                <p class="inline-flex items-center">
-                  <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
-                  <a href={"https://github.com/#{@tip_form.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.username %></a>
-                </p>
-                <%= if @tip_form.contributor.twitter do %>
-                  <p class="ml-3 inline-flex items-center">
-                    <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
-                    <a href={"https://twitter.com/#{@tip_form.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.twitter %></a>
+                    <p class="inline-flex items-center">
+                      <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
+                      <a href={"https://github.com/#{@tip_form.contributor.username}"} target="_blank" rel="nofollow"
+                        class="hover:underline text-xs text-gray-500">
+                        <%= @tip_form.contributor.username %>
+                      </a>
+                    </p>
+
+                    <%= if @tip_form.contributor.twitter do %>
+                      <p class="ml-3 inline-flex items-center">
+                        <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
+                        <a href={"https://twitter.com/#{@tip_form.contributor.twitter}"} rel="nofollow" target="_blank"
+                          class="hover:underline text-xs text-gray-500">
+                          <%= @tip_form.contributor.twitter %>
+                        </a>
+                      </p>
+                    <% end %>
                   </p>
-                <% end %>
-                </p>
-                <p class="text-sm text-gray-500">
-                <div class="sm:col-span-3">
-                </div>
-                </p>
-              </div>
-            </div>
-          </div>
-          <div class="mt-2 text-sm text-gray-700 space-y-4">
-            <div class="mt-1">
-              <%= label f, :title, "Title", class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1">
-                <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                <%= error_tag f, :title %>
-              </div>
-            </div>
-            <div class="mt-1">
-              <%= label f, :description, "Description", class: "block text-sm font-medium text-gray-700" %>
-              <div class="mt-1">
-                <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                <%= error_tag f, :description %>
-              </div>
-              <div class="relative pt-1">
-                <% {track_color, bar_color} = color_for_bar(@character_count, max_characters()) %>
-                <div class={"overflow-hidden h-4 mb-4 text-xs flex rounded #{track_color}"}>
-                  <div style={"width: #{@character_percent}%"} class={"shadow-none flex flex-col whitespace-nowrap text-white justify-center #{bar_color}"}>
-
-                    <span class="text-xs pl-1"><%= @character_count %> / <%= max_characters() %></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-1">
-              <%= label f, :code, "Code", class: "block text-sm font-medium text-gray-700" %>
-              <div class="relative w-full" phx-hook="MonacoEditor" phx-update="ignore" id="code-editor-content"
-                data-editor-status-selector="#code-editor-status"
-                data-mount-replace-selector="#code-editor-mount-replace"
-                data-mount-selector="#code-editor-mount"
-                data-enable-emacs={"#{@current_user.editor_choice == :emacs}"}
-                data-enable-vim={"#{@current_user.editor_choice == :vim}"}
-                class="mt-1">
-                <%= textarea f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace" %>
-                <div phx-update="ignore" class="h-64 hidden" id="code-editor-mount"></div>
-                <div class="font-mono pt-1" id="code-editor-status"></div>
-                <span class="text-gray-500 text-xs">CTRL-M toggles trapping tab</span>
-                <%= error_tag f, :code %>
-              </div>
-            </div>
-            <div class="mt-1">
-              <%= if @preview_image_url do %>
-                <img src={@preview_image_url} class="cursor-pointer w-24" phx-click={show_codeshot_preview()} />
-              <% end %>
-              <div id="codeshot-preview" class="fixed z-10 inset-0 overflow-y-auto hidden" phx-click-away={hide_codeshot_preview()}>
-                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                  <div id="codeshot-wash" phx-click={hide_codeshot_preview()} class="hidden fixed inset-0 transition-opacity" aria-hidden="true">
-                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                  </div>
-                  <span class="sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                  <div id="codeshot-content" class="hidden align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
-                      <button phx-click={hide_codeshot_preview()} type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                        <UtilityWeb.Components.close_icon class="h-6 w-6" />
-                      </button>
+                  <p class="text-sm text-gray-500">
+                    <div class="sm:col-span-3">
                     </div>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2 text-sm text-gray-700 space-y-4">
+              <div class="mt-1">
+                <%= label f, :title, "Title" , class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                  <%= error_tag f, :title %>
+                </div>
+              </div>
+              <div class="mt-1">
+                <%= label f, :description, "Description" , class: "block text-sm font-medium text-gray-700" %>
+                <div class="mt-1">
+                  <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                  <%= error_tag f, :description %>
+                </div>
+
+                <div class="relative pt-1">
+                  <% {track_color, bar_color}=color_for_bar(@character_count, max_characters()) %>
+                  <div class={"overflow-hidden h-4 mb-4 text-xs flex rounded #{track_color}"}>
+                    <div style={"width: #{@character_percent}%"} class={"shadow-none flex flex-col whitespace-nowrap text-white justify-center #{bar_color}"}>
+
+                      <span class="text-xs pl-1">
+                        <%= @character_count %> / <%= max_characters() %>
+                      </span>
+                    </div>
+
                     <div class="sm:flex sm:items-start">
                       <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                         <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
@@ -160,7 +135,7 @@
                         </h3>
                         <div class="mt-2">
                           <p class="text-sm text-gray-500">
-                            <img src={@preview_image_url} class="object-contain h-1/2-screen" />
+                            <img :src="src" class="object-contain h-1/2-screen" />
                           </p>
                         </div>
                       </div>
@@ -169,103 +144,109 @@
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="mt-6 flex justify-between space-x-8">
-            <div class="flex space-x-6">
-            </div>
-            <div class="flex text-sm">
-              <%= if @live_action == :edit do %>
-                <%= if @tip.twitter_status_id != nil do %>
-                  <span class="text-xs text-gray-600">Tweet is already published. Updating will not update the tweet</span>
-                <% end %>
-                <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
-                  <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Update
-                <% end %>
-              <% else %>
-                <div class="inline-flex items-center text-sm">
-                  <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
-                  <div class="ml-2">
-                    <%= date_input f, :published_at, min: Date.to_iso8601(Date.utc_today()), class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                    <%= error_tag f, :published_at %>
-                  </div>
-                </div>
-                <span class="inline-flex items-center text-sm">
-                  <button phx-click="preview" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-brand-700 bg-brand-100 hover:bg-brand-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                    Preview
-                  </button>
-                </span>
-                <span class="inline-flex items-center text-sm">
+            <div class="mt-6 flex justify-between space-x-8">
+              <div class="flex space-x-6">
+              </div>
+              <div class="flex text-sm">
+                <%= if @live_action == :edit do %>
+                  <%= if @tip.twitter_status_id do %>
+                    <span class="text-xs text-gray-600">Tweet is already published. Updating will not update the tweet</span>
+                  <% end %>
                   <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
                     <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                      </circle>
+                      <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                      </path>
                     </svg>
-                    Submit tip!
+                    Update
                   <% end %>
-                </span>
-              <% end %>
+                <% else %>
+                  <div class="inline-flex items-center text-sm">
+                    <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
+                    <div class="ml-2">
+                      <%= date_input f, :published_at, min: Date.to_iso8601(Date.utc_today()), class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                      <%= error_tag f, :published_at %>
+                    </div>
+                  </div>
+                  <h2 id={"tip-title-#{tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
+                    <%= link tip.title, to: Routes.tip_path(@socket, :show, tip.id) %>
+                  </h2>
+                  <div class="mt-2 text-sm text-gray-700 space-y-4">
+                    <%= tip.description %>
+                  </div>
+                  <div class="mt-2 text-sm">
+                    <%= raw(Makeup.highlight(tip.code)) %>
+                  </div>
+                </div>
+                <div class="mt-6 flex justify-between space-x-8">
+                  <div class="flex space-x-6">
+                    <span class="inline-flex items-center text-sm">
+                      <%= cond do %>
+                        <% @current_user.id && @current_user.id !=tip.contributor_id && tip.id not in @upvoted_tip_ids ->
+                          %>
+                          <button phx-click="upvote-tip" phx-value-tip-id={tip.id}
+                            class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
+                            <!-- Heroicon name: solid/thumb-up -->
+                            <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
+                            <span class="font-medium text-gray-900">
+                              <%= tip.upvote_count + @tip.twitter_like_count %>
+                            </span>
+                            <span class="sr-only">upvotes</span>
+                          </button>
+                          <% @current_user.id && @current_user.id !=tip.contributor_id && tip.id in @upvoted_tip_ids -> %>
+                            <button phx-click="downvote-tip" phx-value-tip-id={tip.id}
+                              class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
+                              <UtilityWeb.Components.thumbs_up_icon
+                                class="h-5 w-5 transform duration-300 hover:rotate-180" />
+                              <span class="font-medium text-gray-900">
+                                <%= tip.upvote_count + tip.twitter_like_count %>
+                              </span>
+                              <span class="sr-only">upvotes</span>
+                            </button>
+                            <% true -> %>
+                              <div class="inline-flex space-x-2 text-gray-400">
+                                <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
+                                <span class="font-medium text-gray-900">
+                                  <%= tip.upvote_count + tip.twitter_like_count %>
+                                </span>
+                                <span class="sr-only">upvotes</span>
+                              </div>
+                      <% end %>
+                    </span>
+                  </div>
+
+                  <div class="flex text-sm">
+                    <!-- <span class="inline-flex items-center text-sm">
+                      <button class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
+                        </svg>
+                        <span class="font-medium text-gray-900">Share</span>
+                      </button>
+                    </span> -->
+                    <%= if show_edit?(tip, @current_user) do %>
+                      <.link patch={~p"tips/#{@tip.id}"} class="ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        <span class="font-medium text-gray-900">Edit</span>
+                      </.link>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-        </.form>
-      <% else %>
-        You must be logged in to submit tips
-      <% end %>
-      </div>
-    <% end %>
-
-    <%= if @live_action == :show do %>
-      <UtilityWeb.Components.tip_card upvoted_tip_ids={@upvoted_tip_ids} tip={@tip} socket={@socket}
-        current_user={@current_user} class="mt-4" />
-    <% end %>
-
-    <%= if @live_action == :index do %>
-      <%= if @searching && @tips == [] do %>
-        <div id="no-tips-result" class="mx-auto flex flex-col content-center justify-center">
-          <div class="mt-2 text-center">No results 😿</div>
-          <svg class="mt-6 mx-auto block w-64 h-64" xmlns="http://www.w3.org/2000/svg" id="bac3cfc7-b61b-48ce-8441-8100e40ddaa6" width="797.5" height="834.5" viewBox="0 0 797.5 834.5">
-            <ellipse cx="308.5" cy="780" rx="308.5" ry="54.5" fill="#3f3d56"/>
-            <circle cx="496" cy="301.5" r="301.5" fill="#3f3d56"/>
-            <circle cx="496" cy="301.5" r="248.89787" opacity="0.05"/>
-            <circle cx="496" cy="301.5" r="203.99362" opacity="0.05"/>
-            <circle cx="496" cy="301.5" r="146.25957" opacity="0.05"/>
-            <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-            <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" opacity="0.1"/>
-            <path d="M415.10084,515.74682s-1.75585,16.68055-2.63377,17.55847.87792,2.63377,0,5.26754-1.75585,6.14547,0,7.02339-9.65716,78.13521-9.65716,78.13521-28.09356,36.8728-16.68055,94.81576l3.51169,58.82089s27.21564,1.75585,27.21564-7.90132c0,0-1.75585-11.413-1.75585-16.68055s4.38962-5.26754,1.75585-7.90131-2.63377-4.38962-2.63377-4.38962,4.38961-3.51169,3.51169-4.38962,7.90131-63.2105,7.90131-63.2105,9.65716-9.65716,9.65716-14.92471v-5.26754s4.38962-11.413,4.38962-12.29093,23.70394-54.43127,23.70394-54.43127l9.65716,38.62864,10.53509,55.3092s5.26754,50.04165,15.80262,69.356c0,0,18.4364,63.21051,18.4364,61.45466s30.72733-6.14547,29.84941-14.04678-18.4364-118.5197-18.4364-118.5197L533.62054,513.991Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-            <path d="M391.3969,772.97846s-23.70394,46.53-7.90131,48.2858,21.94809,1.75585,28.97148-5.26754c3.83968-3.83968,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01858-8.16366-10.53508-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-            <path d="M522.20753,807.21748s-23.70394,46.53-7.90131,48.28581,21.94809,1.75584,28.97148-5.26754c3.83968-3.83969,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01857-8.16367-10.53509-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-            <circle cx="295.90488" cy="215.43252" r="36.90462" fill="#ffb8b8"/>
-            <path d="M473.43048,260.30832S447.07,308.81154,444.9612,308.81154,492.41,324.62781,492.41,324.62781s13.70743-46.39439,15.81626-50.61206Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
-            <path d="M513.86726,313.3854s-52.67543-28.97148-57.943-28.09356-61.45466,50.04166-60.57673,70.2339,7.90131,53.55335,7.90131,53.55335,2.63377,93.05991,7.90131,93.93783-.87792,16.68055.87793,16.68055,122.90931,0,123.78724-2.63377S513.86726,313.3854,513.86726,313.3854Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-            <path d="M543.2777,521.89228s16.68055,50.91958,2.63377,49.16373-20.19224-43.89619-20.19224-43.89619Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
-            <path d="M498.50359,310.31267s-32.48318,7.02339-27.21563,50.91957,14.9247,87.79237,14.9247,87.79237l32.48318,71.11182,3.51169,13.16886,23.70394-6.14547L528.353,425.32067s-6.14547-108.86253-14.04678-112.37423A33.99966,33.99966,0,0,0,498.50359,310.31267Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-            <polygon points="277.5 414.958 317.885 486.947 283.86 411.09 277.5 414.958" opacity="0.1"/>
-            <path d="M533.896,237.31585l.122-2.82012,5.6101,1.39632a6.26971,6.26971,0,0,0-2.5138-4.61513l5.97581-.33413a64.47667,64.47667,0,0,0-43.1245-26.65136c-12.92583-1.87346-27.31837.83756-36.182,10.43045-4.29926,4.653-7.00067,10.57018-8.92232,16.60685-3.53926,11.11821-4.26038,24.3719,3.11964,33.40938,7.5006,9.18513,20.602,10.98439,32.40592,12.12114,4.15328.4,8.50581.77216,12.35457-.83928a29.721,29.721,0,0,0-1.6539-13.03688,8.68665,8.68665,0,0,1-.87879-4.15246c.5247-3.51164,5.20884-4.39635,8.72762-3.9219s7.74984,1.20031,10.062-1.49432c1.59261-1.85609,1.49867-4.559,1.70967-6.99575C521.28248,239.785,533.83587,238.70653,533.896,237.31585Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-            <circle cx="559" cy="744.5" r="43" fill="#9428ec"/>
-            <circle cx="54" cy="729.5" r="43" fill="#9428ec"/>
-            <circle cx="54" cy="672.5" r="31" fill="#9428ec"/>
-            <circle cx="54" cy="624.5" r="22" fill="#9428ec"/>
-          </svg>
-        </div>
-      <% else %>
-        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="top-pagination-nav" class="mt-4" />
-
-        <ul phx-hook="HandleScroll" id="tips-list" class="mt-4 space-y-4">
-          <%= for tip <- @tips do %>
-            <li data-tip id={"tip-#{tip.id}"}>
-              <UtilityWeb.Components.tip_card upvoted_tip_ids={@upvoted_tip_ids} tip={tip} socket={@socket} current_user={@current_user} />
-            </li>
+          </.form>
+          <% else %>
+            You must be logged in to submit tips
           <% end %>
-        </ul>
-
-        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="bottom-pagination-nav" class="mt-4" />
+      </div>
       <% end %>
-    <% end %>
+        <% end %>
   </:content>
-
 </UtilityWeb.Components.page_panel>
-

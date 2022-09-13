@@ -1,5 +1,6 @@
 defmodule UtilityWeb.Components do
   @moduledoc false
+
   use UtilityWeb, :html
   import Utility.Accounts, only: [admin?: 1]
 
