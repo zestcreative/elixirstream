@@ -18,8 +18,9 @@ hooks.RegisterSlash = {
 
 hooks.HandleScroll = {
   mounted() {
-    this.handleEvent("scroll", ({ selector }) => {
-      const el = document.querySelector(selector)
+    this.handleEvent("scroll", ({ to }) => {
+      if (!to) return
+      const el = document.querySelector(to)
       if(el) {
         el.scrollIntoView({ behavior: "smooth" })
         location.hash = to

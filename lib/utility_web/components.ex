@@ -1,6 +1,240 @@
 defmodule UtilityWeb.Components do
   @moduledoc false
   use Phoenix.Component
+  import Utility.Accounts, only: [admin?: 1]
+  alias Phoenix.LiveView.JS
+  alias UtilityWeb.Router.Helpers, as: Routes
+
+  def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
+  def show_edit?(_tip, current_user), do: admin?(current_user)
+
+  def show_approve?(%{approved: true}, _current_user), do: false
+  def show_approve?(_tip, current_user), do: admin?(current_user)
+
+  def show_delete?(%{contributor_id: user_id}, %{id: user_id}), do: true
+  def show_delete?(_tip, current_user), do: admin?(current_user)
+
+  def tip_card(assigns) do
+    assigns = assign_new(assigns, :class, fn -> "" end)
+
+    ~H"""
+    <article aria-labelledby={"tip-title-#{@tip.id}"} class={"#{if @tip.approved, do: "dark:border-gray-200", else: "border-yellow-100"} overflow-hidden px-4 py-6 sm:p-6 sm:rounded-md #{@class}"}>
+      <div>
+        <div class="flex space-x-3">
+          <div class="flex-shrink-0">
+            <img class="h-10 w-10 rounded-full" src={@tip.contributor.avatar} alt="">
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="flex mr-4 items-center justify-between text-sm font-medium text-gray-900">
+              <span><%= @tip.contributor.name %></span>
+              <time class="text-gray-500" datetime={DateTime.to_iso8601(@tip.published_at)}><%= @tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
+            </p>
+            <p class="inline-flex items-center">
+              <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3
+  w-3" />
+              <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow"
+              class="hover:underline text-xs text-gray-500"><%= @tip.contributor.username %></a>
+            </p>
+            <%= if @tip.contributor.twitter do %>
+              <p class="ml-3 inline-flex items-center">
+                <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
+                <a href={"https://twitter.com/#{@tip.contributor.twitter}"} rel="nofollow" target="_blank"
+                class="hover:underline text-xs text-gray-500"><%= @tip.contributor.twitter %></a>
+              </p>
+            <% end %>
+          </div>
+        </div>
+        <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
+          <%= live_patch @tip.title, to: Routes.tip_path(@socket, :show, @tip.id) %>
+        </h2>
+      </div>
+      <div class="mt-2 text-sm text-gray-700 space-y-4">
+        <%= @tip.description %>
+      </div>
+      <div class="mt-2 text-sm">
+        <%= Phoenix.HTML.raw(Makeup.highlight(@tip.code)) %>
+      </div>
+      <div class="mt-6 flex justify-between space-x-8">
+        <div class="flex space-x-6">
+          <span class="inline-flex items-center text-sm">
+            <%= cond do %>
+              <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id not in @upvoted_tip_ids -> %>
+                <button phx-click="upvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
+                  <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
+                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="sr-only">upvotes</span>
+                </button>
+              <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id in @upvoted_tip_ids -> %>
+                <button phx-click="downvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
+                  <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5 transform duration-300 hover:rotate-180" />
+                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="sr-only">upvotes</span>
+                </button>
+              <% true -> %>
+                <div class="inline-flex space-x-2 text-gray-400">
+                  <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
+                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="sr-only">upvotes</span>
+                </div>
+            <% end %>
+          </span>
+        </div>
+        <div class="flex text-sm">
+          <%= if show_edit?(@tip, @current_user) do %>
+            <%= live_patch to: Routes.tip_path(@socket, :edit, @tip.id), class: "ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500" do %>
+              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              <span class="font-medium text-gray-900">Edit</span>
+            <% end %>
+          <% end %>
+
+          <%= if show_delete?(@tip, @current_user) do %>
+            <span class="ml-2 inline-flex items-center text-sm">
+              <button phx-click="delete-tip" phx-value-tip-id={@tip.id} class="inline-flex space-x-2 text-red-400 hover:text-red-500">
+                <!-- Heroicon name: outline/trash -->
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                <span class="font-medium text-red-900">Delete</span>
+              </button>
+            </span>
+          <% end %>
+
+          <%= if show_approve?(@tip, @current_user) do %>
+            <span class="ml-2 inline-flex items-center text-sm">
+              <button phx-click="approve-tip" phx-value-tip-id={@tip.id} class="inline-flex space-x-2 text-green-400 hover:text-green-500">
+                <!-- Heroicon name: outline/badge-check -->
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span class="font-medium text-green-900">Approve</span>
+              </button>
+            </span>
+          <% end %>
+
+        </div>
+      </div>
+    </article>
+    """
+  end
+
+  def tab_active, do: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]
+  def tab_active_str, do: Enum.join(tab_active(), " ")
+
+  def tab(assigns) do
+    assigns = assigns |> assign_new(:class, fn -> nil end) |> assign_new(:active, fn -> false end)
+    active_class = if assigns[:active], do: "", else: "hidden"
+
+    ~H"""
+    <div data-tab-group={@group} data-tab={"tab-#{@id}-content"} id={"tab-#{@id}-content"} class={"#{@class} #{active_class}"}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
+
+  def tab_select(assigns) do
+    ~H"""
+      <label class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700" for={"#{@group}-select"}>
+        <%= @title %>
+      </label>
+      <select
+        class="mt-1 rounded-md focus:ring focus:ring-blue-500 focus:ring-opacity-50 focus:border-accent-500 block w-full pl-3 pr-10 py-2 text-base leading-6 dark:border-gray-700 border-gray-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
+        data-tab-group={@group}
+        aria-label={@title}
+        id={"#{@group}-select"}
+        phx-change={JS.dispatch("changeTab", detail: %{active: tab_active()})}>
+        <%= render_slot(@inner_block) %>
+      </select>
+    """
+  end
+
+  def tab_button(assigns) do
+    assigns = assign_new(assigns, :active, fn -> false end)
+    assigns = assign_new(assigns, :active, fn -> false end)
+
+    ~H"""
+    <button
+      id={"tab-#{@id}-btn"}
+      type="button"
+      data-tab={@target}
+      data-tab-group={@group}
+      phx-click={JS.dispatch("changeTab", detail: %{active: tab_active()})}
+      class={"ring-brand-900 px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 dark:hover:text-gray-300 hover:text-gray-700 hover:border-brand-500 focus:outline-none dark:focus:text-gray-300 focus:text-gray-700 focus:border-brand-500 #{if @active == "true", do: tab_active_str()}"}
+      >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
+  end
+
+  def page_panel(assigns) do
+    ~H"""
+    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
+      <section aria-labelledby={"#{@id}-title"}>
+        <div class="rounded-lg dark:bg-gray-900 bg-white overflow-hidden shadow">
+          <h2 class="sr-only" id={"#{@id}-title"}><%= @title %></h2>
+          <div class="dark:bg-gray-800 bg-white p-6">
+            <div class="sm:flex sm:items-center sm:justify-between">
+              <div class="sm:flex sm:space-x-5">
+                <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
+                  <p class="text-xl font-bold dark:text-gray-100 text-gray-900 sm:text-2xl">
+                    <%= @title %>
+                  </p>
+                </div>
+              </div>
+              <div class="mt-5 flex justify-center sm:mt-0">
+                <%= render_slot(@call_to_action) %>
+              </div>
+            </div>
+
+            <%= render_slot(@content) %>
+          </div>
+        </div>
+      </section>
+    </div>
+    """
+  end
+
+  def gear_icon(assigns) do
+    assigns = assigns |> assign_new(:class, fn -> nil end)
+    ~H"""
+    <svg
+      class={@class}
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+      />
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+    """
+  end
+
+  def diff_icon(assigns) do
+    assigns = assigns |> assign_new(:class, fn -> nil end)
+
+    ~H"""
+    <svg
+      class={@class}
+      stroke="none"
+      fill="currentColor"
+      viewBox="0 0 896 1024"
+    >
+      <path d="M448 256H320v128H192v128h128v128h128V512h128V384H448V256zM192 896h384V768H192V896zM640 0H128v64h480l224 224v608h64V256L640 0zM0 128v896h768V320L576 128H0zM704 960H64V192h480l160 160V960z" />
+    </svg>
+    """
+  end
 
   def twitter_icon(assigns) do
     assigns = assigns |> assign_new(:class, fn -> nil end)
@@ -59,8 +293,8 @@ defmodule UtilityWeb.Components do
     assigns =
       assigns
       |> assign_new(:page_metadata, fn -> nil end)
-      |> assign_new(:next, "next-page")
-      |> assign_new(:prev, "prev-page")
+      |> assign_new(:next, fn -> "next-page" end)
+      |> assign_new(:prev, fn -> "prev-page" end)
 
     ~H"""
     <%= if @page_metadata && (@page_metadata.before || @page_metadata.after) do %>

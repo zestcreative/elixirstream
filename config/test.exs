@@ -23,7 +23,7 @@ config :utility, UtilityWeb.Endpoint,
   server: false
 
 config :utility,
-  storage_dir: Path.expand("tmp/test")
+  gendiff_storage_dir: Path.expand("tmp/test")
 
 config :utility, Oban,
   crontab: false,

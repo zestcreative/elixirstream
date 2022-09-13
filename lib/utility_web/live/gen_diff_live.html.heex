@@ -1,40 +1,23 @@
-<div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-  <.form
-    let={f}
-    for={@changeset}
-    id="gen-diff"
-    aria-labelledby="gendiff-title"
-    phx-submit="diff"
-    phx-change="validate"
-    phx-hook="HandleScroll"
-  >
-    <div class="rounded-lg dark:bg-gray-900 bg-white overflow-hidden shadow">
-      <h2 class="sr-only" id="gendiff-title">Generator Diffs</h2>
-      <div class="dark:bg-gray-800 bg-white p-6">
-        <div class="sm:flex sm:items-center sm:justify-between">
-          <div class="sm:flex sm:space-x-5">
-            <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-              <p class="text-xl font-bold dark:text-gray-100 text-gray-900 sm:text-2xl">
-                Generator Diffs
-              </p>
-            </div>
-          </div>
-          <div class="mt-5 flex justify-center sm:mt-0">
-            <%= submit class: "relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150", id: "submit-diff", disabled: @building && !@finished_building do %>
-              <svg
-                class="w-4 h-4 mr-2 transition ease-in-out duration-150"
-                stroke="none"
-                fill="currentColor"
-                viewBox="0 0 896 1024"
-              >
-                <path d="M448 256H320v128H192v128h128v128h128V512h128V384H448V256zM192 896h384V768H192V896zM640 0H128v64h480l224 224v608h64V256L640 0zM0 128v896h768V320L576 128H0zM704 960H64V192h480l160 160V960z" />
-              </svg>
-              Git Diff
-            <% end %>
-          </div>
-        </div>
+<UtilityWeb.Components.page_panel title="Generator Diffs" id="gendiff">
+  <:call_to_action>
+    <%= submit form: "gen-diff", class: "relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150", id: "submit-diff", disabled: @building && !@finished_building do %>
+      <UtilityWeb.Components.diff_icon class="w-4 h-4 mr-2 transition ease-in-out duration-150" />
+      Git Diff
+    <% end %>
+  </:call_to_action>
 
-        <div class="mt-6">
+  <:content>
+    <.form
+      let={f}
+      for={@changeset}
+      id="gen-diff"
+      aria-labelledby="gendiff-title"
+      phx-submit="diff"
+      phx-change="validate"
+      phx-hook="HandleScroll"
+    >
+      <div class="mt-6">
+        <div>
           <div>
             <div>
               <%= label f, :project, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
@@ -137,77 +120,59 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <%= if @command && is_flags_hidden do %>
-              <p class="my-4 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                No flags for generator
-              </p>
+          <%= if @command && is_flags_hidden do %>
+            <p class="my-4 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              No flags for generator
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </.form>
+
+    <div id="runners"></div>
+
+    <%= if @building do %>
+      <div class="relative">
+        <%= unless @finished_building do %>
+          <div class="container flex -mb-6 justify-center mx-auto md:mb-0 md:absolute md:-top-4 md:-right-4 md:justify-end">
+            <div class="rounded-full bg-white dark:bg-black dark:text-white">
+              <UtilityWeb.Components.gear_icon class="w-12 h-12 animate-spin" />
+            </div>
+          </div>
+        <% end %>
+
+        <div class="mt-10">
+          <div
+            class="bg-black overflow-x-auto rounded-t-md border-b-4 border-gray-700 border-dashed"
+            id="output-main"
+            phx-update="append"
+          >
+            <%= for {line, id} <- @lines_main do %>
+              <span id={"line-#{id}"}><%= raw(line) %></span>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2">
+          <div
+            class="border-b-4 border-r-0 md:border-b-0 md:border-r-4 border-gray-700 border-dashed bg-black overflow-x-auto"
+            id="output-runner-1"
+            phx-update="append"
+          >
+            <%= for {line, id} <- @lines_1 do %>
+              <span id={"line-#{id}"}><%= raw(line) %></span>
+            <% end %>
+          </div>
+
+          <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="append">
+            <%= for {line, id} <- @lines_2 do %>
+              <span id={"line-#{id}"}><%= raw(line) %></span>
             <% end %>
           </div>
         </div>
       </div>
-    </div>
-  </.form>
-
-  <div id="runners"></div>
-  <%= if @building do %>
-    <div class="relative">
-      <%= unless @finished_building do %>
-        <div class="container flex -mb-6 justify-center mx-auto md:mb-0 md:absolute md:-top-4 md:-right-4 md:justify-end">
-          <div class="rounded-full bg-white dark:bg-black dark:text-white">
-            <svg
-              class="w-12 h-12 animate-spin"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
-          </div>
-        </div>
-      <% end %>
-
-      <div class="mt-10">
-        <div
-          class="bg-black overflow-x-auto rounded-t-md border-b-4 border-gray-700 border-dashed"
-          id="output-main"
-          phx-update="append"
-        >
-          <%= for {line, id} <- @lines_main do %>
-            <span id={"line-#{id}"}><%= raw(line) %></span>
-          <% end %>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2">
-        <div
-          class="border-b-4 border-r-0 md:border-b-0 md:border-r-4 border-gray-700 border-dashed bg-black overflow-x-auto"
-          id="output-runner-1"
-          phx-update="append"
-        >
-          <%= for {line, id} <- @lines_1 do %>
-            <span id={"line-#{id}"}><%= raw(line) %></span>
-          <% end %>
-        </div>
-
-        <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="append">
-          <%= for {line, id} <- @lines_2 do %>
-            <span id={"line-#{id}"}><%= raw(line) %></span>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  <% end %>
-</div>
+    <% end %>
+  </:content>
+</UtilityWeb.Components.page_panel>

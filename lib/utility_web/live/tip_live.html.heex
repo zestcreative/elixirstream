@@ -1,143 +1,149 @@
-<div class="w-full">
-  <label for="search" class="sr-only">Search</label>
-  <div class="relative">
-    <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-      <UtilityWeb.Components.search_icon class="h-5 w-5 text-gray-400" />
+<UtilityWeb.Components.page_panel title="Elixir Tips" id="elixir-tips">
+  <:call_to_action>
+
+    <label for="search" class="sr-only">Search</label>
+    <div class="relative">
+      <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+        <UtilityWeb.Components.search_icon class="h-5 w-5 text-gray-400" />
+      </div>
+
+      <.form let={f} as="search" for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
+      <%= search_input f, :q, phx_debounce: "250",
+        class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm",
+        maxlength: "75",
+        phx_hook: "RegisterSlash",
+        placeholder: "Search tips",
+        id: "search"
+      %>
+      </.form>
     </div>
 
-    <.form let={f} as="search" for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
-    <%= search_input f, :q, phx_debounce: "250",
-      class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm",
-      maxlength: "75",
-      phx_hook: "RegisterSlash",
-      placeholder: "Search tips",
-      id: "search"
-    %>
-    </.form>
-  </div>
-</div>
+    <%= link to: Routes.auth_path(@socket, :request, "github"), class: "ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+      <UtilityWeb.Components.github_icon class="text-white -ml-0.5 mr-2 h-4 w-4" />
+      Login
+    <% end %>
 
+    <%= live_patch "New Tip", to: Routes.tip_path(@socket, :new), class: "ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" %>
 
-<section id="main" class="min-w-0 flex-1 h-full flex flex-col overflow-hidden xl:order-last col-span-9 space-y-4">
-  <%= if @live_action == :new || @live_action == :edit do %>
-    <div class="bg-white px-4 py-6 mb-4 shadow sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
-    <%= if @current_user.id do %>
-      <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action == :new , do: "create", else: "update"}>
-        <div>
-          <div class="flex space-x-3">
-            <div class="flex-shrink-0">
-              <img class="h-10 w-10 rounded-full" src={@tip_form.contributor.avatar} alt="">
-            </div>
-            <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium text-gray-900">
-              <span><%= @tip_form.contributor.name %></span>
+  </:call_to_action>
 
-              <p class="inline-flex items-center">
-                <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentcolor" alt="GitHub logo" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-                </svg>
-                <a href={"https://github.com/#{@tip_form.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.username %></a>
-              </p>
-              <%= if @tip_form.contributor.twitter do %>
-                <p class="ml-3 inline-flex items-center">
-                  <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentColor" alt="Twitter logo" viewBox="328 355 335 276" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M 630, 425 A 195, 195 0 0 1 331, 600 A 142, 142 0 0 0 428, 570 A  70,  70 0 0 1 370, 523 A  70,  70 0 0 0 401, 521 A  70,  70 0 0 1 344, 455 A  70,  70 0 0 0 372, 460 A  70,  70 0 0 1 354, 370 A 195, 195 0 0 0 495, 442 A  67,  67 0 0 1 611, 380 A 117, 117 0 0 0 654, 363 A  65,  65 0 0 1 623, 401 A 117, 117 0 0 0 662, 390 A  65,  65 0 0 1 630, 425 Z" />
-                  </svg>
-                  <a href={"https://twitter.com/#{@tip_form.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.twitter %></a>
+  <:content>
+    <%= if @live_action == :new || @live_action == :edit do %>
+      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
+      <%= if @current_user.id do %>
+        <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action == :new , do: "create", else: "update"}>
+          <div>
+            <div class="flex space-x-3">
+              <div class="flex-shrink-0">
+                <img class="h-10 w-10 rounded-full" src={@tip_form.contributor.avatar} alt="">
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm font-medium text-gray-900">
+                <span><%= @tip_form.contributor.name %></span>
+
+                <p class="inline-flex items-center">
+                  <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
+                  <a href={"https://github.com/#{@tip_form.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.username %></a>
                 </p>
-              <% end %>
-              </p>
-              <p class="text-sm text-gray-500">
-              <div class="sm:col-span-3">
-              </div>
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="mt-2 text-sm text-gray-700 space-y-4">
-          <div class="mt-1">
-            <%= label f, :title, "Title", class: "block text-sm font-medium text-gray-700" %>
-            <div class="mt-1">
-              <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-              <%= error_tag f, :title %>
-            </div>
-          </div>
-          <div class="mt-1">
-            <%= label f, :description, "Description", class: "block text-sm font-medium text-gray-700" %>
-            <div class="mt-1">
-              <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-              <%= error_tag f, :description %>
-            </div>
-            <div class="relative pt-1">
-              <% {track_color, bar_color} = color_for_bar(@character_count, max_characters()) %>
-              <div class={"overflow-hidden h-4 mb-4 text-xs flex rounded #{track_color}"}>
-                <div style={"width: #{@character_percent}%"} class={"shadow-none flex flex-col whitespace-nowrap text-white justify-center #{bar_color}"}>
-
-                  <span class="text-xs pl-1"><%= @character_count %> / <%= max_characters() %></span>
+                <%= if @tip_form.contributor.twitter do %>
+                  <p class="ml-3 inline-flex items-center">
+                    <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
+                    <a href={"https://twitter.com/#{@tip_form.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500"><%= @tip_form.contributor.twitter %></a>
+                  </p>
+                <% end %>
+                </p>
+                <p class="text-sm text-gray-500">
+                <div class="sm:col-span-3">
                 </div>
+                </p>
               </div>
             </div>
           </div>
-
-          <div class="mt-1">
-            <%= label f, :code, "Code", class: "block text-sm font-medium text-gray-700" %>
-            <div class="w-full" phx-hook="MonocoEditor" phx-update="ignore" id="code-editor-content"
-              data-editor-status-selector="#code-editor-status"
-              data-mount-replace-selector="#code-editor-mount-replace"
-              data-mount-selector="#code-editor-mount"
-              data-enable-emacs={"#{@current_user.editor_choice == :emacs}"}
-              data-enable-vim={"#{@current_user.editor_choice == :vim}"}
-              class="mt-1">
-              <%= textarea f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace" %>
-              <div phx-update="ignore" class="h-64 hidden" id="code-editor-mount"></div>
-              <div class="font-mono pt-1" id="code-editor-status"></div>
-              <span class="text-gray-500 text-xs">CTRL-M toggles trapping tab</span>
-              <%= error_tag f, :code %>
+          <div class="mt-2 text-sm text-gray-700 space-y-4">
+            <div class="mt-1">
+              <%= label f, :title, "Title", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                <%= error_tag f, :title %>
+              </div>
             </div>
-          </div>
-          <div class="mt-1">
-            <img :src="src" :class="{'hidden': !src}" class="cursor-pointer w-24" x-on:click="$dispatch('img-modal', src)" />
-            <div class="fixed z-10 inset-0 overflow-y-auto"
-              x-show="imgShow"
-              x-on:click.away="imgShow = false"
-              x-on:keydown.window.escape="imgShow = false">
-              <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div x-on:click="imgShow = false"
-                      class="fixed inset-0 transition-opacity"
-                      x-show="imgShow"
-                      x-transition:enter="ease-out duration-300"
-                      x-transition:enter-start="opacity-0"
-                      x-transition:enter-end="opacity-100"
-                      x-transition:leave="ease-in duration-200"
-                      x-transition:leave-start="opacity-100"
-                      x-transition:leave-end="opacity-0"
-                      aria-hidden="true">
-                  <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-                      x-show="imgShow"
-                      x-transition:enter="ease-out duration-300"
-                      x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                      x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                      x-transition:leave="ease-in duration-200"
-                      x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                      x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                      role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                  <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
-                    <button x-on:click="imgShow = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                      <UtilityWeb.Components.close_icon class="h-6 w-6" />
-                    </button>
+            <div class="mt-1">
+              <%= label f, :description, "Description", class: "block text-sm font-medium text-gray-700" %>
+              <div class="mt-1">
+                <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                <%= error_tag f, :description %>
+              </div>
+              <div class="relative pt-1">
+                <% {track_color, bar_color} = color_for_bar(@character_count, max_characters()) %>
+                <div class={"overflow-hidden h-4 mb-4 text-xs flex rounded #{track_color}"}>
+                  <div style={"width: #{@character_percent}%"} class={"shadow-none flex flex-col whitespace-nowrap text-white justify-center #{bar_color}"}>
+
+                    <span class="text-xs pl-1"><%= @character_count %> / <%= max_characters() %></span>
                   </div>
-                  <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                      <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                        Preview
-                      </h3>
-                      <div class="mt-2">
-                        <p class="text-sm text-gray-500">
-                          <img :src="src" class="object-contain h-1/2-screen" />
-                        </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-1">
+              <%= label f, :code, "Code", class: "block text-sm font-medium text-gray-700" %>
+              <div class="w-full" phx-hook="MonocoEditor" phx-update="ignore" id="code-editor-content"
+                data-editor-status-selector="#code-editor-status"
+                data-mount-replace-selector="#code-editor-mount-replace"
+                data-mount-selector="#code-editor-mount"
+                data-enable-emacs={"#{@current_user.editor_choice == :emacs}"}
+                data-enable-vim={"#{@current_user.editor_choice == :vim}"}
+                class="mt-1">
+                <%= textarea f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace" %>
+                <div phx-update="ignore" class="h-64 hidden" id="code-editor-mount"></div>
+                <div class="font-mono pt-1" id="code-editor-status"></div>
+                <span class="text-gray-500 text-xs">CTRL-M toggles trapping tab</span>
+                <%= error_tag f, :code %>
+              </div>
+            </div>
+            <div class="mt-1">
+              <img :src="src" :class="{'hidden': !src}" class="cursor-pointer w-24" x-on:click="$dispatch('img-modal', src)" />
+              <div class="fixed z-10 inset-0 overflow-y-auto"
+                x-show="imgShow"
+                x-on:click.away="imgShow = false"
+                x-on:keydown.window.escape="imgShow = false">
+                <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                  <div x-on:click="imgShow = false"
+                        class="fixed inset-0 transition-opacity"
+                        x-show="imgShow"
+                        x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100"
+                        x-transition:leave-end="opacity-0"
+                        aria-hidden="true">
+                    <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+                  </div>
+                  <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                  <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+                        x-show="imgShow"
+                        x-transition:enter="ease-out duration-300"
+                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave="ease-in duration-200"
+                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                        role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                    <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
+                      <button x-on:click="imgShow = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                        <UtilityWeb.Components.close_icon class="h-6 w-6" />
+                      </button>
+                    </div>
+                    <div class="sm:flex sm:items-start">
+                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
+                          Preview
+                        </h3>
+                        <div class="mt-2">
+                          <p class="text-sm text-gray-500">
+                            <img :src="src" class="object-contain h-1/2-screen" />
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -145,318 +151,106 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="mt-6 flex justify-between space-x-8">
-          <div class="flex space-x-6">
-          </div>
-          <div class="flex text-sm">
-            <%= if @live_action == :edit do %>
-              <%= if @tip.twitter_status_id != nil do %>
-                <span class="text-xs text-gray-600">Tweet is already published. Updating will not update the tweet</span>
-              <% end %>
-              <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
-                <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Update
-              <% end %>
-            <% else %>
-              <div class="inline-flex items-center text-sm">
-                <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
-                <div class="ml-2">
-                  <%= date_input f, :published_at, min: Date.to_iso8601(Date.utc_today()), class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                  <%= error_tag f, :published_at %>
-                </div>
-              </div>
-              <span class="inline-flex items-center text-sm">
-                <button x-on:click="loading = true" phx-click="preview" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-brand-700 bg-brand-100 hover:bg-brand-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                  <svg x-cloak x-show="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <%= "Preview" %>
-                </button>
-              </span>
-              <span class="inline-flex items-center text-sm">
+
+          <div class="mt-6 flex justify-between space-x-8">
+            <div class="flex space-x-6">
+            </div>
+            <div class="flex text-sm">
+              <%= if @live_action == :edit do %>
+                <%= if @tip.twitter_status_id != nil do %>
+                  <span class="text-xs text-gray-600">Tweet is already published. Updating will not update the tweet</span>
+                <% end %>
                 <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
                   <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Submit tip!
+                  Update
                 <% end %>
-              </span>
-            <% end %>
-          </div>
-        </div>
-      </.form>
-    <% else %>
-      You must be logged in to submit tips
-    <% end %>
-    </div>
-  <% end %>
-
-  <%= if @live_action == :show do %>
-    <article aria-labelledby={"tip-title-#{@tip.id}"} class="overflow-hidden px-4 py-6 shadow sm:p-6 sm:rounded-md">
-      <div>
-        <div class="flex space-x-3">
-          <div class="flex-shrink-0">
-            <img class="h-10 w-10 rounded-full" src={@tip.contributor.avatar} alt="Contributor Avatar">
-          </div>
-          <div class="min-w-0 flex-1">
-            <p class="flex mr-4 items-center justify-between text-sm font-medium text-gray-900">
-              <span><%= @tip.contributor.name %></span>
-              <time class="text-gray-500" datetime={DateTime.to_iso8601(@tip.published_at)}><%= @tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
-            </p>
-            <p class="inline-flex items-center">
-              <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentcolor" alt="GitHub logo" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-              </svg>
-              <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500"><%= @tip.contributor.username %></a>
-            </p>
-            <%= if @tip.contributor.twitter do %>
-              <p class="ml-3 inline-flex items-center">
-                <svg class="-ml-0.5 mr-1 h-3 w-3" fill="currentColor" alt="Twitter logo" viewBox="328 355 335 276" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M 630, 425 A 195, 195 0 0 1 331, 600 A 142, 142 0 0 0 428, 570 A  70,  70 0 0 1 370, 523 A  70,  70 0 0 0 401, 521 A  70,  70 0 0 1 344, 455 A  70,  70 0 0 0 372, 460 A  70,  70 0 0 1 354, 370 A 195, 195 0 0 0 495, 442 A  67,  67 0 0 1 611, 380 A 117, 117 0 0 0 654, 363 A  65,  65 0 0 1 623, 401 A 117, 117 0 0 0 662, 390 A  65,  65 0 0 1 630, 425 Z" />
-                </svg>
-                <a href={"https://twitter.com/#{@tip.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500"><%= @tip.contributor.twitter %></a>
-              </p>
-            <% end %>
-          </div>
-        </div>
-        <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
-          <%= link @tip.title, to: Routes.tip_path(@socket, :show, @tip.id) %>
-        </h2>
-      </div>
-      <div class="mt-2 text-sm text-gray-700 space-y-4">
-        <%= @tip.description %>
-      </div>
-      <div class="mt-2 text-sm">
-        <%= raw(Makeup.highlight(@tip.code)) %>
-      </div>
-      <div class="mt-6 flex justify-between space-x-8">
-        <div class="flex space-x-6">
-          <span class="inline-flex items-center text-sm">
-            <%= cond do %>
-              <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id not in @upvoted_tip_ids -> %>
-                <button phx-click="upvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
-                  <!-- Heroicon name: solid/thumb-up -->
-                  <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                  </svg>
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
-                  <span class="sr-only">upvotes</span>
-                </button>
-              <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id in @upvoted_tip_ids -> %>
-                <button phx-click="downvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
-                  <!-- Heroicon name: solid/thumb-up -->
-                  <svg class="h-5 w-5 transform duration-300 hover:rotate-180" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                  </svg>
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
-                  <span class="sr-only">upvotes</span>
-                </button>
-              <% true -> %>
-                <div class="inline-flex space-x-2 text-gray-400">
-                  <!-- Heroicon name: solid/thumb-up --> <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                  </svg>
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
-                  <span class="sr-only">upvotes</span>
-                </div>
-            <% end %>
-          </span>
-        </div>
-        <div class="flex text-sm">
-          <!-- <span class="inline-flex items-center text-sm">
-            <button class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-              </svg>
-              <span class="font-medium text-gray-900">Share</span>
-            </button>
-          </span> -->
-          <%= if show_edit?(@tip, @current_user) do %>
-            <%= link to: Routes.tip_path(@socket, :edit, @tip.id), class: "ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500" do %>
-              <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
-              <span class="font-medium text-gray-900">Edit</span>
-            <% end %>
-          <% end %>
-          <%= if show_delete?(@tip, @current_user) do %>
-            <span class="ml-2 inline-flex items-center text-sm">
-              <button phx-click="delete-tip" phx-value-tip-id={@tip.id} class="inline-flex space-x-2 text-red-400 hover:text-red-500">
-                <!-- Heroicon name: outline/trash -->
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                </svg>
-                <span class="font-medium text-red-900">Delete</span>
-              </button>
-            </span>
-          <% end %>
-          <%= if show_approve?(@tip, @current_user) do %>
-            <span class="ml-2 inline-flex items-center text-sm">
-              <button phx-click="approve-tip" phx-value-tip-id={@tip.id} class="inline-flex space-x-2 text-green-400 hover:text-green-500">
-                <!-- Heroicon name: outline/badge-check -->
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                </svg>
-                <span class="font-medium text-green-900">Approve</span>
-              </button>
-            </span>
-          <% end %>
-        </div>
-      </div>
-    </article>
-
-  <% end %>
-
-  <%= if @live_action == :index do %>
-    <%= if @searching && @tips == [] do %>
-      <div id="no-tips-result" class="mx-auto flex flex-col content-center justify-center">
-        <svg class="block w-64 h-64" xmlns="http://www.w3.org/2000/svg" id="bac3cfc7-b61b-48ce-8441-8100e40ddaa6" width="797.5" height="834.5" viewBox="0 0 797.5 834.5">
-          <ellipse cx="308.5" cy="780" rx="308.5" ry="54.5" fill="#3f3d56"/>
-          <circle cx="496" cy="301.5" r="301.5" fill="#3f3d56"/>
-          <circle cx="496" cy="301.5" r="248.89787" opacity="0.05"/>
-          <circle cx="496" cy="301.5" r="203.99362" opacity="0.05"/>
-          <circle cx="496" cy="301.5" r="146.25957" opacity="0.05"/>
-          <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-          <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" opacity="0.1"/>
-          <path d="M415.10084,515.74682s-1.75585,16.68055-2.63377,17.55847.87792,2.63377,0,5.26754-1.75585,6.14547,0,7.02339-9.65716,78.13521-9.65716,78.13521-28.09356,36.8728-16.68055,94.81576l3.51169,58.82089s27.21564,1.75585,27.21564-7.90132c0,0-1.75585-11.413-1.75585-16.68055s4.38962-5.26754,1.75585-7.90131-2.63377-4.38962-2.63377-4.38962,4.38961-3.51169,3.51169-4.38962,7.90131-63.2105,7.90131-63.2105,9.65716-9.65716,9.65716-14.92471v-5.26754s4.38962-11.413,4.38962-12.29093,23.70394-54.43127,23.70394-54.43127l9.65716,38.62864,10.53509,55.3092s5.26754,50.04165,15.80262,69.356c0,0,18.4364,63.21051,18.4364,61.45466s30.72733-6.14547,29.84941-14.04678-18.4364-118.5197-18.4364-118.5197L533.62054,513.991Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-          <path d="M391.3969,772.97846s-23.70394,46.53-7.90131,48.2858,21.94809,1.75585,28.97148-5.26754c3.83968-3.83968,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01858-8.16366-10.53508-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-          <path d="M522.20753,807.21748s-23.70394,46.53-7.90131,48.28581,21.94809,1.75584,28.97148-5.26754c3.83968-3.83969,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01857-8.16367-10.53509-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-          <circle cx="295.90488" cy="215.43252" r="36.90462" fill="#ffb8b8"/>
-          <path d="M473.43048,260.30832S447.07,308.81154,444.9612,308.81154,492.41,324.62781,492.41,324.62781s13.70743-46.39439,15.81626-50.61206Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
-          <path d="M513.86726,313.3854s-52.67543-28.97148-57.943-28.09356-61.45466,50.04166-60.57673,70.2339,7.90131,53.55335,7.90131,53.55335,2.63377,93.05991,7.90131,93.93783-.87792,16.68055.87793,16.68055,122.90931,0,123.78724-2.63377S513.86726,313.3854,513.86726,313.3854Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-          <path d="M543.2777,521.89228s16.68055,50.91958,2.63377,49.16373-20.19224-43.89619-20.19224-43.89619Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
-          <path d="M498.50359,310.31267s-32.48318,7.02339-27.21563,50.91957,14.9247,87.79237,14.9247,87.79237l32.48318,71.11182,3.51169,13.16886,23.70394-6.14547L528.353,425.32067s-6.14547-108.86253-14.04678-112.37423A33.99966,33.99966,0,0,0,498.50359,310.31267Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
-          <polygon points="277.5 414.958 317.885 486.947 283.86 411.09 277.5 414.958" opacity="0.1"/>
-          <path d="M533.896,237.31585l.122-2.82012,5.6101,1.39632a6.26971,6.26971,0,0,0-2.5138-4.61513l5.97581-.33413a64.47667,64.47667,0,0,0-43.1245-26.65136c-12.92583-1.87346-27.31837.83756-36.182,10.43045-4.29926,4.653-7.00067,10.57018-8.92232,16.60685-3.53926,11.11821-4.26038,24.3719,3.11964,33.40938,7.5006,9.18513,20.602,10.98439,32.40592,12.12114,4.15328.4,8.50581.77216,12.35457-.83928a29.721,29.721,0,0,0-1.6539-13.03688,8.68665,8.68665,0,0,1-.87879-4.15246c.5247-3.51164,5.20884-4.39635,8.72762-3.9219s7.74984,1.20031,10.062-1.49432c1.59261-1.85609,1.49867-4.559,1.70967-6.99575C521.28248,239.785,533.83587,238.70653,533.896,237.31585Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
-          <circle cx="559" cy="744.5" r="43" fill="#9428ec"/>
-          <circle cx="54" cy="729.5" r="43" fill="#9428ec"/>
-          <circle cx="54" cy="672.5" r="31" fill="#9428ec"/>
-          <circle cx="54" cy="624.5" r="22" fill="#9428ec"/>
-        </svg>
-        <div class="mt-2 text-center">No results 😿</div>
-      </div>
-    <% else %>
-      <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="top-navigation-nav" />
-
-      <ul phx-hook="PaginationScroll" id="tips-list" class="space-y-4">
-        <%= for tip <- @tips do %>
-          <li data-tip id={"tip-#{tip.id}"}>
-            <article aria-labelledby={"tip-title-#{tip.id}"} class={"#{if tip.approved, do: "bg-white", else: "bg-yellow-100"} overflow-hidden px-4 py-6 shadow sm:p-6 sm:rounded-md"}>
-              <div>
-                <div class="flex space-x-3">
-                  <div class="flex-shrink-0">
-                    <img class="h-10 w-10 rounded-full" src={tip.contributor.avatar} alt="">
-                  </div>
-                  <div class="min-w-0 flex-1">
-                    <p class="flex mr-4 items-center justify-between text-sm font-medium text-gray-900">
-                      <span><%= tip.contributor.name %></span>
-                      <time class="text-gray-500" datetime={DateTime.to_iso8601(tip.published_at)}><%= tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
-                    </p>
-                    <p class="inline-flex items-center">
-                      <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3
-          w-3" />
-                      <a href={"https://github.com/#{tip.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500"><%= tip.contributor.username %></a>
-                    </p>
-                    <%= if tip.contributor.twitter do %>
-                      <p class="ml-3 inline-flex items-center">
-                        <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
-                        <a href={"https://twitter.com/#{tip.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500"><%= tip.contributor.twitter %></a>
-                      </p>
-                    <% end %>
+              <% else %>
+                <div class="inline-flex items-center text-sm">
+                  <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
+                  <div class="ml-2">
+                    <%= date_input f, :published_at, min: Date.to_iso8601(Date.utc_today()), class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                    <%= error_tag f, :published_at %>
                   </div>
                 </div>
-                <h2 id={"tip-title-#{tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
-                  <%= link tip.title, to: Routes.tip_path(@socket, :show, tip.id) %>
-                </h2>
-              </div>
-              <div class="mt-2 text-sm text-gray-700 space-y-4">
-                <%= tip.description %>
-              </div>
-              <div class="mt-2 text-sm">
-                <%= raw(Makeup.highlight(tip.code)) %>
-              </div>
-              <div class="mt-6 flex justify-between space-x-8">
-                <div class="flex space-x-6">
-                  <span class="inline-flex items-center text-sm">
-                    <%= cond do %>
-                      <% @current_user.id && @current_user.id != tip.contributor_id && tip.id not in @upvoted_tip_ids -> %>
-                        <button phx-click="upvote-tip" phx-value-tip-id={tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
-                          <!-- Heroicon name: solid/thumb-up -->
-                          <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                          <span class="font-medium text-gray-900"><%= tip.upvote_count + @tip.twitter_like_count %></span>
-                          <span class="sr-only">upvotes</span>
-                        </button>
-                      <% @current_user.id && @current_user.id != tip.contributor_id && tip.id in @upvoted_tip_ids -> %>
-                        <button phx-click="downvote-tip" phx-value-tip-id={tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
-                          <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5 transform duration-300 hover:rotate-180" />
-                          <span class="font-medium text-gray-900"><%= tip.upvote_count + tip.twitter_like_count %></span>
-                          <span class="sr-only">upvotes</span>
-                        </button>
-                      <% true -> %>
-                        <div class="inline-flex space-x-2 text-gray-400">
-                          <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                          <span class="font-medium text-gray-900"><%= tip.upvote_count + tip.twitter_like_count %></span>
-                          <span class="sr-only">upvotes</span>
-                        </div>
-                    <% end %>
-                  </span>
-                </div>
-                <div class="flex text-sm">
-                  <!-- <span class="inline-flex items-center text-sm">
-                    <button class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
-                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                      </svg>
-                      <span class="font-medium text-gray-900">Share</span>
-                    </button>
-                  </span> -->
-                  <%= if show_edit?(tip, @current_user) do %>
-                    <%= link to: Routes.tip_path(@socket, :edit, @tip.id), class: "ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500" do %>
-                      <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                      <span class="font-medium text-gray-900">Edit</span>
-                    <% end %>
+                <span class="inline-flex items-center text-sm">
+                  <button x-on:click="loading = true" phx-click="preview" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-brand-700 bg-brand-100 hover:bg-brand-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                    <svg x-cloak x-show="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <%= "Preview" %>
+                  </button>
+                </span>
+                <span class="inline-flex items-center text-sm">
+                  <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+                    <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Submit tip!
                   <% end %>
-
-                  <%= if show_delete?(tip, @current_user) do %>
-                    <span class="ml-2 inline-flex items-center text-sm">
-                      <button phx-click="delete-tip" phx-value-tip-id={tip.id} class="inline-flex space-x-2 text-red-400 hover:text-red-500">
-                        <!-- Heroicon name: outline/trash -->
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        <span class="font-medium text-red-900">Delete</span>
-                      </button>
-                    </span>
-                  <% end %>
-
-                  <%= if show_approve?(tip, @current_user) do %>
-                    <span class="ml-2 inline-flex items-center text-sm">
-                      <button phx-click="approve-tip" phx-value-tip-id={tip.id} class="inline-flex space-x-2 text-green-400 hover:text-green-500">
-                        <!-- Heroicon name: outline/badge-check -->
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                        </svg>
-                        <span class="font-medium text-green-900">Approve</span>
-                      </button>
-                    </span>
-                  <% end %>
-
-                </div>
-              </div>
-            </article>
-          </li>
-        <% end %>
-      </ul>
-
-      <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="bottom-navigation-nav" />
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </.form>
+      <% else %>
+        You must be logged in to submit tips
+      <% end %>
+      </div>
     <% end %>
-  <% end %>
-</section>
+
+    <%= if @live_action == :show do %>
+      <UtilityWeb.Components.tip_card tip={@tip} socket={@socket}
+        current_user={@current_user} class="mt-4" />
+    <% end %>
+
+    <%= if @live_action == :index do %>
+      <%= if @searching && @tips == [] do %>
+        <div id="no-tips-result" class="mx-auto flex flex-col content-center justify-center">
+          <svg class="block w-64 h-64" xmlns="http://www.w3.org/2000/svg" id="bac3cfc7-b61b-48ce-8441-8100e40ddaa6" width="797.5" height="834.5" viewBox="0 0 797.5 834.5">
+            <ellipse cx="308.5" cy="780" rx="308.5" ry="54.5" fill="#3f3d56"/>
+            <circle cx="496" cy="301.5" r="301.5" fill="#3f3d56"/>
+            <circle cx="496" cy="301.5" r="248.89787" opacity="0.05"/>
+            <circle cx="496" cy="301.5" r="203.99362" opacity="0.05"/>
+            <circle cx="496" cy="301.5" r="146.25957" opacity="0.05"/>
+            <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
+            <path d="M398.42029,361.23224s-23.70394,66.72221-13.16886,90.42615,27.21564,46.52995,27.21564,46.52995S406.3216,365.62186,398.42029,361.23224Z" transform="translate(-201.25 -32.75)" opacity="0.1"/>
+            <path d="M415.10084,515.74682s-1.75585,16.68055-2.63377,17.55847.87792,2.63377,0,5.26754-1.75585,6.14547,0,7.02339-9.65716,78.13521-9.65716,78.13521-28.09356,36.8728-16.68055,94.81576l3.51169,58.82089s27.21564,1.75585,27.21564-7.90132c0,0-1.75585-11.413-1.75585-16.68055s4.38962-5.26754,1.75585-7.90131-2.63377-4.38962-2.63377-4.38962,4.38961-3.51169,3.51169-4.38962,7.90131-63.2105,7.90131-63.2105,9.65716-9.65716,9.65716-14.92471v-5.26754s4.38962-11.413,4.38962-12.29093,23.70394-54.43127,23.70394-54.43127l9.65716,38.62864,10.53509,55.3092s5.26754,50.04165,15.80262,69.356c0,0,18.4364,63.21051,18.4364,61.45466s30.72733-6.14547,29.84941-14.04678-18.4364-118.5197-18.4364-118.5197L533.62054,513.991Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
+            <path d="M391.3969,772.97846s-23.70394,46.53-7.90131,48.2858,21.94809,1.75585,28.97148-5.26754c3.83968-3.83968,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01858-8.16366-10.53508-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
+            <path d="M522.20753,807.21748s-23.70394,46.53-7.90131,48.28581,21.94809,1.75584,28.97148-5.26754c3.83968-3.83969,11.61528-8.99134,17.87566-12.87285a23.117,23.117,0,0,0,10.96893-21.98175c-.463-4.29531-2.06792-7.83444-6.01857-8.16367-10.53509-.87792-22.826-10.53508-22.826-10.53508Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
+            <circle cx="295.90488" cy="215.43252" r="36.90462" fill="#ffb8b8"/>
+            <path d="M473.43048,260.30832S447.07,308.81154,444.9612,308.81154,492.41,324.62781,492.41,324.62781s13.70743-46.39439,15.81626-50.61206Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
+            <path d="M513.86726,313.3854s-52.67543-28.97148-57.943-28.09356-61.45466,50.04166-60.57673,70.2339,7.90131,53.55335,7.90131,53.55335,2.63377,93.05991,7.90131,93.93783-.87792,16.68055.87793,16.68055,122.90931,0,123.78724-2.63377S513.86726,313.3854,513.86726,313.3854Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
+            <path d="M543.2777,521.89228s16.68055,50.91958,2.63377,49.16373-20.19224-43.89619-20.19224-43.89619Z" transform="translate(-201.25 -32.75)" fill="#ffb8b8"/>
+            <path d="M498.50359,310.31267s-32.48318,7.02339-27.21563,50.91957,14.9247,87.79237,14.9247,87.79237l32.48318,71.11182,3.51169,13.16886,23.70394-6.14547L528.353,425.32067s-6.14547-108.86253-14.04678-112.37423A33.99966,33.99966,0,0,0,498.50359,310.31267Z" transform="translate(-201.25 -32.75)" fill="#d0cde1"/>
+            <polygon points="277.5 414.958 317.885 486.947 283.86 411.09 277.5 414.958" opacity="0.1"/>
+            <path d="M533.896,237.31585l.122-2.82012,5.6101,1.39632a6.26971,6.26971,0,0,0-2.5138-4.61513l5.97581-.33413a64.47667,64.47667,0,0,0-43.1245-26.65136c-12.92583-1.87346-27.31837.83756-36.182,10.43045-4.29926,4.653-7.00067,10.57018-8.92232,16.60685-3.53926,11.11821-4.26038,24.3719,3.11964,33.40938,7.5006,9.18513,20.602,10.98439,32.40592,12.12114,4.15328.4,8.50581.77216,12.35457-.83928a29.721,29.721,0,0,0-1.6539-13.03688,8.68665,8.68665,0,0,1-.87879-4.15246c.5247-3.51164,5.20884-4.39635,8.72762-3.9219s7.74984,1.20031,10.062-1.49432c1.59261-1.85609,1.49867-4.559,1.70967-6.99575C521.28248,239.785,533.83587,238.70653,533.896,237.31585Z" transform="translate(-201.25 -32.75)" fill="#2f2e41"/>
+            <circle cx="559" cy="744.5" r="43" fill="#9428ec"/>
+            <circle cx="54" cy="729.5" r="43" fill="#9428ec"/>
+            <circle cx="54" cy="672.5" r="31" fill="#9428ec"/>
+            <circle cx="54" cy="624.5" r="22" fill="#9428ec"/>
+          </svg>
+          <div class="mt-2 text-center">No results 😿</div>
+        </div>
+      <% else %>
+        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="top-navigation-nav" />
+
+        <ul phx-hook="HandleScroll" id="tips-list" class="mt-4 space-y-4">
+          <%= for tip <- @tips do %>
+            <li data-tip id={"tip-#{tip.id}"}>
+              <UtilityWeb.Components.tip_card tip={tip} socket={@socket} current_user={@current_user} />
+            </li>
+          <% end %>
+        </ul>
+
+        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="bottom-navigation-nav" />
+      <% end %>
+    <% end %>
+  </:content>
+
+</UtilityWeb.Components.page_panel>
+

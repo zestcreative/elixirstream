@@ -7,6 +7,7 @@ defmodule UtilityWeb.RegexLive do
   use Ecto.Schema
   alias Ecto.Changeset
   alias Utility.Cache
+  alias Phoenix.LiveView.JS
   require Logger
 
   @primary_key false
@@ -85,11 +86,6 @@ defmodule UtilityWeb.RegexLive do
         Logger.error(inspect(error))
         {:noreply, put_flash(socket, :error, "Could not save regex")}
     end
-  end
-
-  @impl Phoenix.LiveView
-  def render(assigns) do
-    Phoenix.View.render(UtilityWeb.RegexView, "show.html", assigns)
   end
 
   defp assign_changeset(socket, params) do
@@ -273,4 +269,12 @@ defmodule UtilityWeb.RegexLive do
   defp ensure_last_part({_string, _last_pos, parts}, _string_last), do: parts
 
   defp cache_key_for(id), do: "regex-#{id}"
+
+  def changed?(changeset) do
+    Map.take(changeset.changes, [:regex, :string, :flags, :function]) != %{}
+  end
+
+  def span_match(type, string) do
+    content_tag(:span, string, class: (type == :matched && "m") || "u")
+  end
 end

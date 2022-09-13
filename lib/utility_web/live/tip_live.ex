@@ -165,7 +165,7 @@ defmodule UtilityWeb.TipLive do
 
     {:noreply,
      socket
-     |> push_event(:scroll, %{selector: "#top-pagination-nav"})
+     |> push_event(:scroll, %{to: "#top-pagination-nav"})
      |> assign(tips: tips)
      |> assign(page_metadata: metadata)}
   end
@@ -178,7 +178,7 @@ defmodule UtilityWeb.TipLive do
 
     {:noreply,
      socket
-     |> push_event(:scroll, %{selector: "#top-pagination-nav"})
+     |> push_event(:scroll, %{to: "#top-pagination-nav"})
      |> assign(tips: tips)
      |> assign(page_metadata: metadata)}
   end
@@ -391,15 +391,6 @@ defmodule UtilityWeb.TipLive do
 
   def max_characters, do: @character_limit
 
-  def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
-  def show_edit?(_tip, current_user), do: admin?(current_user)
-
-  def show_approve?(%{approved: true}, _current_user), do: false
-  def show_approve?(_tip, current_user), do: admin?(current_user)
-
-  def show_delete?(%{contributor_id: user_id}, %{id: user_id}), do: true
-  def show_delete?(_tip, current_user), do: admin?(current_user)
-
   @warning_threshold_below_max 20
   def color_for_bar(count, max_count) when count > max_count do
     {"bg-red-200", "bg-red-500"}
@@ -412,4 +403,13 @@ defmodule UtilityWeb.TipLive do
       {"bg-brand-200", "bg-brand-500"}
     end
   end
+
+  def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
+  def show_edit?(_tip, current_user), do: admin?(current_user)
+
+  def show_approve?(%{approved: true}, _current_user), do: false
+  def show_approve?(_tip, current_user), do: admin?(current_user)
+
+  def show_delete?(%{contributor_id: user_id}, %{id: user_id}), do: true
+  def show_delete?(_tip, current_user), do: admin?(current_user)
 end

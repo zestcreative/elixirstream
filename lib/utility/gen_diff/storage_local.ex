@@ -1,4 +1,4 @@
-defmodule Utility.GenDiff.Storage.LocalImplementation do
+defmodule Utility.GenDiff.StorageLocal do
   @behaviour Utility.GenDiff.Storage
 
   def list(project, term) do
