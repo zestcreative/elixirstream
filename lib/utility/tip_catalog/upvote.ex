@@ -4,11 +4,14 @@ defmodule Utility.TipCatalog.Upvote do
   alias Utility.Accounts
   alias Utility.TipCatalog
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   schema "tip_upvotes" do
     belongs_to :user, Accounts.User
     belongs_to :tip, TipCatalog.Tip
 
-    timestamps()
+    timestamps(type: :utc_datetime_usec)
   end
 
   @optional_fields ~w[user_id tip_id]a

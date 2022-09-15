@@ -4,6 +4,9 @@ defmodule Utility.TipCatalog.Tip do
   alias Utility.Accounts
   alias Utility.TipCatalog
 
+  @primary_key {:id, :binary_id, autogenerate: true}
+  @foreign_key_type :binary_id
+
   schema "tips" do
     field :title, :string
     field :description, :string
@@ -20,9 +23,8 @@ defmodule Utility.TipCatalog.Tip do
 
     belongs_to :contributor, Accounts.User
     has_many :upvotes, TipCatalog.Upvote
-    # has_many :modules, Catalog.Modules
 
-    timestamps()
+    timestamps(type: :utc_datetime_usec)
   end
 
   @required_fields ~w[approved title description code]a
@@ -31,7 +33,6 @@ defmodule Utility.TipCatalog.Tip do
   def changeset(struct_or_changeset, attrs) do
     struct_or_changeset
     |> cast(attrs, @optional_fields ++ @required_fields)
-    # |> cast_assoc(:modules)
     |> assoc_constraint(:contributor)
     |> validate_required(@required_fields)
     |> ensure_published_at()

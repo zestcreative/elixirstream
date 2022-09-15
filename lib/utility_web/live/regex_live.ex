@@ -7,7 +7,6 @@ defmodule UtilityWeb.RegexLive do
   use Ecto.Schema
   alias Ecto.Changeset
   alias Utility.Cache
-  alias Phoenix.LiveView.JS
   require Logger
 
   @primary_key false

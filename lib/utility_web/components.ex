@@ -30,8 +30,7 @@ defmodule UtilityWeb.Components do
               <time class="text-gray-500" datetime={DateTime.to_iso8601(@tip.published_at)}><%= @tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
             </p>
             <p class="inline-flex items-center">
-              <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3
-  w-3" />
+              <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
               <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow"
               class="hover:underline text-xs text-gray-500"><%= @tip.contributor.username %></a>
             </p>
@@ -48,12 +47,15 @@ defmodule UtilityWeb.Components do
           <%= live_patch @tip.title, to: Routes.tip_path(@socket, :show, @tip.id) %>
         </h2>
       </div>
+
       <div class="mt-2 text-sm text-gray-700 space-y-4">
         <%= @tip.description %>
       </div>
+
       <div class="mt-2 text-sm">
         <%= Phoenix.HTML.raw(Makeup.highlight(@tip.code)) %>
       </div>
+
       <div class="mt-6 flex justify-between space-x-8">
         <div class="flex space-x-6">
           <span class="inline-flex items-center text-sm">
@@ -112,8 +114,8 @@ defmodule UtilityWeb.Components do
               </button>
             </span>
           <% end %>
-
         </div>
+
       </div>
     </article>
     """
@@ -135,17 +137,17 @@ defmodule UtilityWeb.Components do
 
   def tab_select(assigns) do
     ~H"""
-      <label class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700" for={"#{@group}-select"}>
-        <%= @title %>
-      </label>
-      <select
-        class="mt-1 rounded-md focus:ring focus:ring-blue-500 focus:ring-opacity-50 focus:border-accent-500 block w-full pl-3 pr-10 py-2 text-base leading-6 dark:border-gray-700 border-gray-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
-        data-tab-group={@group}
-        aria-label={@title}
-        id={"#{@group}-select"}
-        phx-change={JS.dispatch("changeTab", detail: %{active: tab_active()})}>
-        <%= render_slot(@inner_block) %>
-      </select>
+    <label class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700" for={"#{@group}-select"}>
+      <%= @title %>
+    </label>
+    <select
+      class="mt-1 rounded-md focus:ring focus:ring-blue-500 focus:ring-opacity-50 focus:border-accent-500 block w-full pl-3 pr-10 py-2 text-base leading-6 dark:border-gray-700 border-gray-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
+      data-tab-group={@group}
+      aria-label={@title}
+      id={"#{@group}-select"}
+      phx-change={JS.dispatch("changeTab", detail: %{active: tab_active()})}>
+      <%= render_slot(@inner_block) %>
+    </select>
     """
   end
 
