@@ -13,6 +13,7 @@ config :utility,
   redis_url: System.get_env("REDIS_URL", "redis://127.0.0.1:6379"),
   redis_pool_size: 5,
   gendiff_storage: Utility.GenDiff.StorageLocal,
+  tip_storage: Utility.TipCatalog.StorageLocal,
   cache: Utility.Cache.Redis,
   cache_version: 2,
   builder_mount: System.tmp_dir!(),
@@ -54,10 +55,6 @@ config :tailwind,
     cd: Path.expand("../assets", __DIR__)
   ]
 
-config :utility, :basic_auth,
-  auth_user: System.get_env("AUTH_USER", "admin"),
-  auth_pass: System.get_env("AUTH_PASS", "admin")
-
 config :mime, :types, %{
   "application/xml" => ["xml"],
   "application/manifest+json" => ["webmanifest"]
@@ -74,27 +71,30 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+config :utility, Utility.TipCatalog.Storage, bucket: "elixirstream.dev"
+
+config :ex_aws,
+  json_codec: Jason,
+  http_client: Utility.ExAwsClient,
+  region: "us-east-1"
+
+config :ex_aws, :s3, host: "minio.bernheisel.com"
+
+config :utility, Utility.Accounts.Guardian,
+  issuer: "utility",
+  secret_key: "9uLgRESJMtHUcFDBAwm3S8rqNtftKmzNbdZc+yf1vf1i+gF5gvBuaI7PtHfjuXop"
+
 config :ueberauth, Ueberauth,
-  base_path: "/login",
   json_library: Jason,
   providers: [
     github:
       {Ueberauth.Strategy.Github,
        [
-         request_path: "/login/github",
-         callback_methods: ["POST"],
-         callback_path: "/login/github/callback",
          allow_private_emails: true,
          send_redirect_uri: true,
          default_scope: "read:user"
        ]},
-    twitter:
-      {Ueberauth.Strategy.Twitter,
-       [
-         request_path: "/login/twitter",
-         callback_path: "/login/twitter/callback",
-         callback_methods: ["POST"]
-       ]}
+    twitter: {Ueberauth.Strategy.Twitter, []}
   ]
 
 # Import environment specific config. This must remain at the bottom

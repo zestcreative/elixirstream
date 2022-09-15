@@ -29,26 +29,26 @@ export default {
     // https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.ieditoroptions.html
     const instance = monaco.editor.create(el, {
       language: "elixir",
-      wordBasedSuggestions: false,
-      extraEditorClassName: "bg-white",
-      fontFamily: "Fira Code, monospace",
-      renderLineHighlight: "none",
-      scrollBeyondLastLine: false,
-      rulers: 80,
+      automaticLayout: true,
       codeLens: false,
-      fontLigatures: true,
-      hideCursorInOverviewRuler: true,
-      overviewRulerBorder: false,
-      overviewRulerLanes: 0,
       contextmenu: false,
-      snippetSuggestions: "none",
-      quickSuggestions: false,
+      extraEditorClassName: "bg-white",
+      fontFamily: "Fira Code, JetBrains Mono, Droid Sans Mono, monospace",
+      fontLigatures: true,
       formatOnPaste: true,
       formatOnType: true,
-      automaticLayout: true,
-      scrollbar: { alwaysConsumeMouseWheel: false },
+      hideCursorInOverviewRuler: true,
+      minimap: { enabled: false },
+      overviewRulerBorder: false,
+      overviewRulerLanes: 0,
       padding: { top: 20, bottom: 20 },
-      minimap: { enabled: false }
+      quickSuggestions: false,
+      renderLineHighlight: "none",
+      rulers: 80,
+      scrollBeyondLastLine: false,
+      scrollbar: { alwaysConsumeMouseWheel: false },
+      snippetSuggestions: "none",
+      wordBasedSuggestions: false
     });
 
     instance.getModel().updateOptions({

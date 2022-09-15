@@ -7,7 +7,7 @@ defmodule UtilityWeb.AuthController do
 
   def request(_conn, _params) do
     # The GitHub/Twitter strategy will intercept before hitting this
-    raise "whoops"
+    raise "invalid authentication"
   end
 
   def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
@@ -19,25 +19,18 @@ defmodule UtilityWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: :github} = auth}} = conn, _params) do
-    conn =
-      case Accounts.update_or_create(auth) do
-        {:create, {:ok, user}} ->
-          conn
-          |> put_flash(
-            :info,
-            "Welcome #{user.name} Be sure to update your profile!"
-          )
-          |> Utility.Accounts.Guardian.Plug.sign_in(user)
+    case Accounts.update_or_create(auth) do
+      {action, {:ok, user}} ->
+        conn
+        |> put_flash(:info, sign_in_message(action, user))
+        |> Utility.Accounts.Guardian.Plug.sign_in(user)
+        |> redirect(to: "/tips")
 
-        {:update, {:ok, user}} ->
-          conn
-          |> put_flash(:info, "Welcome back #{user.name}")
-          |> Utility.Accounts.Guardian.Plug.sign_in(user)
-
-        {_, {:error, reason}} ->
-          conn |> put_flash(:error, reason)
-      end
-    redirect(conn, to: "/")
+      {_, {:error, reason}} ->
+        conn
+        |> put_flash(:error, reason)
+        |> redirect(to: "/tips")
+    end
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: :twitter} = auth}} = conn, _params) do
@@ -48,12 +41,12 @@ defmodule UtilityWeb.AuthController do
         conn
         |> put_session(:current_user, user)
         |> put_flash(:info, "Thanks for connecting Twitter")
-        |> redirect(to: "/")
+        |> redirect(to: "/tips")
 
       {:error, _changeset} ->
         conn
         |> put_flash(:error, "Could not connect Twitter")
-        |> redirect(to: "/")
+        |> redirect(to: "/tips")
     end
   end
 
@@ -61,6 +54,13 @@ defmodule UtilityWeb.AuthController do
     conn
     |> put_flash(:info, "You have been logged out")
     |> Utility.Accounts.Guardian.Plug.sign_out()
-    |> redirect(to: "/")
+    |> redirect(to: "/tips")
+  end
+
+  def sign_in_message(:create, user) do
+    "Welcome #{user.name}. Be sure to update your profile!"
+  end
+  def sign_in_message(:update, user) do
+    "Welcome back #{user.name}"
   end
 end

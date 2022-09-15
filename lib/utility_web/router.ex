@@ -54,7 +54,7 @@ defmodule UtilityWeb.Router do
     match :*, "/sink/:foo_sink_id", SinkController, :any
   end
 
-  scope "/login", UtilityWeb do
+  scope "/auth", UtilityWeb do
     pipe_through [:browser]
     get "/:provider", AuthController, :request
     get "/:provider/callback", AuthController, :callback

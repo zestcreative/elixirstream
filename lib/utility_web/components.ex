@@ -18,37 +18,38 @@ defmodule UtilityWeb.Components do
     assigns = assign_new(assigns, :class, fn -> "" end)
 
     ~H"""
-    <article aria-labelledby={"tip-title-#{@tip.id}"} class={"#{if @tip.approved, do: "dark:border-gray-200", else: "border-yellow-100"} overflow-hidden px-4 py-6 sm:p-6 sm:rounded-md #{@class}"}>
+    <article aria-labelledby={"tip-title-#{@tip.id}"} class={"#{if @tip.approved, do: "border-gray-200 dark:border-transparent", else:
+      "border-yellow-500"} border-2 shadow-md dark:bg-gray-900 bg-white overflow-hidden px-4 py-6 sm:p-6 sm:rounded-md #{@class}"}>
       <div>
         <div class="flex space-x-3">
           <div class="flex-shrink-0">
             <img class="h-10 w-10 rounded-full" src={@tip.contributor.avatar} alt="">
           </div>
-          <div class="min-w-0 flex-1">
-            <p class="flex mr-4 items-center justify-between text-sm font-medium text-gray-900">
+          <div class="min-w-0 flex-1 text-gray-500 dark:text-gray-400">
+            <p class="flex mr-4 items-center justify-between text-sm font-medium dark:text-gray-300 text-gray-900">
               <span><%= @tip.contributor.name %></span>
-              <time class="text-gray-500" datetime={DateTime.to_iso8601(@tip.published_at)}><%= @tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
+              <time datetime={DateTime.to_iso8601(@tip.published_at)}><%= @tip.published_at |> DateTime.to_date() |> Date.to_iso8601() %></time>
             </p>
             <p class="inline-flex items-center">
               <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
               <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow"
-              class="hover:underline text-xs text-gray-500"><%= @tip.contributor.username %></a>
+              class="hover:underline text-xs"><%= @tip.contributor.username %></a>
             </p>
             <%= if @tip.contributor.twitter do %>
               <p class="ml-3 inline-flex items-center">
                 <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
                 <a href={"https://twitter.com/#{@tip.contributor.twitter}"} rel="nofollow" target="_blank"
-                class="hover:underline text-xs text-gray-500"><%= @tip.contributor.twitter %></a>
+                class="hover:underline text-xs"><%= @tip.contributor.twitter %></a>
               </p>
             <% end %>
           </div>
         </div>
-        <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
+        <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900 dark:text-gray-300">
           <%= live_patch @tip.title, to: Routes.tip_path(@socket, :show, @tip.id) %>
         </h2>
       </div>
 
-      <div class="mt-2 text-sm text-gray-700 space-y-4">
+      <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-4">
         <%= @tip.description %>
       </div>
 
@@ -63,19 +64,19 @@ defmodule UtilityWeb.Components do
               <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id not in @upvoted_tip_ids -> %>
                 <button phx-click="upvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
                   <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="font-medium dark:text-gray-300 text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
                   <span class="sr-only">upvotes</span>
                 </button>
               <% @current_user.id && @current_user.id != @tip.contributor_id && @tip.id in @upvoted_tip_ids -> %>
                 <button phx-click="downvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
                   <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5 transform duration-300 hover:rotate-180" />
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="font-medium dark:text-gray-300 text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
                   <span class="sr-only">upvotes</span>
                 </button>
               <% true -> %>
                 <div class="inline-flex space-x-2 text-gray-400">
                   <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                  <span class="font-medium text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
+                  <span class="font-medium dark:text-gray-300 text-gray-900"><%= @tip.upvote_count + @tip.twitter_like_count %></span>
                   <span class="sr-only">upvotes</span>
                 </div>
             <% end %>
@@ -87,7 +88,7 @@ defmodule UtilityWeb.Components do
               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              <span class="font-medium text-gray-900">Edit</span>
+              <span class="font-medium dark:text-gray-300 text-gray-900">Edit</span>
             <% end %>
           <% end %>
 
@@ -170,6 +171,7 @@ defmodule UtilityWeb.Components do
   end
 
   def page_panel(assigns) do
+    assigns = assign_new(assigns, :title_area, fn -> [] end)
     ~H"""
     <div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
       <section aria-labelledby={"#{@id}-title"}>
@@ -177,7 +179,8 @@ defmodule UtilityWeb.Components do
           <h2 class="sr-only" id={"#{@id}-title"}><%= @title %></h2>
           <div class="dark:bg-gray-800 bg-white p-6">
             <div class="sm:flex sm:items-center sm:justify-between">
-              <div class="sm:flex sm:space-x-5">
+              <div class="sm:flex sm:space-x-5 items-center">
+                <%= render_slot(@title_area) %>
                 <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
                   <p class="text-xl font-bold dark:text-gray-100 text-gray-900 sm:text-2xl">
                     <%= @title %>
@@ -297,19 +300,20 @@ defmodule UtilityWeb.Components do
       |> assign_new(:page_metadata, fn -> nil end)
       |> assign_new(:next, fn -> "next-page" end)
       |> assign_new(:prev, fn -> "prev-page" end)
+      |> assign_new(:class, fn -> "" end)
 
     ~H"""
     <%= if @page_metadata && (@page_metadata.before || @page_metadata.after) do %>
-      <nav id={@nav_id} aria-label="Pagination" class="px-2 flex-1 flex justify-between sm:justify-end">
-        <button phx-click={@prev} class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white hover:bg-gray-50">
+      <nav id={@nav_id} aria-label="Pagination" class={"px-2 flex-1 flex justify-between sm:justify-end #{@class}"}>
+        <button disabled={!@page_metadata.before} phx-click={@prev} class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium select-none rounded-md dark:bg-gray-700 bg-white disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-50">
           <!-- Heroicon name: chevron-left -->
           <svg class="text-gray-400 h-5 w-5 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
-          <span class="font-medium text-gray-900">Previous Page</span>
+          <span class="font-medium dark:text-white text-gray-900">Previous Page</span>
         </button>
-        <button phx-click={@next} class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md bg-white hover:bg-gray-50">
-          <span class="font-medium mr-1 text-gray-900">Next Page</span>
+        <button disabled={!@page_metadata.after} phx-click={@next} class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium select-none rounded-md dark:bg-gray-700 bg-white disabled:pointer-events-none disabled:opacity-50 hover:bg-gray-50">
+          <span class="font-medium mr-1 dark:text-white text-gray-900">Next Page</span>
           <!-- Heroicon name: chevron-right -->
           <svg class="text-gray-400 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

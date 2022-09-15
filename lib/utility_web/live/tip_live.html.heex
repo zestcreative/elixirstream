@@ -1,6 +1,36 @@
 <UtilityWeb.Components.page_panel title="Elixir Tips" id="elixir-tips">
-  <:call_to_action>
+  <:title_area>
+    <%= if @current_user.id do %>
+      <!-- Profile dropdown -->
+      <div class="flex-shrink-0 relative">
+        <div>
+          <button phx-click={toggle_user_menu()} type="button" class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" id="user-menu" aria-expanded="false" aria-haspopup="true">
+            <span class="sr-only">Open user menu</span>
+            <img class="h-8 w-8 rounded-full" src={@current_user.avatar} alt="">
+          </button>
+        </div>
 
+        <!-- User menu -->
+        <div id="user-profile" phx-click-away={toggle_user_menu()} class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
+          <div>
+            <%= link "Sign out",
+              to: Routes.auth_path(@socket, :delete),
+              class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
+              role: "menuitem" %>
+          </div>
+          <%= if admin?(@current_user) do %>
+            <div>
+              <%= link "Dashboard",
+                to: Routes.live_dashboard_path(@socket, :home),
+                class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
+                role: "menuitem" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </:title_area>
+  <:call_to_action>
     <label for="search" class="sr-only">Search</label>
     <div class="relative">
       <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
@@ -19,44 +49,7 @@
     </div>
 
     <%= if @current_user.id do %>
-      <!-- Profile dropdown -->
-      <div class="flex-shrink-0 relative ml-5">
-        <div>
-          <button x-on:click="profileOpen = !profileOpen" type="button" class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" id="user-menu" aria-expanded="false" aria-haspopup="true">
-            <span class="sr-only">Open user menu</span>
-            <img class="h-8 w-8 rounded-full" src={@current_user.avatar} alt="">
-          </button>
-        </div>
-
-        <!-- User menu -->
-        <div
-          @click.away="profileOpen = false"
-          x-show="profileOpen"
-          x-cloak
-          x-transition:enter="transition ease-out duration-100"
-          x-transition:enter-start="transform opacity-0 scale-95"
-          x-transition:enter-end="transform opacity-100 scale-100"
-          x-transition:leave="transition ease-in duration-75"
-          x-transition:leave-start="transform opacity-100 scale-100"
-          x-transition:leave-end="transform opacity-0 scale-95"
-          class="origin-top-right absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300"
-          role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
-          <div>
-            <%= link "Sign out",
-              to: Routes.auth_path(@socket, :delete),
-              class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
-              role: "menuitem" %>
-          </div>
-          <%= if admin?(@current_user) do %>
-            <div>
-              <%= link "Dashboard",
-                to: Routes.live_dashboard_path(@socket, :home),
-                class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
-                role: "menuitem" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
+      <%# Nothing %>
     <% else %>
       <%= link to: Routes.auth_path(@socket, :request, "github"), class: "ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
         <UtilityWeb.Components.github_icon class="text-white -ml-0.5 mr-2 h-4 w-4" />
@@ -74,7 +67,7 @@
 
   <:content>
     <%= if @live_action == :new || @live_action == :edit do %>
-      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
+      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form">
       <%= if @current_user.id do %>
         <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action == :new , do: "create", else: "update"}>
           <div>
@@ -131,7 +124,7 @@
 
             <div class="mt-1">
               <%= label f, :code, "Code", class: "block text-sm font-medium text-gray-700" %>
-              <div class="w-full" phx-hook="MonocoEditor" phx-update="ignore" id="code-editor-content"
+              <div class="relative w-full" phx-hook="MonacoEditor" phx-update="ignore" id="code-editor-content"
                 data-editor-status-selector="#code-editor-status"
                 data-mount-replace-selector="#code-editor-mount-replace"
                 data-mount-selector="#code-editor-mount"
@@ -146,36 +139,18 @@
               </div>
             </div>
             <div class="mt-1">
-              <img :src="src" :class="{'hidden': !src}" class="cursor-pointer w-24" x-on:click="$dispatch('img-modal', src)" />
-              <div class="fixed z-10 inset-0 overflow-y-auto"
-                x-show="imgShow"
-                x-on:click.away="imgShow = false"
-                x-on:keydown.window.escape="imgShow = false">
+              <%= if @preview_image_url do %>
+                <img src={@preview_image_url} class="cursor-pointer w-24" phx-click={show_codeshot_preview()} />
+              <% end %>
+              <div id="codeshot-preview" class="fixed z-10 inset-0 overflow-y-auto hidden" phx-click-away={hide_codeshot_preview()}>
                 <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                  <div x-on:click="imgShow = false"
-                        class="fixed inset-0 transition-opacity"
-                        x-show="imgShow"
-                        x-transition:enter="ease-out duration-300"
-                        x-transition:enter-start="opacity-0"
-                        x-transition:enter-end="opacity-100"
-                        x-transition:leave="ease-in duration-200"
-                        x-transition:leave-start="opacity-100"
-                        x-transition:leave-end="opacity-0"
-                        aria-hidden="true">
+                  <div id="codeshot-wash" phx-click={hide_codeshot_preview()} class="hidden fixed inset-0 transition-opacity" aria-hidden="true">
                     <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
                   </div>
-                  <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                  <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
-                        x-show="imgShow"
-                        x-transition:enter="ease-out duration-300"
-                        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave="ease-in duration-200"
-                        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                        role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                  <span class="sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                  <div id="codeshot-content" class="hidden align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
                     <div class="hidden sm:block absolute top-0 right-0 pt-4 pr-4">
-                      <button x-on:click="imgShow = false" type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                      <button phx-click={hide_codeshot_preview()} type="button" class="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
                         <UtilityWeb.Components.close_icon class="h-6 w-6" />
                       </button>
                     </div>
@@ -186,7 +161,7 @@
                         </h3>
                         <div class="mt-2">
                           <p class="text-sm text-gray-500">
-                            <img :src="src" class="object-contain h-1/2-screen" />
+                            <img src={@preview_image_url} class="object-contain h-1/2-screen" />
                           </p>
                         </div>
                       </div>
@@ -221,12 +196,8 @@
                   </div>
                 </div>
                 <span class="inline-flex items-center text-sm">
-                  <button x-on:click="loading = true" phx-click="preview" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-brand-700 bg-brand-100 hover:bg-brand-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-                    <svg x-cloak x-show="loading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <%= "Preview" %>
+                  <button phx-click="preview" type="button" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-brand-700 bg-brand-100 hover:bg-brand-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+                    Preview
                   </button>
                 </span>
                 <span class="inline-flex items-center text-sm">
@@ -249,14 +220,15 @@
     <% end %>
 
     <%= if @live_action == :show do %>
-      <UtilityWeb.Components.tip_card tip={@tip} socket={@socket}
+      <UtilityWeb.Components.tip_card upvoted_tip_ids={@upvoted_tip_ids} tip={@tip} socket={@socket}
         current_user={@current_user} class="mt-4" />
     <% end %>
 
     <%= if @live_action == :index do %>
       <%= if @searching && @tips == [] do %>
         <div id="no-tips-result" class="mx-auto flex flex-col content-center justify-center">
-          <svg class="block w-64 h-64" xmlns="http://www.w3.org/2000/svg" id="bac3cfc7-b61b-48ce-8441-8100e40ddaa6" width="797.5" height="834.5" viewBox="0 0 797.5 834.5">
+          <div class="mt-2 text-center">No results 😿</div>
+          <svg class="mt-6 mx-auto block w-64 h-64" xmlns="http://www.w3.org/2000/svg" id="bac3cfc7-b61b-48ce-8441-8100e40ddaa6" width="797.5" height="834.5" viewBox="0 0 797.5 834.5">
             <ellipse cx="308.5" cy="780" rx="308.5" ry="54.5" fill="#3f3d56"/>
             <circle cx="496" cy="301.5" r="301.5" fill="#3f3d56"/>
             <circle cx="496" cy="301.5" r="248.89787" opacity="0.05"/>
@@ -279,20 +251,19 @@
             <circle cx="54" cy="672.5" r="31" fill="#9428ec"/>
             <circle cx="54" cy="624.5" r="22" fill="#9428ec"/>
           </svg>
-          <div class="mt-2 text-center">No results 😿</div>
         </div>
       <% else %>
-        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="top-navigation-nav" />
+        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="top-pagination-nav" class="mt-4" />
 
         <ul phx-hook="HandleScroll" id="tips-list" class="mt-4 space-y-4">
           <%= for tip <- @tips do %>
             <li data-tip id={"tip-#{tip.id}"}>
-              <UtilityWeb.Components.tip_card tip={tip} socket={@socket} current_user={@current_user} />
+              <UtilityWeb.Components.tip_card upvoted_tip_ids={@upvoted_tip_ids} tip={tip} socket={@socket} current_user={@current_user} />
             </li>
           <% end %>
         </ul>
 
-        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="bottom-navigation-nav" />
+        <UtilityWeb.Components.pagination next="next-page" prev="prev-page" page_metadata={@page_metadata} nav_id="bottom-pagination-nav" class="mt-4" />
       <% end %>
     <% end %>
   </:content>

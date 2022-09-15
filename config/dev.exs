@@ -23,8 +23,13 @@ config :utility, Utility.Repo,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
+config :ueberauth, Ueberauth.Strategy.Github.OAuth,
+  client_id: System.get_env("GITHUB_CLIENT_ID"),
+  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+
 config :utility,
-  gendiff_storage_dir: System.tmp_dir!()
+  gendiff_storage_dir: System.tmp_dir!(),
+  tip_storage_dir: Path.expand("priv/static")
 
 # Watch static and templates for browser reloading.
 config :utility, UtilityWeb.Endpoint,

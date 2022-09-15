@@ -8,7 +8,7 @@ function generate() {
   local font=$1; shift
   local language_ext=$1; shift
 
-  local tmpfile=$(mktemp --suffix='.png')
+  local tmpfile=$(mktemp "$TMPDIR/$(uuidgen)-XXXXXX.png")
 
   echo "$code" | silicon -o "$tmpfile" --font "$font" -l ex
   echo "$tmpfile"

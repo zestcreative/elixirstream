@@ -3,6 +3,7 @@ defmodule UtilityWeb.TipLive do
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
   alias Ecto.Changeset
+  alias Phoenix.LiveView.JS
   alias Utility.TipCatalog
   require Logger
 
@@ -412,4 +413,41 @@ defmodule UtilityWeb.TipLive do
 
   def show_delete?(%{contributor_id: user_id}, %{id: user_id}), do: true
   def show_delete?(_tip, current_user), do: admin?(current_user)
+
+  def toggle_user_menu do
+    JS.toggle(
+      to: "#user-profile",
+      in: {"transition ease-out duration-100", "transform opacity-0 scale-95", "transform opacity-100 scale-100"},
+      out: {"transition ease-in duration-75", "transform opacity-100 scale-100", "transform opacity-0 scale-95"}
+    )
+  end
+
+  def show_codeshot_preview do
+    JS.show(to: "#codeshot-preview")
+    |> JS.show(
+      to: "#codeshot-wash",
+      transition: {"ease-out duration-300", "opacity-0", "opacity-100"}
+    )
+    |> JS.show(
+      to: "#codeshot-content",
+      transition: {"ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95", "opacity-100 translate-y-0 sm:scale-100"},
+      display: "inline-block"
+    )
+  end
+
+  def hide_codeshot_preview do
+    JS.hide(
+      to: "#codeshot-wash",
+      transition: {"ease-in duration-200", "opacity-100", "opacity-0"}
+    )
+    |> JS.hide(
+      to: "#codeshot-content",
+      transition: {"ease-in duration-200", "opacity-100 translate-y-0 sm:translate-y-0 sm:scale-100", "opacity-0 translate-y-4 sm:scale-95"}
+    )
+    |> JS.hide(
+      to: "#codeshot-preview",
+      transition: "hidden",
+      time: 200
+    )
+  end
 end

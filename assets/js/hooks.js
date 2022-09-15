@@ -25,7 +25,7 @@ hooks.HandleScroll = {
         el.scrollIntoView({ behavior: "smooth" })
         location.hash = to
       } else {
-        console.warn(`scroll event did not find ${selector} to scroll to`)
+        console.warn(`scroll event did not find ${to} to scroll to`)
       }
     })
   }
@@ -82,7 +82,7 @@ hooks.ThemeChooser = {
   }
 }
 
-hooks.MonocoEditor = {
+hooks.MonacoEditor = {
   destroyed() {
     this.editor.unmount()
   },

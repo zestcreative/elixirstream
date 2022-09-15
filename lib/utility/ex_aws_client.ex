@@ -1,4 +1,4 @@
-defmodule Utility.TipCatalog.ExAwsClient do
+defmodule Utility.ExAwsClient do
   @behaviour ExAws.Request.HttpClient
   @client ExAwsFinch
 

@@ -23,7 +23,14 @@ defmodule UtilityWeb.Endpoint do
     at: "/",
     from: :utility,
     gzip: true,
-    only: ~w(assets fonts svg images site.webmanifest favicon.ico robots.txt)
+    only: ~w(uploads assets fonts svg images site.webmanifest favicon.ico robots.txt)
+  #
+  # if Application.compile_env(:utility, :tip_storage) == Utility.TipCatalog.StorageLocal do
+  #   plug Plug.Static,
+  #     at: "/uploads",
+  #     from: Application.compile_env(:utility, :tip_storage_dir),
+  #     gzip: false
+  # end
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
