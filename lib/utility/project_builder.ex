@@ -303,9 +303,9 @@ defmodule Utility.ProjectBuilder do
     version = Version.parse!(version)
 
     cond do
-      Version.compare(version, @phx_latest_at) -> "latest"
-      Version.compare(version, @phx_112_at) -> "112"
-      Version.compare(version, @phx_111_at) -> "111"
+      Version.compare(version, @phx_latest_at) != :lt -> "latest"
+      Version.compare(version, @phx_112_at) != :lt -> "112"
+      Version.compare(version, @phx_111_at) != :lt -> "111"
       true -> "old"
     end
   end
