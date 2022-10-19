@@ -294,7 +294,8 @@ defmodule Utility.ProjectBuilder do
 
   def run_command(command, _version_string, flags), do: "mix #{command} #{Enum.join(flags, " ")}"
 
-  @phx_latest_at Version.parse!("1.6.0")
+  @phx_latest_at Version.parse!("1.7.0")
+  @phx_112_at Version.parse!("1.6.0")
   @phx_111_at Version.parse!("1.3.0")
   def docker_tag_for("phx.new", "master"), do: "latest"
 
@@ -303,6 +304,7 @@ defmodule Utility.ProjectBuilder do
 
     cond do
       Version.compare(version, @phx_latest_at) -> "latest"
+      Version.compare(version, @phx_112_at) -> "112"
       Version.compare(version, @phx_111_at) -> "111"
       true -> "old"
     end
