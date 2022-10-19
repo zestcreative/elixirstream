@@ -1,5 +1,13 @@
 import Config
 
+if config_env() != :test do
+  config :utility,
+    docker_bin:
+      System.find_executable("docker") || System.find_executable("podman") ||
+        raise("needs 'docker' installed."),
+    gem_bin: System.find_executable("gem") || raise("needs 'gem' installed.")
+end
+
 if config_env() == :prod do
   host = System.get_env("HOST")
   fly_host = System.get_env("FLY_APP_NAME") <> ".fly.dev"
@@ -39,10 +47,6 @@ if config_env() == :prod do
     http: [port: System.get_env("PORT"), compress: true],
     url: [scheme: "https", host: host || fly_host, port: 443],
     secret_key_base: secret_key_base
-
-  config :utility,
-    docker_bin: System.find_executable("docker") || raise("needs 'docker' installed."),
-    gem_bin: System.find_executable("gem") || raise("needs 'gem' installed.")
 
   if storage_dir = System.get_env("STORAGE_DIR") do
     File.mkdir_p(storage_dir)

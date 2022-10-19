@@ -8,8 +8,6 @@
 import Config
 
 config :utility,
-  docker_bin: System.find_executable("docker") || System.find_executable("podman"),
-  gem_bin: System.find_executable("gem"),
   ecto_repos: [Utility.Repo],
   generators: [binary_id: true],
   redis_url: System.get_env("REDIS_URL", "redis://127.0.0.1:6379"),
