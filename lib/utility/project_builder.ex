@@ -184,6 +184,7 @@ defmodule Utility.ProjectBuilder do
          :lt <- Version.compare(version, @phx_gen_auth_merged) do
       # This is the separate phx_gen_auth package
       """
+      elixir --version &&
       #{run_command("phx.new", "1.5.7", ["my_app"])} &&
         sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
         cd my_app &&
@@ -195,6 +196,7 @@ defmodule Utility.ProjectBuilder do
       _ ->
         # phx.gen.auth is merged into phx_new package
         """
+        elixir --version &&
         #{run_command("phx.new", version_string, ["my_app"])} &&
           cd my_app &&
           mix deps.get &&
@@ -209,6 +211,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("phx.new", :standard, [where | _] = flags) do
     """
+    elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex* &> /dev/null || true)
@@ -217,6 +220,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("phx.new", :umbrella, [where | _] = flags) do
     """
+    elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true)
@@ -229,6 +233,7 @@ defmodule Utility.ProjectBuilder do
     case {Version.compare(version, @phx_new_github), "--umbrella" in flags} do
       {:lt, _} ->
         """
+        elixir --version &&
         yes n | mix phoenix.new #{Enum.join(flags, " ")} &&
           sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex*
@@ -245,6 +250,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("rails new", _version_string, [where | _] = flags) do
     """
+    ruby --version && gem --version &&
     rails new #{Enum.join(flags, " ")} &&
       cd #{where} &&
       (rm -f config/credentials.yml.enc &> /dev/null || true) &&
@@ -255,6 +261,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("rails webpacker:install", version_string, [:none]) do
     """
+    ruby --version && gem --version &&
     #{run_command("rails new", "5.2.4", ["my_app", "--skip-keeps", "--skip-git", "--skip-bundle", "--skip-webpack-install"])} &&
       echo "gem 'webpacker', '#{version_string}'" >> Gemfile &&
       bundle --quiet &&
@@ -265,6 +272,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("rails webpacker:install", version_string, [framework]) do
     """
+    ruby --version && gem --version &&
     #{run_command("rails webpacker:install", version_string, [:none])} &&
       bundle exec rails webpacker:install:#{framework} &&
       rm -rf node_modules tmp yarn.lock
@@ -274,6 +282,7 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("rails webpacker:install", version_string, []) do
     """
+    ruby --version && gem --version &&
     #{run_command("rails webpacker:install", version_string, [:none])} &&
       rm -rf node_modules tmp yarn.lock
     """
@@ -286,15 +295,22 @@ defmodule Utility.ProjectBuilder do
 
   def run_command("nerves.new", _version_string, [where | _] = flags) do
     """
+    elixir --version &&
     mix nerves.new #{Enum.join(flags, " ")} &&
       (sed -i 's/-setcookie.*/-setcookie foo/g' #{where}/rel/vm.args &> /dev/null || true)
     """
     |> String.trim()
   end
 
-  def run_command(command, _version_string, flags), do: "mix #{command} #{Enum.join(flags, " ")}"
+  def run_command(command, _version_string, flags) do
+    """
+    elixir --version &&
+    mix #{command} #{Enum.join(flags, " ")}
+    """
+  end
 
-  @phx_latest_at Version.parse!("1.6.0")
+  @phx_latest_at Version.parse!("1.7.0")
+  @phx_112_at Version.parse!("1.6.0")
   @phx_111_at Version.parse!("1.3.0")
   def docker_tag_for("phx.new", "master"), do: "latest"
 
@@ -302,8 +318,9 @@ defmodule Utility.ProjectBuilder do
     version = Version.parse!(version)
 
     cond do
-      Version.compare(version, @phx_latest_at) -> "latest"
-      Version.compare(version, @phx_111_at) -> "111"
+      Version.compare(version, @phx_latest_at) != :lt -> "latest"
+      Version.compare(version, @phx_112_at) != :lt -> "112"
+      Version.compare(version, @phx_111_at) != :lt -> "111"
       true -> "old"
     end
   end

@@ -10,11 +10,16 @@ A series of utilities for developers.
 
 ## Running Locally
 
+You need to install `docker` and `gem` for Ruby and docker needs to be running,
+otherwise the app will complain when starting up since it can't build the
+Dockerfiles needed for diffing. Colima doesn't seem to work, but docker-ce does
+seem to work when mounting volumes. `podman` might work instead of `docker` but
+is the containerd runtime is untested.
+
 To start your Phoenix server:
 
   * Setup the project with `mix setup`
   * Start Phoenix endpoint with `iex -S mix phx.server`
-  * You need docker and ruby installed in order to run generator diffs.
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
