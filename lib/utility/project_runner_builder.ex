@@ -111,6 +111,7 @@ defmodule Utility.ProjectRunnerBuilder do
     case :os.type() do
       {:unix, :darwin} ->
         501
+
       _ ->
         {group_id, 0} = System.cmd("id", ["-g"])
         String.trim(group_id)

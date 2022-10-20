@@ -123,13 +123,14 @@ defmodule UtilityWeb.GenDiffLive do
     project = Changeset.get_field(changeset, :project)
     from = Changeset.get_field(changeset, :from_version)
     to = Changeset.get_field(changeset, :to_version)
+    command = Changeset.get_field(changeset, :command)
 
     socket
     |> assign(:changeset, changeset)
     |> assign(:project, project)
     |> assign(:project_url, Changeset.get_field(changeset, :url))
     |> assign(:project_source, Changeset.get_field(changeset, :source))
-    |> assign(:command, Changeset.get_field(changeset, :command))
+    |> assign(:command, command)
     |> assign(:command_help, Changeset.get_field(changeset, :help))
     |> assign(:docs_url, Changeset.get_field(changeset, :docs_url))
     |> assign(:from_version, from)
@@ -138,6 +139,8 @@ defmodule UtilityWeb.GenDiffLive do
     |> assign(:to_versions, versions_for(project, floor: from))
     |> assign(:from_flags, Changeset.get_field(changeset, :from_flags, []))
     |> assign(:to_flags, Changeset.get_field(changeset, :to_flags, []))
+    |> assign(:available_from_flags, Data.flags_for_command(project, command, from))
+    |> assign(:available_to_flags, Data.flags_for_command(project, command, to))
   end
 
   defp maybe_reset(%{"project" => project} = params, %{params: %{"project" => project}}, record),
@@ -222,9 +225,5 @@ defmodule UtilityWeb.GenDiffLive do
   defp version_options(versions) do
     versions = Enum.map(versions, &[key: &1, value: &1])
     @version_placeholder ++ versions
-  end
-
-  defp flags_for_command(project, command) do
-    Data.flags_for_command(project, command)
   end
 end

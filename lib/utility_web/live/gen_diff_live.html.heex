@@ -107,8 +107,7 @@
           </div>
 
           <div>
-            <% available_flags = flags_for_command(@project, @command) %>
-            <% is_flags_hidden = !Enum.any?(available_flags) %>
+            <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
             <div class={"my-4 #{if is_flags_hidden, do: "hidden"}"} }>
               <div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -116,10 +115,10 @@
                     <%= label(f, :from_flags, "From #{@from_version} Flags",
                       class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
                     ) %>
-                    <%= multiple_select(f, :from_flags, available_flags,
+                    <%= multiple_select(f, :from_flags, @available_from_flags,
                       class:
                         "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden",
-                      size: length(available_flags)
+                      size: length(@available_from_flags)
                     ) %>
                     <%= error_tag(f, :from_flags) %>
                   </div>
@@ -128,10 +127,10 @@
                     <%= label(f, :to_flags, "To #{@to_version} Flags",
                       class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
                     ) %>
-                    <%= multiple_select(f, :to_flags, available_flags,
+                    <%= multiple_select(f, :to_flags, @available_to_flags,
                       class:
                         "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden",
-                      size: length(available_flags)
+                      size: length(@available_to_flags)
                     ) %>
                     <%= error_tag(f, :to_flags) %>
                   </div>
