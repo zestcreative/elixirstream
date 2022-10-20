@@ -11,21 +11,24 @@ defmodule Utility.GenDiff.Data do
           help:
             "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error or be ignored.",
           flags: [
-            "--binary-id",
-            "--database=mssql",
-            "--database=mysql",
-            "--database=postgres",
-            "--database=sqlite3",
-            "--live",
-            "--no-dashboard",
-            "--no-ecto",
-            "--no-gettext",
-            "--no-html",
-            "--no-live",
-            "--no-mailer",
-            "--no-webpack",
-            "--no-assets",
-            "--umbrella"
+            {"--binary-id", [from: "1.0.0"]},
+            {"--database=mongodb", [from: "1.0.0", until: "1.3.3"]},
+            {"--database=mssql", [from: "1.0.0"]},
+            {"--database=mysql", [from: "1.0.0"]},
+            {"--database=postgres", [from: "1.0.0"]},
+            {"--database=sqlite", [from: "1.0.0"]},
+            {"--database=sqlite3", [from: "1.6.0"]},
+            {"--live", [from: "1.5.0", until: "1.6.0"]},
+            {"--no-assets", [from: "1.6.0"]},
+            {"--no-brunch", [from: "1.0.0", until: "1.4.0"]},
+            {"--no-dashboard", [from: "1.5.0"]},
+            {"--no-ecto", [from: "1.0.0"]},
+            {"--no-gettext", [from: "1.4.12"]},
+            {"--no-html", [from: "1.0.0"]},
+            {"--no-live", [from: "1.6.0"]},
+            {"--no-mailer", [from: "1.6.0"]},
+            {"--no-webpack", [from: "1.4.0", until: "1.6.0"]},
+            {"--umbrella", [from: "1.3.0"]}
           ]
         },
         %{
@@ -35,11 +38,12 @@ defmodule Utility.GenDiff.Data do
           help:
             "phx.gen.auth used to be distributed separately as phx_gen_auth, but was merged into Phoenix in 1.6",
           flags: [
-            "--binary-id",
-            "--no-binary-id",
-            "--hashing-lib=bcrypt",
-            "--hashing-lib=pbkdf2",
-            "--hashing-lib=argon2"
+            {"--live", [from: "1.7.0"]},
+            {"--binary-id", [from: "1.6.0"]},
+            {"--no-binary-id", [from: "1.6.0"]},
+            {"--hashing-lib=bcrypt", [from: "1.6.0"]},
+            {"--hashing-lib=pbkdf2", [from: "1.6.0"]},
+            {"--hashing-lib=argon2", [from: "1.6.0"]}
           ]
         }
       ]
@@ -55,8 +59,11 @@ defmodule Utility.GenDiff.Data do
           help:
             "Ran on a default Phoenix 1.5.7 project. You might consider using phx_new instead.",
           flags: [
-            "--binary-id",
-            "--no-binary-id"
+            {"--binary-id", [from: "0.1.0"]},
+            {"--no-binary-id", [from: "0.1.0"]},
+            {"--hashing-lib=bcrypt", [from: "0.7.0"]},
+            {"--hashing-lib=pbkdf2", [from: "0.7.0"]},
+            {"--hashing-lib=argon2", [from: "0.7.0"]}
           ]
         }
       ]
@@ -193,8 +200,38 @@ defmodule Utility.GenDiff.Data do
 
   def flags_for_command(project, command) do
     case get_by(project: project, command: command) do
+      %{flags: [{_, _} | _] = flags} -> Enum.map(flags, &elem(&1, 1))
       %{flags: flags} -> flags
       _ -> []
+    end
+  end
+
+  def flags_for_command(nil, _command, _version), do: []
+  def flags_for_command(_project, nil, _version), do: []
+
+  def flags_for_command(project, command, version) do
+    version = if version == "master", do: "9999.0.0", else: version
+
+    case {version, get_by(project: project, command: command)} do
+      {nil, %{flags: [{_, _} | _] = flags}} ->
+        Enum.map(flags, &elem(&1, 0))
+
+      {_version, %{flags: [{_, _} | _] = flags}} ->
+        flags
+        |> Enum.filter(fn
+          {_flag, [from: from, until: until]} ->
+            Version.compare(version, from) != :lt && Version.compare(version, until) == :lt
+
+          {_flag, [from: from]} ->
+            Version.compare(version, from) != :lt
+        end)
+        |> Enum.map(&elem(&1, 0))
+
+      {_version, %{flags: flags}} ->
+        flags
+
+      _ ->
+        []
     end
   end
 
