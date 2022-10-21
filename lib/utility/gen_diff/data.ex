@@ -200,7 +200,7 @@ defmodule Utility.GenDiff.Data do
 
   def flags_for_command(project, command) do
     case get_by(project: project, command: command) do
-      %{flags: [{_, _} | _] = flags} -> Enum.map(flags, &elem(&1, 1))
+      %{flags: [{_, _} | _] = flags} -> Enum.map(flags, &elem(&1, 0))
       %{flags: flags} -> flags
       _ -> []
     end
