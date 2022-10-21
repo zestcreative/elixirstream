@@ -58,7 +58,27 @@
             <%= error_tag(f, :project) %>
           </div>
 
-          <div class="flex my-4 -space-x-px shadow-sm">
+          <div class="my-4">
+            <%= label f, :command, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
+              Command
+              <%= if @docs_url do %>
+                <a rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
+                  Docs
+                </a>
+              <% end %>
+            <% end %>
+            <%= select(f, :command, generator_options(@project),
+              autocomplete: "off",
+              class:
+                "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
+            ) %>
+            <%= error_tag(f, :command) %>
+            <%= if @command_help do %>
+              <p class="mt-2 text-sm text-gray-500"><%= @command_help %></p>
+            <% end %>
+          </div>
+
+          <div class="flex -space-x-px shadow-sm">
             <div class="w-1/2 flex-1 min-w-0">
               <%= label(f, :from_version, "From Version",
                 class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -84,26 +104,6 @@
               ) %>
               <%= error_tag(f, :to_version) %>
             </div>
-          </div>
-
-          <div>
-            <%= label f, :command, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
-              Command
-              <%= if @docs_url do %>
-                <a rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
-                  Docs
-                </a>
-              <% end %>
-            <% end %>
-            <%= select(f, :command, generator_options(@project),
-              autocomplete: "off",
-              class:
-                "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-            ) %>
-            <%= error_tag(f, :command) %>
-            <%= if @command_help do %>
-              <p class="mt-2 text-sm text-gray-500"><%= @command_help %></p>
-            <% end %>
           </div>
 
           <div>
