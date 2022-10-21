@@ -1,12 +1,4 @@
-defmodule UtilityWeb.Views.LinkHelpers do
-  def render_page_header(assigns, do: block) do
-    Phoenix.View.render(
-      UtilityWeb.LayoutView,
-      "_page_header.html",
-      Map.put(assigns, :header_content, block)
-    )
-  end
-
+defmodule UtilityWeb.LinkHelpers do
   @doc """
   A shim for Phoenix.HTML.Link.link, but adding attributes for external URLs
   """

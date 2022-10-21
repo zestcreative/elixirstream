@@ -1,4 +1,4 @@
-defmodule UtilityWeb.LayoutViewTest do
+defmodule UtilityWeb.LayoutTest do
   use UtilityWeb.ConnCase, async: true
 
   # When testing helpers, you may want to import Phoenix.HTML and

@@ -23,7 +23,7 @@ defmodule UtilityWeb.Endpoint do
     at: "/",
     from: :utility,
     gzip: true,
-    only: ~w(uploads assets fonts svg images site.webmanifest favicon.ico robots.txt)
+    only: UtilityWeb.static_paths()
   #
   # if Application.compile_env(:utility, :tip_storage) == Utility.TipCatalog.StorageLocal do
   #   plug Plug.Static,

@@ -15,6 +15,6 @@ defmodule UtilityWeb.Nav do
         {_, _} -> nil
       end
 
-    {:cont, assign(socket, active_tab: active_tab)}
+    {:cont, Phoenix.Component.assign(socket, active_tab: active_tab)}
   end
 end

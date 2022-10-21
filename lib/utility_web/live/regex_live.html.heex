@@ -21,7 +21,7 @@
       id="regex-tester-content"
       phx-hook="ConfirmBeforeLeave"
       data-is-changed={changed?(@changeset)}>
-      <.form let={f} for={@changeset} phx_change="validate" %>
+      <.form let={f} for={@changeset} phx-change="validate">
         <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
           <div class="sm:col-span-5">
             <%= label(f, :regex,

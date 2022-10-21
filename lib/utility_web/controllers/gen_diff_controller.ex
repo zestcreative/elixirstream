@@ -12,19 +12,19 @@ defmodule UtilityWeb.GenDiffController do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Diff not found. Please specify diff parameters")
-        |> redirect(to: Routes.gen_diff_path(conn, :new))
+        |> redirect(to: ~p"/gendiff")
     end
   end
 
   defp stream_diff(conn, stream) do
     header = [
-      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "head.html", conn: conn),
+      Phoenix.Template.render_to_iodata(UtilityWeb.Layouts, "head", "html", conn: conn),
       "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">",
-      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "head.html", conn: conn)
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffView, "head", "html", conn: conn)
     ]
 
     footer = [
-      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "footer.html", conn: conn),
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffView, "footer", "html", conn: conn),
       "</body>"
     ]
 

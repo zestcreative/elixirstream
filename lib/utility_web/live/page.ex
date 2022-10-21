@@ -19,10 +19,7 @@ defmodule UtilityWeb.PageLive do
 
           <p>
             If you're interested in the source code,
-            <%= link("check it out",
-              to: "https://github.com/zestcreative/elixir-utilities-web",
-              class: "link"
-            ) %>
+            <.link href="https://github.com/zestcreative/elixir-utilities-web" class="link">check it out</.link>
             .
             Have any ideas on what would be helpful here? Drop me a line by
             <%= outbound_link("starting a discussion on GitHub",
@@ -60,7 +57,7 @@ defmodule UtilityWeb.PageLive do
             <li>
               Phoenix LiveView is a welcome addition that enables normally-backend-developers like me produce reactive Web
               UIs like the
-              <%= link("Regex Tester", to: Routes.regex_path(@socket, :new), class: "link") %>
+              <.link navigate={~p"/regex"} class="link">Regex Tester</.link>
               without having to split the codebase into "backend" and "frontend" so much. This isn't a knock on frontend frameworks; this is just another highly-efficient tool in the developer's toolbelt to rapidly produce good web applications.
             </li>
           </ul>

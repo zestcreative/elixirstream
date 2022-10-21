@@ -8,6 +8,7 @@ defmodule UtilityWeb.GenDiffLive do
   alias Utility.GenDiff.Data
   alias Utility.GenDiff.Storage
   alias Utility.GenDiff.Generator
+  import Phoenix.HTML.Form
   alias Ecto.Changeset
 
   @impl Phoenix.LiveView
@@ -116,7 +117,7 @@ defmodule UtilityWeb.GenDiffLive do
   end
 
   defp show_path_for(generator) do
-    Routes.gen_diff_path(UtilityWeb.Endpoint, :show, generator.project, generator.id)
+    ~p"/gendiff/#{generator.project}/#{generator.id}"
   end
 
   defp assign_changeset(socket, params) do

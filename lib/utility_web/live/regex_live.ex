@@ -7,6 +7,7 @@ defmodule UtilityWeb.RegexLive do
   use Ecto.Schema
   alias Ecto.Changeset
   alias Utility.Cache
+  import Phoenix.HTML.Form
   require Logger
 
   @primary_key false
@@ -274,6 +275,6 @@ defmodule UtilityWeb.RegexLive do
   end
 
   def span_match(type, string) do
-    content_tag(:span, string, class: (type == :matched && "m") || "u")
+    Phoenix.HTML.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
   end
 end

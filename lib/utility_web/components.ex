@@ -1,9 +1,7 @@
 defmodule UtilityWeb.Components do
   @moduledoc false
-  use Phoenix.Component
+  use UtilityWeb, :html
   import Utility.Accounts, only: [admin?: 1]
-  alias Phoenix.LiveView.JS
-  alias UtilityWeb.Router.Helpers, as: Routes
 
   def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
   def show_edit?(_tip, current_user), do: admin?(current_user)
@@ -45,7 +43,7 @@ defmodule UtilityWeb.Components do
           </div>
         </div>
         <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900 dark:text-gray-300">
-          <%= live_patch @tip.title, to: Routes.tip_path(@socket, :show, @tip.id) %>
+          <.link patch={~p"/tips/#{@tip.id}"}><%= @tip.title %></.link>
         </h2>
       </div>
 
@@ -84,12 +82,12 @@ defmodule UtilityWeb.Components do
         </div>
         <div class="flex text-sm">
           <%= if show_edit?(@tip, @current_user) do %>
-            <%= live_patch to: Routes.tip_path(@socket, :edit, @tip.id), class: "ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500" do %>
+            <.link patch={~p"/tips/#{@tip.id}/edit"} class="ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500">
               <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
               <span class="font-medium dark:text-gray-300 text-gray-900">Edit</span>
-            <% end %>
+            </.link>
           <% end %>
 
           <%= if show_delete?(@tip, @current_user) do %>
@@ -126,11 +124,15 @@ defmodule UtilityWeb.Components do
   def tab_active_str, do: Enum.join(tab_active(), " ")
 
   def tab(assigns) do
-    assigns = assigns |> assign_new(:class, fn -> nil end) |> assign_new(:active, fn -> false end)
-    active_class = if assigns[:active], do: "", else: "hidden"
+    assigns = assigns
+      |> assign_new(:class, fn -> nil end)
+      |> assign_new(:active, fn -> false end)
+      |> assign_new(:active_class, fn %{active: active} ->
+        if active, do: "", else: "hidden"
+      end)
 
     ~H"""
-    <div data-tab-group={@group} data-tab={"tab-#{@id}-content"} id={"tab-#{@id}-content"} class={"#{@class} #{active_class}"}>
+    <div data-tab-group={@group} data-tab={"tab-#{@id}-content"} id={"tab-#{@id}-content"} class={"#{@class} #{@active_class}"}>
       <%= render_slot(@inner_block) %>
     </div>
     """

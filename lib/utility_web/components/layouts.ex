@@ -1,6 +1,7 @@
-defmodule UtilityWeb.LayoutView do
-  use UtilityWeb, :view
-  alias Phoenix.LiveView.JS
+defmodule UtilityWeb.Layouts do
+  use UtilityWeb, :html
+
+  embed_templates "layouts/*"
 
   @themes ["dark", "light", "system"]
   def themes, do: @themes

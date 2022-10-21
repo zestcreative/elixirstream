@@ -9,7 +9,7 @@ defmodule UtilityWeb.Router do
     plug UtilityWeb.Plug.GuardianPipeline
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug :put_root_layout, {UtilityWeb.LayoutView, :root}
+    plug :put_root_layout, {UtilityWeb.Layouts, :root}
   end
 
   pipeline :crawlers do

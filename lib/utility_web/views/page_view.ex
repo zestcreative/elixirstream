@@ -1,3 +1,5 @@
-defmodule UtilityWeb.PageView do
-  use UtilityWeb, :view
+defmodule UtilityWeb.PageHTML do
+  use UtilityWeb, :html
+
+  embed_templates "page/*"
 end

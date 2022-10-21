@@ -31,7 +31,10 @@ config :utility, UtilityWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "gJjLZxqBoWFJVdwbLjZe1v2jd2txjpePiZan9WJrhOZsnKhLGftHdjSDHOmDQ+tP",
   signing_salt: "foobar",
-  render_errors: [view: UtilityWeb.ErrorView, accepts: ~w(html json), layout: false],
+  render_errors: [
+    formats: [html: UtilityWeb.ErrorHTML, json: UtilityWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
 

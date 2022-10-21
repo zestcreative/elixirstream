@@ -14,7 +14,7 @@ defmodule UtilityWeb.SinkController do
 
     conn
     |> put_status(200)
-    |> text("See sink at #{Routes.sink_url(conn, :show, id)}\n")
+    |> text("See sink at #{~p"/sink/view/#{id}"}\n")
   end
 
   def any(conn, _params) do

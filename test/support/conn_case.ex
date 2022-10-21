@@ -24,6 +24,7 @@ defmodule UtilityWeb.ConnCase do
       import Phoenix.ConnTest
       import UtilityWeb.ConnCase
 
+      use UtilityWeb, :verified_routes
       alias UtilityWeb.Router.Helpers, as: Routes
 
       # The default endpoint for testing

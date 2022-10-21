@@ -10,7 +10,7 @@ defmodule UtilityWeb.ErrorHelpers do
   """
   def error_tag(form, field) do
     Enum.map(Keyword.get_values(form.errors, field), fn error ->
-      content_tag(:span, translate_error(error),
+      Phoenix.HTML.Tag.content_tag(:span, translate_error(error),
         class: "invalid-feedback error-input",
         phx_feedback_for: input_name(form, field)
       )

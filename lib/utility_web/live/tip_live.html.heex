@@ -13,17 +13,16 @@
         <!-- User menu -->
         <div id="user-profile" phx-click-away={toggle_user_menu()} class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300" role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
           <div>
-            <%= link "Sign out",
-              to: Routes.auth_path(@socket, :delete),
-              class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
-              role: "menuitem" %>
+            <.link href={~p"/logout"} method={"delete"}
+              class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+              role="menuitem">Sign out</.link>
           </div>
           <%= if admin?(@current_user) do %>
             <div>
-              <%= link "Dashboard",
-                to: Routes.live_dashboard_path(@socket, :home),
-                class: "block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100",
-                role: "menuitem" %>
+              <.link href={~p"/admin/dashboard"}
+                class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
+                role="menuitem">Dashboard</.link>
+
             </div>
           <% end %>
         </div>
@@ -37,7 +36,7 @@
         <UtilityWeb.Components.search_icon class="h-5 w-5 text-gray-400" />
       </div>
 
-      <.form let={f} as="search" for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
+      <.form let={f} as={:search} for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
       <%= search_input f, :q, phx_debounce: "250",
         class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm",
         maxlength: "75",
@@ -51,16 +50,16 @@
     <%= if @current_user.id do %>
       <%# Nothing %>
     <% else %>
-      <%= link to: Routes.auth_path(@socket, :request, "github"), class: "ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+      <.link href={~p"/auth/github"} class="ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
         <UtilityWeb.Components.github_icon class="text-white -ml-0.5 mr-2 h-4 w-4" />
         Login
-      <% end %>
+      </.link>
     <% end %>
 
     <%= if @live_action == :index do %>
-      <%= live_patch "New Tip", to: Routes.tip_path(@socket, :new), class: "ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" %>
+      <.link class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" patch={~p"/tips/new"}>New Tip</.link>
     <% else %>
-      <%= live_patch "Back", to: Routes.tip_path(@socket, :index), class: "ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" %>
+      <.link class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" patch={~p"/tips"}>Back</.link>
     <% end %>
 
   </:call_to_action>

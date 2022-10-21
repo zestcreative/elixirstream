@@ -22,7 +22,7 @@ defmodule UtilityWeb.Live.Defaults do
   end
 
   def load_user(socket, %{@token_key => token}) do
-    Phoenix.LiveView.assign_new(socket, :current_user, fn ->
+    Phoenix.Component.assign_new(socket, :current_user, fn ->
       with {:ok, claims} <-
              Guardian.decode_and_verify(Utility.Accounts.Guardian, token, @claims),
            {:ok, user} <- Utility.Accounts.Guardian.resource_from_claims(claims) do
@@ -34,6 +34,6 @@ defmodule UtilityWeb.Live.Defaults do
   end
 
   def load_user(socket, _) do
-    assign_new(socket, :current_user, fn -> %Utility.Accounts.User{} end)
+    Phoenix.Component.assign_new(socket, :current_user, fn -> %Utility.Accounts.User{} end)
   end
 end

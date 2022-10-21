@@ -9,9 +9,9 @@ defmodule Utility.Application do
   def start(_type, _args) do
     children = [
       # Start the Telemetry supervisor
+      UtilityWeb.Telemetry,
       Utility.Repo,
       Utility.PackageRepo,
-      UtilityWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: Utility.PubSub},
       # Start the Endpoint (http/https)

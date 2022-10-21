@@ -31,4 +31,4 @@ config :utility, Oban,
   plugins: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning

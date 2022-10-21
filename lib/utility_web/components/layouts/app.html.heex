@@ -1,7 +1,7 @@
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-  <%= render("nav.html", assigns) %>
+  <%= Phoenix.Template.render(UtilityWeb.Layouts, "nav", "html", assigns) %>
   <main class="-mt-24 pb-8">
-    <%= if @flash["info"] do %>
+    <%= if info = Phoenix.Flash.get(@flash, :info) do %>
       <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
         <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
           <div class="overflow-hidden rounded-lg shadow-xs">
@@ -27,7 +27,7 @@
                     Success!
                   </p>
                   <p class="mt-1 text-sm dark:text-gray-300 text-gray-500 leading-5">
-                    <%= live_flash(@flash, :info) %>
+                    <%= info %>
                   </p>
                 </div>
                 <div class="flex flex-shrink-0 ml-4">
@@ -52,7 +52,7 @@
       </div>
     <% end %>
 
-    <%= if @flash["error"] do %>
+    <%= if error = Phoenix.Flash.get(@flash, :error) do %>
       <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
         <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
           <div class="overflow-hidden rounded-lg shadow-xs">
@@ -78,7 +78,7 @@
                     Error!
                   </p>
                   <p class="mt-1 text-sm dark:text-gray-300 text-gray-500 leading-5">
-                    <%= live_flash(@flash, :error) %>
+                    <%= error %>
                   </p>
                 </div>
                 <div class="flex flex-shrink-0 ml-4">
@@ -105,5 +105,5 @@
 
     <%= @inner_content %>
   </main>
-  <%= render("footer.html", assigns) %>
+  <%= Phoenix.Template.render(UtilityWeb.Layouts, "footer", "html", assigns) %>
 </div>

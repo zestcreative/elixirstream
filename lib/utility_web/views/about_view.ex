@@ -1,3 +1,3 @@
 defmodule UtilityWeb.AboutView do
-  use UtilityWeb, :view
+  use UtilityWeb, :html
 end

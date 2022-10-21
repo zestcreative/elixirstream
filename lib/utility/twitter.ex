@@ -1,7 +1,7 @@
 defmodule Utility.Twitter do
   alias Utility.TipCatalog
   alias Utility.Twitter.Client
-  alias UtilityWeb.Router.Helpers, as: Routes
+  use UtilityWeb, :verified_routes
   @endpoint UtilityWeb.Endpoint
 
   def get_status(%{twitter_status_id: nil}), do: {:error, :no_tweet}
@@ -20,9 +20,8 @@ defmodule Utility.Twitter do
            {:ok, media_id} <-
              Client.upload_media(file, filename: url_safe(tip.title) <> Path.extname(file)),
            {:ok, %{body: %{"id_str" => twitter_status_id}}} <-
-             Client.update_status(tweet_body(tip), [media_id]),
-           {:ok, tip} <- TipCatalog.add_twitter_status_id(tip, twitter_status_id) do
-        {:ok, tip}
+             Client.update_status(tweet_body(tip), [media_id]) do
+        TipCatalog.add_twitter_status_id(tip, twitter_status_id)
       end
     else
       {:ok, tip}
@@ -50,7 +49,7 @@ defmodule Utility.Twitter do
 
   def put_contributor(body, %{contributor: %{twitter: twitter}}), do: [" by @#{twitter}" | body]
 
-  def put_url(body, %{id: tip_id}), do: [" ", Routes.tip_url(@endpoint, :show, tip_id) | body]
+  def put_url(body, %{id: tip_id}), do: [" ", ~p"/tips/#{tip_id}" | body]
 
   @tweet_limit 280
   def fill_with_description(body, %{description: description}) do

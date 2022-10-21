@@ -38,7 +38,7 @@
           preserveAspectRatio="xMinYMin meet"
         >
           <foreignObject class="w-full h-full">
-            <p><%= Routes.sink_url(@socket, :any, @id) %></p>
+            <p><%= ~p"/sink/#{@id}" %></p>
           </foreignObject>
         </svg>
         <input
@@ -47,7 +47,7 @@
           aria-hidden="true"
           readonly
           id="url-pasta"
-          value={Routes.sink_url(@socket, :any, @id)}
+          value={~p"/sink/#{@id}"}
         />
       </div>
       <!-- Warning Box -->
@@ -137,7 +137,7 @@
           <p>For example, in a shell:</p>
           <pre
             class="p-4 bg-gray-100 text-gray-800 dark:bg-black dark:text-gray-50 rounded-md select-all overflow-x-auto"
-          ><code>curl '<%= Routes.sink_url(@socket, :any, @id) %>?query=param' \
+          ><code>curl '<%= ~p"/sink/#{@id}" %>?query=param' \
   --silent \
   --header "Content-Type: application/json" \
   --data '{"foo": "bar"}'</code></pre>

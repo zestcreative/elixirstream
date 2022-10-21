@@ -9,34 +9,34 @@
   />
   <meta name="color-scheme" content="dark light" />
   <link rel="canonical" href={"https://utils.zest.dev#{Phoenix.Controller.current_path(@conn)}"} />
-  <link rel="stylesheet" href={Routes.static_path(@conn, "/assets/app.css")} />
+  <link rel="stylesheet" href={~p"/assets/app.css"} />
   <link
     rel="apple-touch-icon"
     sizes="180x180"
-    href={Routes.static_path(@conn, "/images/apple-touch-icon.png")}
+    href={~p"/images/apple-touch-icon.png"}
   />
   <link
     rel="icon"
     type="image/png"
     sizes="32x32"
-    href={Routes.static_path(@conn, "/images/favicon-32x32.png")}
+    href={~p"/images/favicon-32x32.png"}
   />
   <link
     rel="icon"
     type="image/png"
     sizes="16x16"
-    href={Routes.static_path(@conn, "/images/favicon-16x16.png")}
+    href={~p"/images/favicon-16x16.png"}
   />
   <link
     rel="mask-icon"
-    href={Routes.static_path(@conn, "/images/safari-pinned-tab.svg")}
+    href={~p"/images/safari-pinned-tab.svg"}
     color="#5bbad5"
   />
   <link rel="manifest" href="/site.webmanifest" />
   <meta name="msapplication-TileColor" content="#603cba" />
   <meta name="theme-color" content="#ffffff" />
-  <%= csrf_meta_tag() %>
-  <script defer type="text/javascript" src={Routes.static_path(@conn, "/assets/app.js")}>
+  <meta name="csrf-token" content={get_csrf_token()} />
+  <script defer type="text/javascript" src={~p"/assets/app.js"}>
   </script>
   <%= if Application.get_env(:utility, :app_env) == :prod do %>
     <script async data-domain="utils.zest.dev" src="https://plausible.zest.dev/js/index.js">

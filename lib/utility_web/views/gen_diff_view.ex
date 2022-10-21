@@ -1,8 +1,8 @@
 defmodule UtilityWeb.GenDiffView do
-  use UtilityWeb, :view
+  use UtilityWeb, :html
   require Logger
 
-  def themes, do: UtilityWeb.LayoutView.themes()
+  def themes, do: UtilityWeb.Layouts.themes()
 
   def render_diff(stream, generator) do
     path = tmp_path("html-#{generator.project}-#{generator.id}-")
@@ -10,11 +10,11 @@ defmodule UtilityWeb.GenDiffView do
 
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
       html_patch =
-        Phoenix.View.render_to_iodata(__MODULE__, "diff_header.html", generator: generator)
+        Phoenix.Template.render_to_iodata(__MODULE__, "diff_header", "html", generator: generator)
 
       IO.binwrite(file, html_patch)
       render_diff_body(generator, file, stream)
-      html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff_footer.html", [])
+      html_patch = Phoenix.Template.render_to_iodata(__MODULE__, "diff_footer", "html", [])
       IO.binwrite(file, html_patch)
     end)
 
@@ -22,14 +22,14 @@ defmodule UtilityWeb.GenDiffView do
   end
 
   defp render_diff_body(_generator, file, nil) do
-    html_patch = Phoenix.View.render_to_iodata(__MODULE__, "no_diff.html", [])
+    html_patch = Phoenix.Template.render_to_iodata(__MODULE__, "no_diff", "html", [])
     IO.binwrite(file, html_patch)
   end
 
   defp render_diff_body(generator, file, stream) do
     Enum.each(stream, fn
       {:ok, patch} ->
-        html_patch = Phoenix.View.render_to_iodata(__MODULE__, "diff.html", patch: patch)
+        html_patch = Phoenix.Template.render_to_iodata(__MODULE__, "diff", "html", patch: patch)
         IO.binwrite(file, html_patch)
 
       {:error, error} ->
@@ -83,13 +83,13 @@ defmodule UtilityWeb.GenDiffView do
   def line_type(line), do: to_string(line.type)
 
   def line_text("+" <> text),
-    do: [content_tag(:span, "+ ", class: "ghd-line-status"), content_tag(:span, text)]
+    do: [Phoenix.HTML.Tag.content_tag(:span, "+ ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
 
   def line_text("-" <> text),
-    do: [content_tag(:span, "- ", class: "ghd-line-status"), content_tag(:span, text)]
+    do: [Phoenix.HTML.Tag.content_tag(:span, "- ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
 
   def line_text(" " <> text),
-    do: [content_tag(:span, "  ", class: "ghd-line-status"), content_tag(:span, text)]
+    do: [Phoenix.HTML.Tag.content_tag(:span, "  ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
 
-  def line_text(text), do: [content_tag(:span, text)]
+  def line_text(text), do: [Phoenix.HTML.Tag.content_tag(:span, text)]
 end

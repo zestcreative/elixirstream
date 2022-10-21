@@ -2,6 +2,7 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
+  import Phoenix.HTML.Form
   alias Ecto.Changeset
   alias Phoenix.LiveView.JS
   alias Utility.TipCatalog
@@ -107,7 +108,7 @@ defmodule UtilityWeb.TipLive do
        socket
        |> mount_new_tip()
        |> put_flash(:info, "Successfully scheduled tip. Thank you so much for your contribution!")
-       |> push_patch(to: Routes.tip_path(socket, :index))}
+       |> push_patch(to: ~p"/tips")}
     else
       {:error, date_error} when date_error in ~w[invalid_date invalid_format]a ->
         {:noreply,
@@ -131,7 +132,7 @@ defmodule UtilityWeb.TipLive do
        socket
        |> mount_new_tip()
        |> put_flash(:info, "Updated tip.")
-       |> push_patch(to: Routes.tip_path(socket, :index))}
+       |> push_patch(to: ~p"/tips")}
     else
       {:error, changeset} ->
         {:noreply, assign(socket, :changeset, changeset)}
@@ -223,8 +224,8 @@ defmodule UtilityWeb.TipLive do
   end
 
   def handle_event("search", %{"search" => search}, socket) do
-    to = Routes.tip_path(socket, :index, %{"search" => search})
-    {:noreply, socket |> push_patch(to: to)}
+    params = %{"search" => search}
+    {:noreply, socket |> push_patch(to: ~p"/tips?#{params}")}
   end
 
   @impl true
@@ -256,7 +257,7 @@ defmodule UtilityWeb.TipLive do
         {:noreply,
          socket
          |> put_flash(:error, "Tip not found")
-         |> push_redirect(to: Routes.tip_path(socket, :index))}
+         |> push_redirect(to: ~p"/tips")}
 
       tip ->
         tip_form = %__MODULE__{
@@ -282,7 +283,7 @@ defmodule UtilityWeb.TipLive do
     {:noreply,
      socket
      |> assign(:searching, false)
-     |> push_patch(to: Routes.tip_path(socket, :index))}
+     |> push_patch(to: ~p"/tips")}
   end
 
   def handle_params(%{"search" => params}, _uri, socket) do
