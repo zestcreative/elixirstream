@@ -309,7 +309,7 @@ defmodule Utility.ProjectBuilder do
     """
   end
 
-  @phx_latest_at Version.parse!("1.7.0")
+  @phx_latest_at Version.parse!("1.7.0-rc.0")
   @phx_112_at Version.parse!("1.6.0")
   @phx_111_at Version.parse!("1.3.0")
   def docker_tag_for("phx.new", "master"), do: "latest"

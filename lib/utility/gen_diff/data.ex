@@ -38,7 +38,7 @@ defmodule Utility.GenDiff.Data do
           help:
             "phx.gen.auth used to be distributed separately as phx_gen_auth, but was merged into Phoenix in 1.6",
           flags: [
-            {"--live", [from: "1.7.0"]},
+            {"--live", [from: "1.7.0-rc.0"]},
             {"--binary-id", [from: "1.6.0"]},
             {"--no-binary-id", [from: "1.6.0"]},
             {"--hashing-lib=bcrypt", [from: "1.6.0"]},
