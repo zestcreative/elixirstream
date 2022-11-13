@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.13.3-erlang-24.3.3-alpine-3.15.3 AS build
+FROM hexpm/elixir:1.14.2-erlang-25.1.2-alpine-3.16.2 AS build
 RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
@@ -29,14 +29,16 @@ COPY rel ./rel
 RUN mix release
 
 ## DEP - SILICON
-RUN apk add --no-cache curl cmake expat-dev libxcb pkgconfig freetype-dev python3 libxcb-dev libxkbcommon-dev
+RUN apk add --no-cache curl cmake expat-dev libxcb pkgconfig fontconfig fontconfig-dev \
+  freetype-dev freetype python3 libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev
+RUN touch foo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
-RUN cargo install --root /bin silicon
+RUN /root/.cargo/bin/cargo install --root / silicon
 
 # APP LAYER
 
-FROM docker:20.10.14-alpine3.15 AS app
+FROM docker:20.10.21-alpine3.16 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
     ip6tables pigz sysstat procps lsof sudo bind-tools
 RUN addgroup -S docker && \

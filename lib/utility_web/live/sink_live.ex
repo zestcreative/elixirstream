@@ -1,6 +1,6 @@
 defmodule UtilityWeb.SinkLive do
   use UtilityWeb, :live_view
-  alias UtilityWeb.HttpSink
+  alias UtilityWeb.HTTPSink
   alias Phoenix.LiveView.JS
 
   @impl Phoenix.LiveView
@@ -15,8 +15,8 @@ defmodule UtilityWeb.SinkLive do
   @impl Phoenix.LiveView
   def handle_params(%{"id" => id}, _uri, socket) do
     if connected?(socket) do
-      HttpSink.unsubscribe(socket.assigns.id)
-      HttpSink.subscribe(id)
+      HTTPSink.unsubscribe(socket.assigns.id)
+      HTTPSink.subscribe(id)
     end
 
     {:noreply, assign(socket, :id, id)}

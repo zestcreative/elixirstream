@@ -1,10 +1,10 @@
 defmodule UtilityWeb.SinkController do
   use UtilityWeb, :controller
-  alias UtilityWeb.HttpSink
+  alias UtilityWeb.HTTPSink
 
   def any(conn, %{"foo_sink_id" => id}) when byte_size(id) == 36 do
     start = System.monotonic_time()
-    HttpSink.broadcast(id, HttpSink.build(conn))
+    HTTPSink.broadcast(id, HTTPSink.build(conn))
 
     :telemetry.execute(
       [:utility, :sink, :build],

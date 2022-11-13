@@ -35,7 +35,7 @@ if Application.get_env(:utility, :app_env) == :dev do
       iex> IO.puts "WOWZERS"
       #=> "WOWZERS"
       """,
-      published_at: DateTime.utc_now() |> DateTime.add(-:rand.uniform(10000)),
+      published_at: DateTime.utc_now() |> DateTime.add(-:rand.uniform(10_000)),
       contributor_id: demouser.id,
       upvote_count: i
     })
@@ -159,20 +159,20 @@ Repo.insert!(%Tip{
   code: """
   # $ cat ./expenses.csv
   # # System76 Lemur Pro,1499.99
-  # # MacBook AIr,1999.99
-  # # AMD Ryzen 3950x,749.99A
+  # # MacBook Air,1999.99
+  # # AMD Ryzen 3950x,749.99
   # ...
 
-  iex> "./expenses.csv" |>
-  ...> File.stream!() |>
-  ...> Stream.map(fn line ->
-  ...>   line |>
-  ...>   String.trim() |>
-  ...>   String.split(",") |>
-  ...>   Enum.at(1) |>
-  ...>   String.to_float()
-  ...> end |>
-  ...> Enum.sum()
+  iex> "./expenses.csv"
+  ...> |> File.stream!()
+  ...> |> Stream.map(fn line ->
+  ...>   line
+  ...>   |> String.trim()
+  ...>   |> String.split(",")
+  ...>   |> Enum.at(1)
+  ...>   |> String.to_float()
+  ...> end
+  ...> |> Enum.sum()
   4249.97
   """,
   twitter_status_id: "1370434414564499456",

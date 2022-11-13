@@ -2,7 +2,7 @@ import Config
 
 if config_env() != :test do
   config :utility,
-    silicon_bin: System.find_executable("silicon"),
+    silicon_bin: System.find_executable("silicon") || raise("needs 'silicon' installed."),
     docker_bin:
       System.find_executable("docker") || System.find_executable("podman") ||
         raise("needs 'docker' installed."),

@@ -1,4 +1,4 @@
-<UtilityWeb.Components.page_panel title="Regex Tester" id="regex-tester">
+<Components.page_panel title="Regex Tester" id="regex-tester">
   <:call_to_action>
     <% is_disabled = @record.id && !changed?(@changeset) %>
     <button
@@ -9,9 +9,7 @@
         "relative inline-flex items-center px-4 py-2 font-medium text-white bg-brand-600 border transition ease-in-out duration-150 border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700 #{if is_disabled, do: "opacity-50 cursor-not-allowed"}"
       }
     >
-      <svg viewBox="0 0 24 24" class="w-4 h-5 mr-2 fill-current">
-        <path d="M19.48 13.03A4 4 0 0 1 16 19h-4a4 4 0 1 1 0-8h1a1 1 0 0 0 0-2h-1a6 6 0 1 0 0 12h4a6 6 0 0 0 5.21-8.98L21.2 12a1 1 0 1 0-1.72 1.03zM4.52 10.97A4 4 0 0 1 8 5h4a4 4 0 1 1 0 8h-1a1 1 0 0 0 0 2h1a6 6 0 1 0 0-12H8a6 6 0 0 0-5.21 8.98l.01.02a1 1 0 1 0 1.72-1.03z" />
-      </svg>
+      <Icon.link class="w-4 h-5 mr-2 fill-current" />
       <%= if @record.id && !changed?(@changeset), do: "Saved", else: "Permalink" %>
     </button>
   </:call_to_action>
@@ -42,7 +40,7 @@
                 /
               </div>
             </div>
-            <%= error_tag(f, :regex) %>
+            <Components.errors form={f} field={:regex} />
             <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
               For example:
               <%= if @function == "named_captures" do %>
@@ -68,7 +66,7 @@
                   "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5"
               ) %>
             </div>
-            <%= error_tag(f, :flags) %>
+            <Components.errors form={f} field={:flags} />
             <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
               U f i m s u x
             </p>
@@ -86,7 +84,7 @@
                   "shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5"
               ) %>
             </div>
-            <%= error_tag(f, :string) %>
+            <Components.errors form={f} field={:string} />
           </div>
         </div>
 
@@ -182,23 +180,23 @@ pretty: true
     </div>
     <div class="mt-2">
       <div class="sm:hidden">
-        <UtilityWeb.Components.tab_select group="help" title="Help">
+        <Components.tab_select group="help" title="Help">
           <option value="cheatsheet" selected="">Cheatsheet</option>
           <option value="flags">Flags</option>
           <option value="recipes">Recipes</option>
-        </UtilityWeb.Components.tab_select>
+        </Components.tab_select>
       </div>
       <div class="hidden sm:block">
         <div class="border-b dark:border-gray-500 border-gray-200">
           <nav class="flex -mb-px">
-            <UtilityWeb.Components.tab_button group="help" active="true" id="cheatsheet" target="cheatsheet">Cheatsheet</UtilityWeb.Components.tab_button>
-            <UtilityWeb.Components.tab_button group="help" id="flags" target="flags">Flags</UtilityWeb.Components.tab_button>
-            <UtilityWeb.Components.tab_button group="help" id="recipes" target="recipes">Recipes</UtilityWeb.Components.tab_button>
+            <Components.tab_button group="help" active="true" id="cheatsheet" target="cheatsheet">Cheatsheet</Components.tab_button>
+            <Components.tab_button group="help" id="flags" target="flags">Flags</Components.tab_button>
+            <Components.tab_button group="help" id="recipes" target="recipes">Recipes</Components.tab_button>
           </nav>
         </div>
       </div>
 
-      <UtilityWeb.Components.tab group="help" id="cheatsheet" class="p-4" active="true">
+      <Components.tab group="help" id="cheatsheet" class="p-4" active="true">
         <dl class="flex flex-wrap -mx-2 text-sm">
           <div class="w-full p-2 md:w-1/3">
             <dt class="font-semibold select-all"><code>[abc]</code></dt>
@@ -297,9 +295,9 @@ pretty: true
             <dd>Between 3 and 6 of a</dd>
           </div>
         </dl>
-      </UtilityWeb.Components.tab>
+      </Components.tab>
 
-      <UtilityWeb.Components.tab group="help" id="flags" class="p-4">
+      <Components.tab group="help" id="flags" class="p-4">
         <dl class="flex flex-wrap -mx-2 text-sm">
           <div class="w-full p-2 md:w-1/3">
             <dt class="font-semibold">
@@ -365,8 +363,8 @@ pretty: true
             </dd>
           </div>
         </dl>
-      </UtilityWeb.Components.tab>
-      <UtilityWeb.Components.tab group="help" id="recipes" class="p-4">
+      </Components.tab>
+      <Components.tab group="help" id="recipes" class="p-4">
         <dl class="flex flex-wrap -mx-2 text-sm">
           <div class="w-full p-2 md:w-1/2">
             <dt class="font-semibold">
@@ -430,7 +428,7 @@ pretty: true
             </dd>
           </div>
         </dl>
-      </UtilityWeb.Components.tab>
+      </Components.tab>
     </div>
   </:content>
-</UtilityWeb.Components.page_panel>
+</Components.page_panel>

@@ -2,7 +2,6 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
-  import Phoenix.HTML.Form
   alias Ecto.Changeset
   alias Phoenix.LiveView.JS
   alias Utility.TipCatalog
@@ -389,38 +388,6 @@ defmodule UtilityWeb.TipLive do
     else
       Map.put(params, "approved", false)
     end
-  end
-
-  def max_characters, do: @character_limit
-
-  @warning_threshold_below_max 20
-  def color_for_bar(count, max_count) when count > max_count do
-    {"bg-red-200", "bg-red-500"}
-  end
-
-  def color_for_bar(count, max_count) do
-    if count > max_count - @warning_threshold_below_max do
-      {"bg-yellow-200", "bg-yellow-500"}
-    else
-      {"bg-brand-200", "bg-brand-500"}
-    end
-  end
-
-  def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
-  def show_edit?(_tip, current_user), do: admin?(current_user)
-
-  def show_approve?(%{approved: true}, _current_user), do: false
-  def show_approve?(_tip, current_user), do: admin?(current_user)
-
-  def show_delete?(%{contributor_id: user_id}, %{id: user_id}), do: true
-  def show_delete?(_tip, current_user), do: admin?(current_user)
-
-  def toggle_user_menu do
-    JS.toggle(
-      to: "#user-profile",
-      in: {"transition ease-out duration-100", "transform opacity-0 scale-95", "transform opacity-100 scale-100"},
-      out: {"transition ease-in duration-75", "transform opacity-100 scale-100", "transform opacity-0 scale-95"}
-    )
   end
 
   def show_codeshot_preview do

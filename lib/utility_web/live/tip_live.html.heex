@@ -1,252 +1,37 @@
-<UtilityWeb.Components.page_panel title="Elixir Tips" id="elixir-tips">
+<Components.page_panel title="Elixir Tips" id="elixir-tips">
   <:title_area>
-    <%= if @current_user.id do %>
-      <!-- Profile dropdown -->
-      <div class="flex-shrink-0 relative">
-        <div>
-          <button phx-click={toggle_user_menu()} type="button"
-            class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
-            id="user-menu" aria-expanded="false" aria-haspopup="true">
-            <span class="sr-only">Open user menu</span>
-            <img class="h-8 w-8 rounded-full" src={@current_user.avatar} alt="">
-          </button>
-        </div>
-
-        <!-- User menu -->
-        <div id="user-profile" phx-click-away={toggle_user_menu()}
-          class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300"
-          role="menu" aria-orientation="vertical" aria-labelledby="user-menu">
-          <div>
-            <.link href={~p"/logout"} method={"delete"} class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-              role="menuitem">Sign out</.link>
-          </div>
-          <%= if admin?(@current_user) do %>
-            <div>
-              <.link href={~p"/admin/dashboard"} class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-100"
-                role="menuitem">Dashboard</.link>
-
-            </div>
-            <% end %>
-        </div>
-      </div>
-      <% end %>
+    <Components.User.user_menu current_user={@current_user} />
   </:title_area>
 
   <:call_to_action>
-    <label for="search" class="sr-only">Search</label>
-    <div class="relative">
-      <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-        <UtilityWeb.Components.search_icon class="h-5 w-5 text-gray-400" />
-      </div>
+    <Components.Tip.search changeset={@search_changeset} phx_change="search" id="search-form" />
+    <Components.User.login current_user={@current_user} />
 
-      <.form let={f} as={:search} for={@search_changeset} phx-change="search" id="search-form" onsubmit="return false;">
-        <%= search_input f, :q, phx_debounce: "250", class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm", maxlength: "75" , phx_hook: "RegisterSlash" , placeholder: "Search tips" , id: "search" %>
-      </.form>
-    </div>
-
-    <%= if @current_user.id do %>
-      <%# Nothing %>
-    <% else %>
-      <.link href={~p"/auth/github"}
-        class="ml-6 inline-flex items-center px-3 py-2 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-black hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
-        <UtilityWeb.Components.github_icon class="text-white -ml-0.5 mr-2 h-4 w-4" />
-        Login
-      </.link>
-    <% end %>
-
-    <.link patch={~p"/tips/new"} class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+    <.link patch={~p"/tips/new"}
+      class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
       New Tip
     </.link>
-
   </:call_to_action>
 
   <:content>
-    <%= if @live_action == :new || @live_action == :edit do %>
-      <div class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
-        <%= if @current_user.id do %>
-          <.form let={f} for={@changeset} phx-change="validate" phx-submit={if @live_action==:new , do: "create" ,
-            else: "update" }>
-            <div>
-              <div class="flex space-x-3">
-                <div class="flex-shrink-0">
-                  <img class="h-10 w-10 rounded-full" src={@tip_form.contributor.avatar} alt="">
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-gray-900">
-                    <span>
-                      <%= @tip_form.contributor.name %>
-                    </span>
-
-                    <p class="inline-flex items-center">
-                      <UtilityWeb.Components.github_icon class="-ml-0.5 mr-1 h-3 w-3" />
-                      <a href={"https://github.com/#{@tip_form.contributor.username}"} target="_blank" rel="nofollow"
-                        class="hover:underline text-xs text-gray-500">
-                        <%= @tip_form.contributor.username %>
-                      </a>
-                    </p>
-
-                    <%= if @tip_form.contributor.twitter do %>
-                      <p class="ml-3 inline-flex items-center">
-                        <UtilityWeb.Components.twitter_icon class="-ml-0.5 mr-1 h-3 w-3" />
-                        <a href={"https://twitter.com/#{@tip_form.contributor.twitter}"} rel="nofollow" target="_blank"
-                          class="hover:underline text-xs text-gray-500">
-                          <%= @tip_form.contributor.twitter %>
-                        </a>
-                      </p>
-                    <% end %>
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    <div class="sm:col-span-3">
-                    </div>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-2 text-sm text-gray-700 space-y-4">
-              <div class="mt-1">
-                <%= label f, :title, "Title" , class: "block text-sm font-medium text-gray-700" %>
-                <div class="mt-1">
-                  <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                  <%= error_tag f, :title %>
-                </div>
-              </div>
-              <div class="mt-1">
-                <%= label f, :description, "Description" , class: "block text-sm font-medium text-gray-700" %>
-                <div class="mt-1">
-                  <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                  <%= error_tag f, :description %>
-                </div>
-
-                <div class="relative pt-1">
-                  <% {track_color, bar_color}=color_for_bar(@character_count, max_characters()) %>
-                  <div class={"overflow-hidden h-4 mb-4 text-xs flex rounded #{track_color}"}>
-                    <div style={"width: #{@character_percent}%"} class={"shadow-none flex flex-col whitespace-nowrap text-white justify-center #{bar_color}"}>
-
-                      <span class="text-xs pl-1">
-                        <%= @character_count %> / <%= max_characters() %>
-                      </span>
-                    </div>
-
-                    <div class="sm:flex sm:items-start">
-                      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-                          Preview
-                        </h3>
-                        <div class="mt-2">
-                          <p class="text-sm text-gray-500">
-                            <img :src="src" class="object-contain h-1/2-screen" />
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="mt-6 flex justify-between space-x-8">
-              <div class="flex space-x-6">
-              </div>
-              <div class="flex text-sm">
-                <%= if @live_action == :edit do %>
-                  <%= if @tip.twitter_status_id do %>
-                    <span class="text-xs text-gray-600">Tweet is already published. Updating will not update the tweet</span>
-                  <% end %>
-                  <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
-                    <svg class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
-                      </circle>
-                      <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                      </path>
-                    </svg>
-                    Update
-                  <% end %>
-                <% else %>
-                  <div class="inline-flex items-center text-sm">
-                    <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
-                    <div class="ml-2">
-                      <%= date_input f, :published_at, min: Date.to_iso8601(Date.utc_today()), class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
-                      <%= error_tag f, :published_at %>
-                    </div>
-                  </div>
-                  <h2 id={"tip-title-#{tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
-                    <%= link tip.title, to: Routes.tip_path(@socket, :show, tip.id) %>
-                  </h2>
-                  <div class="mt-2 text-sm text-gray-700 space-y-4">
-                    <%= tip.description %>
-                  </div>
-                  <div class="mt-2 text-sm">
-                    <%= raw(Makeup.highlight(tip.code)) %>
-                  </div>
-                </div>
-                <div class="mt-6 flex justify-between space-x-8">
-                  <div class="flex space-x-6">
-                    <span class="inline-flex items-center text-sm">
-                      <%= cond do %>
-                        <% @current_user.id && @current_user.id !=tip.contributor_id && tip.id not in @upvoted_tip_ids ->
-                          %>
-                          <button phx-click="upvote-tip" phx-value-tip-id={tip.id}
-                            class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
-                            <!-- Heroicon name: solid/thumb-up -->
-                            <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                            <span class="font-medium text-gray-900">
-                              <%= tip.upvote_count + @tip.twitter_like_count %>
-                            </span>
-                            <span class="sr-only">upvotes</span>
-                          </button>
-                          <% @current_user.id && @current_user.id !=tip.contributor_id && tip.id in @upvoted_tip_ids -> %>
-                            <button phx-click="downvote-tip" phx-value-tip-id={tip.id}
-                              class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
-                              <UtilityWeb.Components.thumbs_up_icon
-                                class="h-5 w-5 transform duration-300 hover:rotate-180" />
-                              <span class="font-medium text-gray-900">
-                                <%= tip.upvote_count + tip.twitter_like_count %>
-                              </span>
-                              <span class="sr-only">upvotes</span>
-                            </button>
-                            <% true -> %>
-                              <div class="inline-flex space-x-2 text-gray-400">
-                                <UtilityWeb.Components.thumbs_up_icon class="h-5 w-5" />
-                                <span class="font-medium text-gray-900">
-                                  <%= tip.upvote_count + tip.twitter_like_count %>
-                                </span>
-                                <span class="sr-only">upvotes</span>
-                              </div>
-                      <% end %>
-                    </span>
-                  </div>
-
-                  <div class="flex text-sm">
-                    <!-- <span class="inline-flex items-center text-sm">
-                      <button class="inline-flex space-x-2 text-gray-400 hover:text-gray-500">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                          <path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" />
-                        </svg>
-                        <span class="font-medium text-gray-900">Share</span>
-                      </button>
-                    </span> -->
-                    <%= if show_edit?(tip, @current_user) do %>
-                      <.link patch={~p"tips/#{@tip.id}"} class="ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500">
-                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                          stroke="currentColor">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                        </svg>
-                        <span class="font-medium text-gray-900">Edit</span>
-                      </.link>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </.form>
-          <% else %>
-            You must be logged in to submit tips
-          <% end %>
-      </div>
+    <div :if={@live_action in [:new, :edit]} class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
+      <%= if @current_user.id do %>
+        <Components.Tip.tip_form
+          tip={@tip}
+          tip_form={@tip_form}
+          changeset={@changeset}
+          character_percent={@character_percent}
+          character_count={@character_count}
+          action={@live_action}
+          phx_change="validate"
+          phx_submit={if @live_action == :new, do: "create", else: "update"} />
+      <% else %>
+        You must be logged in to submit tips
       <% end %>
-        <% end %>
+    </div>
+
+    <div class="mt-6 flex flex-col space-y-6">
+    <Components.Tip.card :for={tip <- @tips} current_user={@current_user} tip={tip} />
+    </div>
   </:content>
-</UtilityWeb.Components.page_panel>
+</Components.page_panel>

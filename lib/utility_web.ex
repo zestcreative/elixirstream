@@ -68,8 +68,9 @@ defmodule UtilityWeb do
     quote do
       import Phoenix.HTML
       import UtilityWeb.LinkHelpers
-      import UtilityWeb.ErrorHelpers
       alias Phoenix.LiveView.JS
+      alias UtilityWeb.Components
+      alias UtilityWeb.Icon
       unquote(verified_routes())
     end
   end

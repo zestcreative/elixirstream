@@ -5,6 +5,7 @@ defmodule UtilityWeb.RegexLive do
 
   use UtilityWeb, :live_view
   use Ecto.Schema
+  import Phoenix.HTML.Form
   alias Ecto.Changeset
   alias Utility.Cache
   require Logger
