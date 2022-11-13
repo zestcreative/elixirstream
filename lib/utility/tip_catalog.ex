@@ -12,7 +12,7 @@ defmodule Utility.TipCatalog do
 
   @tip_topic "tips"
 
-  @spec find_tip(String.t()) :: nil | %Tip{}
+  @spec find_tip(String.t()) :: nil | Tip.t()
   def find_tip(id) do
     Tip
     |> Query.preload_contributor()
@@ -30,7 +30,7 @@ defmodule Utility.TipCatalog do
     paginate: false,
     stream: false
   ]
-  @spec list_tips(Keyword.t(), Ecto.Queryable.t()) :: list(%Tip{}) | Quarto.Page.t()
+  @spec list_tips(Keyword.t(), Ecto.Queryable.t()) :: list(Tip.t()) | Quarto.Page.t()
   def list_tips(opts \\ [], queryable \\ Tip)
 
   def list_tips(opts, queryable) do
@@ -129,7 +129,7 @@ defmodule Utility.TipCatalog do
     |> downvote_tip(tip)
   end
 
-  @spec upvote_tip(String.t(), %User{}) :: {:ok, %Upvote{}} | {:error, Ecto.Changeset.t()}
+  @spec upvote_tip(String.t(), User.t()) :: {:ok, Upvote.t()} | {:error, Ecto.Changeset.t()}
   def upvote_tip(tip_id, user) when is_binary(tip_id) do
     Tip
     |> Repo.get_by(id: tip_id)
@@ -161,7 +161,7 @@ defmodule Utility.TipCatalog do
     end
   end
 
-  @spec tips_upvoted_by_user(%User{}, Keyword.t()) :: list(String.t())
+  @spec tips_upvoted_by_user(User.t(), Keyword.t()) :: list(String.t())
   def tips_upvoted_by_user(nil, _opts), do: []
   def tips_upvoted_by_user(%{id: nil}, _opts), do: []
 
@@ -174,7 +174,7 @@ defmodule Utility.TipCatalog do
     |> Enum.map(& &1.id)
   end
 
-  @spec add_image_to_tip(%Tip{}, String.t()) :: {:ok, %Tip{}} | {:error, Ecto.Changeset.t()}
+  @spec add_image_to_tip(Tip.t(), String.t()) :: {:ok, Tip.t()} | {:error, Ecto.Changeset.t()}
   def add_image_to_tip(%{id: nil} = tip, key) do
     case Storage.url(key, expires_in: :timer.minutes(5), grant_read: :public_read) do
       {:ok, url} -> {:ok, %{tip | code_image_url: url}}
@@ -194,7 +194,7 @@ defmodule Utility.TipCatalog do
     |> Repo.update()
   end
 
-  @spec create_tip(map()) :: {:ok, %Tip{}}
+  @spec create_tip(map()) :: {:ok, Tip.t()}
   def create_tip(attrs) do
     %Tip{}
     |> Tip.changeset(attrs)
@@ -210,7 +210,7 @@ defmodule Utility.TipCatalog do
     end
   end
 
-  @spec update_tip(%Tip{}, map()) :: {:ok, %Tip{}} | {:error, Ecto.Changeset.t()}
+  @spec update_tip(Tip.t(), map()) :: {:ok, Tip.t()} | {:error, Ecto.Changeset.t()}
   def update_tip(tip, attrs) do
     tip
     |> Tip.changeset(attrs)
@@ -226,7 +226,7 @@ defmodule Utility.TipCatalog do
     end
   end
 
-  @spec approve_tip(%Tip{}) :: {:ok, %Tip{}}
+  @spec approve_tip(Tip.t()) :: {:ok, Tip.t()}
   def approve_tip(tip_id) when is_binary(tip_id), do: tip_id |> find_tip() |> approve_tip()
 
   def approve_tip(tip) do

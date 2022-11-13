@@ -16,9 +16,11 @@
   <:content>
     <div :if={@live_action in [:new, :edit]} class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form" phx-hook="PreviewImage">
       <%= if @current_user.id do %>
-        <Components.Tip.tip_form
+        <Components.Tip.edit
           tip={@tip}
           tip_form={@tip_form}
+          upvoted_tip_ids={@upvoted_tip_ids}
+          current_user={@current_user}
           changeset={@changeset}
           character_percent={@character_percent}
           character_count={@character_count}
@@ -30,8 +32,19 @@
       <% end %>
     </div>
 
-    <div class="mt-6 flex flex-col space-y-6">
-    <Components.Tip.card :for={tip <- @tips} current_user={@current_user} tip={tip} />
+    <div :if={@live_action in [:index]}>
+      <ul role="list" class="list-none mt-6 divide-y dark:divide-gray-600 divide-gray-200">
+        <Components.Tip.show
+          :for={tip <- @tips}
+
+          current_user={@current_user}
+          upvoted_tip_ids={@upvoted_tip_ids}
+          tip={tip}
+          />
+      </ul>
+      <%= if @tips == [] do %>
+        No found tips!
+      <% end %>
     </div>
   </:content>
 </Components.page_panel>

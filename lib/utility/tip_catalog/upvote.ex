@@ -4,6 +4,13 @@ defmodule Utility.TipCatalog.Upvote do
   alias Utility.Accounts
   alias Utility.TipCatalog
 
+  @type t :: %__MODULE__{
+    user_id: Ecto.UUID.t(),
+    tip_id: Ecto.UUID.t(),
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 

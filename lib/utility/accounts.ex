@@ -6,12 +6,12 @@ defmodule Utility.Accounts do
   alias Utility.Accounts.User
   alias Utility.Repo
 
-  @spec admin?(%User{}) :: boolean()
+  @spec admin?(User.t()) :: boolean()
   def admin?(%{source: :github, source_id: id}) when id in @github_admins, do: true
   def admin?(_), do: false
 
   @spec update_or_create(map()) ::
-    {:create | :update, {:ok, %User{}}} | {:error, Ecto.Changeset.t()}
+    {:create | :update, {:ok, User.t()}} | {:error, Ecto.Changeset.t()}
   def update_or_create(%Ueberauth.Auth{} = auth) do
     case find(to_string(auth.provider), to_string(auth.uid)) do
       nil -> {:create, create(auth)}
@@ -19,8 +19,8 @@ defmodule Utility.Accounts do
     end
   end
 
-  @spec find(String.t()) :: nil | %User{}
-  @spec find(String.t(), String.t()) :: nil | %User{}
+  @spec find(String.t()) :: nil | User.t()
+  @spec find(String.t(), String.t()) :: nil | User.t()
   def find(id), do: Repo.get(User, id)
 
   def find(source, source_id) do
@@ -29,7 +29,7 @@ defmodule Utility.Accounts do
     |> Repo.one()
   end
 
-  @spec create(map()) :: {:ok, %User{}} | {:error, Ecto.Changeset.t()}
+  @spec create(map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def create(%Ueberauth.Auth{} = auth) do
     %User{}
     |> User.changeset(%{
@@ -42,7 +42,7 @@ defmodule Utility.Accounts do
     |> Repo.insert()
   end
 
-  @spec update(%User{}, map()) :: {:ok, %User{}} | {:error, Ecto.Changeset.t()}
+  @spec update(User.t(), map()) :: {:ok, User.t()} | {:error, Ecto.Changeset.t()}
   def update(user, %Ueberauth.Auth{} = auth) do
     user
     |> User.changeset(%{
@@ -53,8 +53,8 @@ defmodule Utility.Accounts do
     |> Repo.update()
   end
 
-  @spec update_twitter(%User{}, String.t()) ::
-          {:ok, %User{}} | {:error, Ecto.Changeset.t() | atom()}
+  @spec update_twitter(User.t(), String.t()) ::
+          {:ok, User.t()} | {:error, Ecto.Changeset.t() | atom()}
   def update_twitter(nil, _twitter), do: {:error, :not_found}
 
   def update_twitter(user, twitter) do
@@ -63,8 +63,8 @@ defmodule Utility.Accounts do
     |> Repo.update()
   end
 
-  @spec update_editor_choice(%User{}, String.t()) ::
-          {:ok, %User{}} | {:error, Ecto.Changeset.t() | atom()}
+  @spec update_editor_choice(User.t(), String.t()) ::
+          {:ok, User.t()} | {:error, Ecto.Changeset.t() | atom()}
   def update_editor_choice(user, choice) do
     user
     |> User.changeset(%{editor_choice: choice})

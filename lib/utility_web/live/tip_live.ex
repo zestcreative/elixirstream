@@ -149,9 +149,8 @@ defmodule UtilityWeb.TipLive do
   def handle_event("delete-tip", %{"tip-id" => tip_id}, socket) do
     {:noreply,
      case TipCatalog.delete_tip_for_user(tip_id, socket.assigns.current_user) do
-       {:ok, %{id: id}} ->
-         socket
-         |> assign(tips: Enum.reject(socket.assigns.tips, &(&1.id == id)))
+       {1, _} ->
+         assign(socket, tips: Enum.reject(socket.assigns.tips, &(&1.id == tip_id)))
 
        _ ->
          socket
@@ -278,6 +277,10 @@ defmodule UtilityWeb.TipLive do
     end
   end
 
+  def handle_params(%{"q" => _} = params, uri, socket) do
+    handle_params(%{"search" => params}, uri, socket)
+  end
+
   def handle_params(%{"search" => %{"q" => ""}}, _uri, socket) do
     {:noreply,
      socket
@@ -318,12 +321,14 @@ defmodule UtilityWeb.TipLive do
   end
 
   defp mount_new_tip(socket) do
-    tip = %__MODULE__{contributor: socket.assigns.current_user}
-    changeset = changeset(tip, %{published_at: Date.utc_today() |> Date.to_iso8601()})
+    tip_form = %__MODULE__{contributor: socket.assigns.current_user}
+    changeset = changeset(tip_form, %{published_at: Date.utc_today() |> Date.to_iso8601()})
     placeholder_code = Changeset.get_field(changeset, :code)
 
     socket
-    |> assign(tip_form: tip)
+    |> assign(tip: %TipCatalog.Tip{})
+    |> assign(upvoted_tip_ids: [])
+    |> assign(tip_form: tip_form)
     |> assign(preview_image_url: nil)
     |> assign(page_title: "New tip")
     |> assign(changeset: changeset)

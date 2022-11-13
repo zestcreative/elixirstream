@@ -9,7 +9,7 @@ if config_env() != :test do
     gem_bin: System.find_executable("gem") || raise("needs 'gem' installed.")
 end
 
-config :utility, Utility.Twitter, publish: System.get_env("TWITTER_PUBLISH") || false
+config :utility, Utility.Twitter, publish: System.get_env("TWITTER_PUBLISH", "false") == "true"
 
 if config_env() == :prod do
   host = System.get_env("HOST")

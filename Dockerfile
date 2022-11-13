@@ -31,7 +31,6 @@ RUN mix release
 ## DEP - SILICON
 RUN apk add --no-cache curl cmake expat-dev libxcb pkgconfig fontconfig fontconfig-dev \
   freetype-dev freetype python3 libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev
-RUN touch foo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 RUN /root/.cargo/bin/cargo install --root / silicon

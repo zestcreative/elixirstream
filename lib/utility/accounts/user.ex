@@ -2,6 +2,18 @@ defmodule Utility.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @type t :: %__MODULE__{
+    source: :github,
+    source_id: String.t(),
+    name: String.t(),
+    avatar: String.t(),
+    username: String.t(),
+    twitter: String.t(),
+    editor_choice: :gui | :emacs | :vim,
+    inserted_at: DateTime.t(),
+    updated_at: DateTime.t()
+  }
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
