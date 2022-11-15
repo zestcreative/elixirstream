@@ -36,7 +36,7 @@ config :utility, UtilityWeb.Endpoint,
   live_reload: [
     iframe_attrs: [class: "hidden"],
     patterns: [
-      ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/utility_web/(live|views)/.*(ex)$",
       ~r"lib/utility_web/templates/.*(eex)$"
     ]

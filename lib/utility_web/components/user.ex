@@ -17,23 +17,24 @@ defmodule UtilityWeb.Components.User do
   end
 
   attr :current_user, :any, required: true
+  attr :class, :string, default: nil
 
   def user_menu(assigns) do
     ~H"""
     <%= if @current_user.id do %>
       <!-- Profile dropdown -->
-      <div class="flex-shrink-0 relative">
+      <div class={"flex-shrink-0 relative #{@class}"}>
         <div>
           <button phx-click={toggle_user_menu()} type="button" class="bg-white rounded-full flex focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" id="user-menu" aria-expanded="false" aria-haspopup="true">
             <span class="sr-only">Open user menu</span>
-            <img class="h-8 w-8 rounded-full" src={@current_user.avatar} alt="" />
+            <img class="h-9 w-9 rounded-full" src={@current_user.avatar} alt="" />
           </button>
         </div>
         <!-- User menu -->
         <div
           id="user-profile"
           phx-click-away={toggle_user_menu()}
-          class="hidden origin-top-left absolute z-10 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300"
+          class="hidden origin-top-right absolute z-10 right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1 focus:outline-none divide-y-2 divide-gray-300"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu"

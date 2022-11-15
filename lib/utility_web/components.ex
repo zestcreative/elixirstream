@@ -3,6 +3,27 @@ defmodule UtilityWeb.Components do
 
   use UtilityWeb, :component
 
+  attr :type, :string, default: nil
+  attr :class, :string, default: nil
+  attr :rest, :global, include: ~w[disabled form name value]
+  slot :inner_block, required: true
+  def button(assigns) do
+    ~H"""
+    <button
+      type={@type}
+      class={[
+        "inline-flex items-center px-4 py-2 border border-transparent",
+        "text-sm font-medium shadow-sm text-white bg-brand-600 hover:bg-brand-700",
+        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500",
+        @class
+      ]}
+      {@rest}
+    >
+      <%= render_slot(@inner_block) %>
+    </button>
+    """
+  end
+
   attr :class, :string, default: nil
   attr :active, :string, default: "false"
   attr :group, :string, required: true
@@ -69,11 +90,12 @@ defmodule UtilityWeb.Components do
   attr :id, :string, required: true
   attr :title, :string, required: true
   slot :title_area
-  slot :call_to_action
+  slot :call_to_action, default: []
+  slot :navigation, default: []
   slot :content, required: true
   def page_panel(assigns) do
     ~H"""
-    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
+    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto sm:mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
       <section aria-labelledby={"#{@id}-title"}>
         <div class="rounded-lg dark:bg-gray-900 bg-white overflow-hidden shadow">
           <h2 class="sr-only" id={"#{@id}-title"}><%= @title %></h2>
@@ -87,10 +109,15 @@ defmodule UtilityWeb.Components do
                   </p>
                 </div>
               </div>
-              <div class="mt-5 flex justify-center sm:mt-0">
+              <div class="mt-5 flex items-center justify-center sm:mt-0">
                 <%= render_slot(@call_to_action) %>
               </div>
             </div>
+            <%= if @navigation != [] do %>
+            <div class="mt-5">
+              <%= render_slot(@navigation) %>
+            </div>
+            <% end %>
 
             <%= render_slot(@content) %>
           </div>

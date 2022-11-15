@@ -2,6 +2,7 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
+  import Phoenix.HTML.Form, only: [label: 4, text_input: 3, textarea: 3, submit: 2, date_input: 3]
   alias Ecto.Changeset
   alias Phoenix.LiveView.JS
   alias Utility.TipCatalog
@@ -205,19 +206,18 @@ defmodule UtilityWeb.TipLive do
   end
 
   def handle_event("preview", _params, socket) do
-    socket.assigns.changeset
-    |> Changeset.apply_changes()
-    |> TipCatalog.generate_codeshot()
-    |> case do
-      {:ok, %{code_image_url: url}, _file} ->
-        {:noreply,
-         socket
-         |> assign(:preview_image_url, url)
-         |> push_event(:preview, %{imgUrl: url})}
+    tip = Changeset.apply_changes(socket.assigns.changeset)
+    if tip.code do
+      case TipCatalog.generate_codeshot(tip) do
+        {:ok, %{code_image_url: url}, _file} ->
+          {:noreply, assign(socket, :preview_image_url, url)}
 
-      {:error, error} ->
-        Logger.error(inspect(error))
-        {:noreply, socket}
+        {:error, error} ->
+          Logger.error(inspect(error))
+          {:noreply, socket}
+      end
+    else
+      {:noreply, socket}
     end
   end
 
@@ -393,34 +393,5 @@ defmodule UtilityWeb.TipLive do
     else
       Map.put(params, "approved", false)
     end
-  end
-
-  def show_codeshot_preview do
-    JS.show(to: "#codeshot-preview")
-    |> JS.show(
-      to: "#codeshot-wash",
-      transition: {"ease-out duration-300", "opacity-0", "opacity-100"}
-    )
-    |> JS.show(
-      to: "#codeshot-content",
-      transition: {"ease-out duration-300", "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95", "opacity-100 translate-y-0 sm:scale-100"},
-      display: "inline-block"
-    )
-  end
-
-  def hide_codeshot_preview do
-    JS.hide(
-      to: "#codeshot-wash",
-      transition: {"ease-in duration-200", "opacity-100", "opacity-0"}
-    )
-    |> JS.hide(
-      to: "#codeshot-content",
-      transition: {"ease-in duration-200", "opacity-100 translate-y-0 sm:translate-y-0 sm:scale-100", "opacity-0 translate-y-4 sm:scale-95"}
-    )
-    |> JS.hide(
-      to: "#codeshot-preview",
-      transition: "hidden",
-      time: 200
-    )
   end
 end

@@ -131,6 +131,26 @@ defmodule UtilityWeb.Icon do
   end
 
   attr :class, :string, default: nil
+  def chevron_left(assigns) do
+    ~H"""
+    <!-- Heroicon name: chevron-left -->
+    <svg class={@class} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    """
+  end
+
+  attr :class, :string, default: nil
+  def chevron_right(assigns) do
+    ~H"""
+    <!-- Heroicon name: chevron-right -->
+    <svg class={@class} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+    </svg>
+    """
+  end
+
+  attr :class, :string, default: nil
   def link(assigns) do
     ~H"""
     <svg viewBox="0 0 24 24" class={@class}>

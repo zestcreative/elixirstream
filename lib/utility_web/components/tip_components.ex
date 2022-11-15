@@ -18,14 +18,14 @@ defmodule UtilityWeb.Components.Tip do
 
   @warning_threshold_below_max 20
   def color_for_bar(count, max_count) when count > max_count do
-    {"bg-red-200", "bg-red-500"}
+    {"bg-red-200 dark:bg-red-800", "bg-red-500"}
   end
 
   def color_for_bar(count, max_count) do
     if count > max_count - @warning_threshold_below_max do
-      {"bg-yellow-200", "bg-yellow-500"}
+      {"bg-yellow-200 dark:bg-yellow-800", "bg-yellow-500"}
     else
-      {"bg-brand-200", "bg-brand-500"}
+      {"bg-brand-200 dark:bg-brand-700", "bg-brand-500"}
     end
   end
 
@@ -36,8 +36,8 @@ defmodule UtilityWeb.Components.Tip do
       <div class="flex-shrink-0">
         <img class="h-10 w-10 rounded-full" src={@user.avatar} alt="">
       </div>
-      <div class="min-w-0 flex-1">
-        <p class="text-sm font-medium text-gray-900">
+      <div class="min-w-0 flex-1 text-gray-500 dark:text-gray-400">
+        <p class="text-sm font-medium dark:text-gray-300 text-gray-900">
           <span>
             <%= @user.name %>
           </span>
@@ -85,19 +85,19 @@ defmodule UtilityWeb.Components.Tip do
       <.contributor user={@tip_form.contributor} />
 
       <%# form %>
-      <div class="mt-2 text-sm text-gray-700 space-y-4">
+      <div class="mt-2 text-sm dark:text-gray-300 text-gray-700 space-y-4">
         <div class="mt-1">
-          <%= label f, :title, "Title" , class: "block text-sm font-medium text-gray-700" %>
+          <%= label f, :title, "Title" , class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
           <div class="mt-1">
-            <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+            <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
             <Components.errors form={f} field={:title} />
           </div>
         </div>
 
         <div class="mt-1">
-          <%= label f, :description, "Description", class: "block text-sm font-medium text-gray-700" %>
+          <%= label f, :description, "Description", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
           <div class="mt-1">
-            <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+            <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
             <Components.errors form={f} field={:description} />
           </div>
 
@@ -112,70 +112,40 @@ defmodule UtilityWeb.Components.Tip do
         </div>
       </div>
 
-      <%# TODO: CODE EDITOR %>
-      <div>
-        TODO Code Editor
+      <div class="mt-1">
+        <%= label f, :code, "Code", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
+        <div class="w-full" phx-hook="CodeMirror" phx-update="ignore" id="code-editor-content"
+          data-mount-replace-selector="#code-editor-mount-replace"
+          data-mount-selector="#code-editor-mount"
+          class="mt-1">
+          <%= textarea f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace" %>
+          <div phx-update="ignore" class="h-64 hidden" id="code-editor-mount"></div>
+          <span class="text-gray-500 text-xs"><kbd>ESC</kbd> toggles trapping tab</span>
+          <Components.errors form={f} field={:code} />
+        </div>
       </div>
 
       <%# Preview %>
-      <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-headline">
-          Preview
-        </h3>
-
-        <div class="flex space-x-6">
-          <h2 :if={@tip.id} id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900">
-            <.link patch={~p"/tips/#{@tip.id}"}><%= @tip.title %></.link>
-          </h2>
-          <div class="mt-2 text-sm text-gray-700 space-y-4">
-            <%= @tip.description %>
-          </div>
-          <div class="mt-2 text-sm">
-            <%= raw(Makeup.highlight(@tip.code)) %>
-          </div>
-        </div>
-
-        <div class="mt-2">
-          <p class="text-sm text-gray-500">
-            <img src="src" class="object-contain h-1/2-screen" />
-          </p>
-        </div>
-
+      <div class="mt-2">
+        <Components.button type="button" phx-click="preview">Preview</Components.button>
+        <img id="img-preview" src={@preview_image_url} class="mt-2 h-80" />
+      </div>
+      <div class="mt-3 text-center sm:ml-4 sm:text-left">
       </div>
 
       <div class="mt-6 flex justify-between space-x-8">
         <div class="flex text-sm">
-
-          <%# Edit Actions %>
-          <%= if @action == :edit do %>
-            <%= if @tip.twitter_status_id do %>
-              <span class="text-xs text-gray-600">
-                Tweet is already published. Updating will not update the tweet
-              </span>
-            <% end %>
-
-            <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
-              <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" />
-              Update
-            <% end %>
-          <% end %>
-
           <%# New Actions %>
           <%= if @action == :new do %>
             <div class="inline-flex items-center text-sm">
-              <%= label f, :published_at, "Publish On", class: "block text-sm font-medium text-gray-700" %>
+              <%= label f, :published_at, "Publish On", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
               <div class="ml-2">
                 <%= date_input f, :published_at,
                     min: Date.to_iso8601(Date.utc_today()),
-                    class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md" %>
+                    class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
                 <Components.errors form={f} field={:published_at} />
               </div>
             </div>
-
-            <%= submit class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
-              <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" />
-              Submit
-            <% end %>
           <% end %>
         </div>
 
@@ -244,23 +214,37 @@ defmodule UtilityWeb.Components.Tip do
 
   attr :changeset, Ecto.Changeset, required: true
   attr :phx_change, :string, required: true
+  attr :meta, Quarto.Config, default: nil
   attr :id, :string, required: true
   def search(assigns) do
     ~H"""
-    <label for="search" class="sr-only">Search</label>
-    <div class="relative">
-      <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
-        <Icon.search class="h-5 w-5 text-gray-400" />
-      </div>
+    <label for="search" class="sr-only">Search Tips</label>
+    <div class="mt-1 flex justify-center rounded-md shadow-sm">
 
-      <.form let={f} as={:search} for={@changeset} phx-change={@phx_change} id={"#{@id}-form"} onsubmit="return false;">
-        <%= Phoenix.HTML.Form.search_input f, :q, phx_debounce: "250",
-          class: "block w-full bg-white border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm placeholder-gray-500 focus:outline-none focus:text-gray-900 focus:placeholder-gray-400 focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm",
-          maxlength: "75",
-          phx_hook: "RegisterSlash",
-          placeholder: "Search tips",
-          id: @id %>
-      </.form>
+      <Components.button phx-click="prev-page" class={"#{if !@meta.before, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-l-md px-4 py-2 text-sm font-medium"}>
+        <Icon.chevron_left class="h-5 w-5 mr-1"/>
+        Previous
+      </Components.button>
+
+      <div class="relative flex flex-grow items-stretch focus-within:z-10">
+
+        <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
+          <Icon.search class="h-5 w-5 text-gray-400" />
+        </div>
+
+        <.form let={f} as={:search} for={@changeset} phx-submit="" phx-change={@phx_change} id={"#{@id}-form"}>
+          <%= Phoenix.HTML.Form.search_input f, :q, phx_debounce: "250",
+            class: "block w-full rounded-none border-brand-500 pl-10 focus:border-brand-700 focus:ring-brand-500 sm:text-sm",
+            maxlength: "75",
+            phx_hook: "RegisterSlash",
+            placeholder: "Search tips",
+            id: @id %>
+        </.form>
+      </div>
+      <Components.button phx-click="next-page" class={"#{if !@meta.after, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-r-md px-4 py-2 text-sm font-medium"}>
+        Next
+        <Icon.chevron_right class="h-5 w-5"/>
+      </Components.button>
     </div>
     """
   end
@@ -270,8 +254,8 @@ defmodule UtilityWeb.Components.Tip do
   attr :class, :string, default: nil
   def show(assigns) do
     ~H"""
-    <li class="px-6 py-12 sm:px-0">
-      <article aria-labelledby={"tip-title-#{@tip.id}"} class={"#{if !@tip.approved, do: "border-2 border-yellow-500"} overflow-hidden"}>
+    <li class="xs:px-0 sm:px-6 py-12 sm:px-0">
+      <article aria-labelledby={"tip-title-#{@tip.id}"} class={"#{if !@tip.approved, do: "border-2 border-dashed p-3 border-yellow-500"} overflow-hidden"}>
         <div>
           <div class="flex space-x-3">
             <div class="flex-shrink-0">

@@ -1,5 +1,15 @@
 import theme from "./theme"
-import editorInit from "./code-editor"
+import { minimalSetup } from "codemirror"
+import { EditorView, keymap } from "@codemirror/view"
+import { Compartment, EditorState } from "@codemirror/state"
+import { StreamLanguage } from "@codemirror/language"
+import { indentWithTab } from "@codemirror/commands"
+import { elixir } from "codemirror-lang-elixir"
+import { oneDark } from '@codemirror/theme-one-dark'
+import debounce from 'lodash.debounce'
+
+const editorTheme = new Compartment()
+const lightTheme = EditorView.baseTheme({})
 
 let hooks = {};
 
@@ -82,48 +92,40 @@ hooks.ThemeChooser = {
   }
 }
 
-hooks.MonacoEditor = {
-  destroyed() {
-    this.editor.unmount()
-  },
+hooks.CodeMirror = {
   mounted() {
+    const replace = this.el.dataset.mountReplaceSelector;
+    const replaceEl = this.el.querySelector(replace)
     const where = this.el.dataset.mountSelector;
     const mountEl = this.el.querySelector(where)
-    if (mountEl) {
-      const replace = this.el.dataset.mountReplaceSelector;
-      const replaceEl = this.el.querySelector(replace)
-      const editorStatus = this.el.dataset.editorStatusSelector
-      const editorStatusEl = this.el.querySelector(editorStatus)
-      let preferences = {}
+    const cmTheme = theme.displayedTheme() === "light" ? lightTheme : oneDark
 
-      if(this.el.dataset.enableVim === "true") {
-        preferences.vim = editorStatusEl
-      } else if(this.el.dataset.enableEmacs === "true") {
-        preferences.emacs = editorStatusEl
-      }
-
-      replaceEl.classList.add("hidden")
-      mountEl.classList.remove("hidden")
-      const editor = editorInit.mount(mountEl, preferences)
-      editor.setValue(replaceEl.value)
-      editor.setOnChange({
-        callback: (_event) => {
-          let payload = editor.instance.getValue()
-          replaceEl.value = payload.replace(/\r\n/g, "\n")
-          this.pushEvent("code-updated", payload)
-        },
-        debounceMs: 1000
-      })
-      this.editor = editor
-      this.handleEvent("set_code", ({ code }) => {
-        if (this.editor) {
-          this.editor.setValue(code)
-        }
-      })
-    } else {
-      console.error(`Could not mount Monaco onto ${where}`)
-    }
-
+    this.editor = new EditorView({
+      doc: replaceEl.value,
+      extensions: [
+        minimalSetup,
+        EditorState.tabSize.of(2),
+        keymap.of([indentWithTab]),
+        StreamLanguage.define(elixir),
+        editorTheme.of(cmTheme),
+        EditorView.updateListener.of(debounce((v) => {
+          if (v.docChanged) {
+            this.pushEvent("code-updated", v.state.doc.text.join("\n"))
+          }
+        }, 500))
+      ],
+      parent: mountEl
+    })
+    replaceEl.classList.add("hidden")
+    mountEl.classList.remove("hidden")
+    this.themeListener = document.addEventListener('theme', (e) => {
+      const cmTheme = e.detail === 'dark' ? oneDark : lightTheme
+      this.editor.dispatch({ effects: editorTheme.reconfigure(cmTheme) })
+    })
+  },
+  destroyed() {
+    if (this.themeListener) document.removeEventListener(this.themeListener)
+    if (this.editor) this.editor.destroy()
   }
 }
 
