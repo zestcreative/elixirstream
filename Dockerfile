@@ -29,7 +29,7 @@ COPY rel ./rel
 RUN mix release
 
 # APP LAYER
-FROM docker:20.10.21-alpine3.16 AS app
+FROM docker:20.10.21-dind-alpine3.16 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
     ip6tables pigz sysstat procps lsof sudo bind-tools \
     expat-dev pkgconfig \
