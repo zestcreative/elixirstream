@@ -80,7 +80,7 @@ defmodule UtilityWeb.Components.Tip do
 
   def edit(assigns) do
     ~H"""
-    <.form id="tipform" :let={f} for={@changeset} phx-change={@phx_change} phx-submit={@phx_submit}>
+    <.form :let={f} id="tipform" for={@changeset} phx-change={@phx_change} phx-submit={@phx_submit}>
       <.contributor user={@tip_form.contributor} />
 
       <div class="mt-2 text-sm dark:text-gray-300 text-gray-700 space-y-4">

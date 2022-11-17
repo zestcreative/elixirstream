@@ -268,23 +268,27 @@ defmodule UtilityWeb.TipLive do
          |> push_redirect(to: ~p"/tips")}
 
       tip ->
-        tip_form = %__MODULE__{
-          contributor: tip.contributor,
-          title: tip.title,
-          description: tip.description,
-          code: tip.code,
-          published_at: tip.published_at |> DateTime.to_date() |> Date.to_iso8601()
-        }
+        if socket.assigns.live_action == :edit && !editable?(tip, socket.assigns.current_user) do
+          {:noreply, push_navigate(socket, to: ~p"/tips/#{tip.id}")}
+        else
+          tip_form = %__MODULE__{
+            contributor: tip.contributor,
+            title: tip.title,
+            description: tip.description,
+            code: tip.code,
+            published_at: tip.published_at |> DateTime.to_date() |> Date.to_iso8601()
+          }
 
-        {:noreply,
-         socket
-         |> load_my_upvotes(tip)
-         |> assign(:editable?, editable?(tip, socket.assigns.current_user))
-         |> assign(:tip, tip)
-         |> assign(:tip_form, tip_form)
-         |> assign(:page_title, tip.title)
-         |> assign(:changeset, changeset(tip_form, %{}))
-         |> assign_computed()}
+          {:noreply,
+           socket
+           |> load_my_upvotes(tip)
+           |> assign(:editable?, editable?(tip, socket.assigns.current_user))
+           |> assign(:tip, tip)
+           |> assign(:tip_form, tip_form)
+           |> assign(:page_title, tip.title)
+           |> assign(:changeset, changeset(tip_form, %{}))
+           |> assign_computed()}
+        end
     end
   end
 
