@@ -9,106 +9,69 @@
     <.form :let={f} for={@changeset} id="gen-diff" aria-labelledby="gendiff-title" phx-submit="diff" phx-change="validate" phx-hook="HandleScroll">
       <div class="mt-6">
         <div>
-          <div>
-            <div>
-              <%= label f, :project, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
-                Project
-                <%= if @project_url do %>
-                  <a rel="nofollow" target="_blank" href={@project_url} class="mt-2 text-xs link">
-                    <%= Phoenix.Naming.humanize(@project_source) %>
-                  </a>
-                <% end %>
-              <% end %>
-              <div class="mt-1">
-                <%= select(f, :project, generator_package_options(),
-                  autocomplete: "off",
-                  placeholder: "Select Package...",
-                  class:
-                    "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-                ) %>
-              </div>
-            </div>
-
-            <%= error_tag(f, :project) %>
-          </div>
-
-          <div class="my-4">
-            <%= label f, :command, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
-              Command
-              <%= if @docs_url do %>
-                <a rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
-                  Docs
-                </a>
-              <% end %>
+          <%= label f, :project, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
+            Project
+            <%= if @project_url do %>
+              <a rel="nofollow" target="_blank" href={@project_url} class="mt-2 text-xs link">
+                <%= Phoenix.Naming.humanize(@project_source) %>
+              </a>
             <% end %>
-            <%= select(f, :command, generator_options(@project),
+          <% end %>
+          <div class="mt-1">
+            <%= select(f, :project, generator_package_options(),
               autocomplete: "off",
-              class:
-                "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
+              placeholder: "Select Package...",
+              class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
             ) %>
-            <%= error_tag(f, :command) %>
-            <%= if @command_help do %>
-              <p class="mt-2 text-sm text-gray-500"><%= @command_help %></p>
-            <% end %>
           </div>
+        </div>
 
+        <Components.errors form={f} field={:project} />
+      </div>
+
+      <div class="mt-6">
+        <%= label f, :command, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
+          Command
+          <%= if @docs_url do %>
+            <a rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
+              Docs
+            </a>
+          <% end %>
+        <% end %>
+        <%= select(f, :command, generator_options(@project),
+          autocomplete: "off",
+          class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
+        ) %>
+        <Components.errors form={f} field={:command} />
+        <%= if @command_help do %>
+          <p class="mt-2 text-sm text-gray-500">
+            <%= @command_help %>
+          </p>
+        <% end %>
+      </div>
+
+      <div class="mt-6">
+        <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
+        <div class={"my-4 #{if is_flags_hidden, do: "hidden" }"}>
           <div class="flex -space-x-px shadow-sm">
             <div class="w-1/2 flex-1 min-w-0">
-              <%= label(f, :from_version, "From Version",
-                class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
-              ) %>
+              <%= label(f, :from_version, "From Version", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
               <%= select(f, :from_version, version_options(@from_versions),
                 autocomplete: "off",
                 placeholder: "From version...",
-                class:
-                  "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
+                class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
               ) %>
-              <%= error_tag(f, :from_version) %>
+              <Components.errors form={f} field={:from_version} />
             </div>
 
             <div class="flex-1 min-w-0">
-              <%= label(f, :to_version, "To Version",
-                class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
-              ) %>
+              <%= label(f, :to_version, "To Version", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
               <%= select(f, :to_version, version_options(@to_versions),
                 autocomplete: "off",
                 placeholder: "From version...",
-                class:
-                  "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
+                class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
               ) %>
-              <%= error_tag(f, :to_version) %>
-            </div>
-
-          <div>
-            <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
-            <div class={"my-4 #{if is_flags_hidden, do: "hidden"}"} }>
-              <div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <%= label(f, :from_flags, "From #{@from_version} Flags",
-                      class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    ) %>
-                    <%= multiple_select(f, :from_flags, @available_from_flags,
-                      class:
-                        "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden",
-                      size: length(@available_from_flags)
-                    ) %>
-                    <%= error_tag(f, :from_flags) %>
-                  </div>
-
-                  <div>
-                    <%= label(f, :to_flags, "To #{@to_version} Flags",
-                      class: "block text-sm font-medium text-gray-700 dark:text-gray-300"
-                    ) %>
-                    <%= multiple_select(f, :to_flags, @available_to_flags,
-                      class:
-                        "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden",
-                      size: length(@available_to_flags)
-                    ) %>
-                    <%= error_tag(f, :to_flags) %>
-                  </div>
-                </div>
-              </div>
+              <Components.errors form={f} field={:to_version} />
             </div>
           </div>
         </div>
