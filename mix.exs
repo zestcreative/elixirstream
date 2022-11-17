@@ -65,6 +65,7 @@ defmodule Utility.MixProject do
       {:quarto, "~> 1.0"},
       {:redix, ">= 0.0.0"},
       {:sentry, "~> 8.0"},
+      {:sweet_xml, "~> 0.7"},
       {:telemetry, "~> 1.1", override: true},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 1.0"},
