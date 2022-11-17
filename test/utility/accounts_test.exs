@@ -1,6 +1,7 @@
 defmodule Utility.AccountsTest do
   use Utility.DataCase, async: true
   alias Utility.Accounts
+  alias Utility.Test.Factory
 
   doctest Accounts
 
@@ -17,7 +18,7 @@ defmodule Utility.AccountsTest do
 
   describe "update_twitter" do
     test "updates twitter on user" do
-      user = Factory.insert(:user, twitter: nil)
+      user = Factory.insert!(:user, twitter: nil)
       assert {:ok, _updated} = Accounts.update_twitter(user, "new twitter")
       assert Repo.get_by(Accounts.User, id: user.id, twitter: "new twitter")
     end
@@ -40,7 +41,7 @@ defmodule Utility.AccountsTest do
       auth = Factory.build(:github_auth)
 
       %{id: existing_id} =
-        Factory.insert(:user,
+        Factory.insert!(:user,
           username: auth.info.nickname,
           source: auth.provider,
           source_id: to_string(auth.uid)
@@ -53,7 +54,7 @@ defmodule Utility.AccountsTest do
       auth = Factory.build(:github_auth)
 
       %{id: existing_id} =
-        Factory.insert(:user,
+        Factory.insert!(:user,
           name: "old name",
           username: "old username",
           source: auth.provider,

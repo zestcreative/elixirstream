@@ -6,6 +6,16 @@
   @apply font-mono text-sm overflow-y-auto h-64 max-h-64;
 }
 
+.cm-editor {
+  @apply shadow-sm rounded-md border dark:border-gray-700 border-gray-300;
+  @apply px-2 py-1;
+}
+
+.cm-editor.cm-focused {
+  @apply border ring-brand-500 border-brand-500 ring-1;
+  @apply outline-none outline-offset-0 !important;
+}
+
 
 @layer base {
   html.dark [type='text'],

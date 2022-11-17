@@ -2,9 +2,8 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
-  import Phoenix.HTML.Form, only: [label: 4, text_input: 3, textarea: 3, submit: 2, date_input: 3]
+  import Phoenix.HTML.Form, only: [submit: 2]
   alias Ecto.Changeset
-  alias Phoenix.LiveView.JS
   alias Utility.TipCatalog
   require Logger
 
@@ -42,6 +41,7 @@ defmodule UtilityWeb.TipLive do
     |> Changeset.validate_required(~w[title description published_at]a)
     |> Changeset.validate_length(:code, max: @limit)
     |> validate_total_length()
+    |> maybe_copy_characer_error()
   end
 
   @search_types %{module: :string, q: :string}
@@ -49,6 +49,15 @@ defmodule UtilityWeb.TipLive do
     {%{}, @search_types}
     |> Changeset.cast(params, Map.keys(@search_types))
     |> Changeset.validate_length(:q, max: 75)
+  end
+
+  def maybe_copy_characer_error(changeset) do
+    if errors = Keyword.get(changeset.errors, :total_characters) do
+      {error, additional} = errors
+      Changeset.add_error(changeset, :description, error, additional)
+    else
+      changeset
+    end
   end
 
   defp assign_computed(socket) do
@@ -207,6 +216,7 @@ defmodule UtilityWeb.TipLive do
 
   def handle_event("preview", _params, socket) do
     tip = Changeset.apply_changes(socket.assigns.changeset)
+
     if tip.code do
       case TipCatalog.generate_codeshot(tip) do
         {:ok, %{code_image_url: url}, _file} ->
@@ -269,6 +279,7 @@ defmodule UtilityWeb.TipLive do
         {:noreply,
          socket
          |> load_my_upvotes(tip)
+         |> assign(:editable?, editable?(tip, socket.assigns.current_user))
          |> assign(:tip, tip)
          |> assign(:tip_form, tip_form)
          |> assign(:page_title, tip.title)
@@ -394,4 +405,8 @@ defmodule UtilityWeb.TipLive do
       Map.put(params, "approved", false)
     end
   end
+
+  def editable?(%{id: nil}, _), do: false
+  def editable?(%{contributor_id: user_id}, %{id: user_id}), do: true
+  def editable?(_tip, current_user), do: admin?(current_user)
 end

@@ -1,10 +1,13 @@
 <Components.page_panel title="HTTP Sink" id="http-sink">
   <:call_to_action>
-    <button type="button"
+    <button
+      type="button"
       class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150"
-      id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="url-pasta">
-      <Icon.clipboard class="w-4 h-4 mr-2 transition ease-in-out duration-150" />
-      Copy URL
+      id="clipboard-pasta"
+      phx-hook="ClipboardCopy"
+      data-target="url-pasta"
+    >
+      <Icon.clipboard class="w-4 h-4 mr-2 transition ease-in-out duration-150" /> Copy URL
     </button>
   </:call_to_action>
   <:content>
@@ -15,16 +18,15 @@
         </h2>
       </div>
       <div class="w-full my-2">
-        <svg class="font-mono w-full h-full dark:text-brand-200 text-brand-600 select-all" viewbox="0 0 450 24" preserveAspectRatio="xMinYMin meet">
+        <svg class="font-mono w-full h-full dark:text-brand-200 text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
           <foreignObject class="w-full h-full">
             <p>
-              <%= ~p"/sink/#{@id}" %>
+              <%= url(~p"/sink/#{@id}") %>
             </p>
           </foreignObject>
         </svg>
         <input type="text" class="hide-away" aria-hidden="true" readonly id="url-pasta" value={url(~p"/sink/#{@id}")} />
       </div>
-
       <!-- Warning Box -->
       <div id="warning-box" class="rounded-md dark:bg-red-900 bg-red-50 p-4 mt-4">
         <div class="flex">
@@ -49,10 +51,7 @@
           </div>
           <div class="ml-auto pl-3">
             <div class="-mx-1.5 -my-1.5">
-              <button
-                phx-click={hide_warning()}
-                class="inline-flex dark:bg-red-900 bg-red-50 rounded-md p-1.5 text-red-500 dark:hover:bg-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-red-900 focus:ring-offset-red-50 focus:ring-red-600"
-              >
+              <button phx-click={hide_warning()} class="inline-flex dark:bg-red-900 bg-red-50 rounded-md p-1.5 text-red-500 dark:hover:bg-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-red-900 focus:ring-offset-red-50 focus:ring-red-600">
                 <span class="sr-only">Dismiss</span>
                 <Icon.x class="h-5 w-5" />
               </button>
@@ -62,8 +61,7 @@
       </div>
       <div class="mt-4">
         <button phx-click={toggle_help()} class="px-2 py-1 rounded transition-colors bg-opacity-0 dark:bg-gray-600 bg-gray-200 hover:bg-opacity-50">
-          Not sure how this works?
-          <Icon.caret class="text-gray-500 w-4 h-4 transform duration-150 inline" id="help-caret" />
+          Not sure how this works? <Icon.caret class="text-gray-500 w-4 h-4 transform duration-150 inline" id="help-caret" />
         </button>
         <div id="help-box" class="hidden border-l-4 border-brand-500 pl-6 mt-6 space-y-2">
           <p>For example, in a shell:</p>
@@ -96,8 +94,7 @@
                   <dt class="text-right text-sm leading-5 font-medium text-gray-500">
                     Received at
                   </dt>
-                  <dd
-                    class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
+                  <dd class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
                     <%= request.received_at %>
                   </dd>
                 </div>
@@ -105,14 +102,13 @@
                   <dt class="text-sm leading-5 font-medium text-gray-500">
                     Headers
                   </dt>
-                  <dd
-                    class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
                     <ul>
                       <%= for {header, value} <- request.headers do %>
                         <li class="p-1 flex items-center justify-between text-sm leading-5">
                           <%= header %>: <%= value %>
                         </li>
-                        <% end %>
+                      <% end %>
                     </ul>
                   </dd>
                 </div>
@@ -120,8 +116,7 @@
                   <dt class="text-sm leading-5 font-medium text-gray-500">
                     Query Params
                   </dt>
-                  <dd
-                    class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
                     <%= request.query_string %>
                   </dd>
                 </div>
@@ -129,8 +124,7 @@
                   <dt class="text-sm leading-5 font-medium text-gray-500">
                     Body
                   </dt>
-                  <dd
-                    class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <dd class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
                     <%= render_body(request) %>
                   </dd>
                 </div>

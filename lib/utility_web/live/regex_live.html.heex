@@ -15,16 +15,11 @@
   </:call_to_action>
 
   <:content>
-    <div
-      id="regex-tester-content"
-      phx-hook="ConfirmBeforeLeave"
-      data-is-changed={changed?(@changeset)}>
-      <.form let={f} for={@changeset} phx-change="validate">
+    <div id="regex-tester-content" phx-hook="ConfirmBeforeLeave" data-is-changed={changed?(@changeset)}>
+      <.form :let={f} for={@changeset} phx-change="validate">
         <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
           <div class="sm:col-span-5">
-            <%= label(f, :regex,
-              class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700"
-            ) %>
+            <%= label(f, :regex, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
             <div class="relative mt-1 mr-2 rounded-md shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pr-3 font-normal tracking-widest text-gray-500 pointer-events-none">
                 ~r/
@@ -33,8 +28,7 @@
                 placeholder: "regex",
                 autofocus: true,
                 autocomplete: "off",
-                class:
-                  "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5"
+                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5"
               ) %>
               <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">
                 /
@@ -54,16 +48,13 @@
           </div>
 
           <div class="sm:col-span-1">
-            <%= label(f, :flags,
-              class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700"
-            ) %>
+            <%= label(f, :flags, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
             <div class="relative mt-1 rounded-md shadow-sm">
               <%= text_input(f, :flags,
                 placeholder: "flags",
                 phx_hook: "MaskFlags",
                 autocomplete: "off",
-                class:
-                  "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5"
+                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5"
               ) %>
             </div>
             <Components.errors form={f} field={:flags} />
@@ -73,15 +64,12 @@
           </div>
 
           <div class="sm:col-span-6">
-            <%= label(f, :string,
-              class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700"
-            ) %>
+            <%= label(f, :string, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
             <div class="mt-1 rounded-md shadow-sm">
               <%= textarea(f, :string,
                 spellcheck: "false",
                 rows: 6,
-                class:
-                  "shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5"
+                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5"
               ) %>
             </div>
             <Components.errors form={f} field={:string} />
@@ -92,24 +80,12 @@
           <fieldset class="mt-6">
             <legend class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
               Function
-              <button
-                type="button"
-                class="inline-block dark:text-gray-900 px-1 bg-gray-300 rounded"
-                id="clipboard-pasta"
-                phx-hook="ClipboardCopy"
-                data-target="regex-pasta"
-              >
+              <button type="button" class="inline-block dark:text-gray-900 px-1 bg-gray-300 rounded" id="clipboard-pasta" phx-hook="ClipboardCopy" data-target="regex-pasta">
                 Copy
               </button>
             </legend>
             <div class="w-full my-2 font-mono">
-              <input
-                type="text"
-                readonly
-                id="regex-pasta"
-                class="cursor-default shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full"
-                value={@pasta}
-              />
+              <input type="text" readonly id="regex-pasta" class="cursor-default shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full" value={@pasta} />
             </div>
             <p class="text-sm text-gray-500 leading-5">
               Which
@@ -120,10 +96,7 @@
             </p>
             <div class="flex flex-wrap mt-1 space-x-8">
               <div class="flex items-center">
-                <%= radio_button(f, :function, "run",
-                  class:
-                    "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
-                ) %>
+                <%= radio_button(f, :function, "run", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
                 <label for="regex_live_function_run" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Run
@@ -131,10 +104,7 @@
                 </label>
               </div>
               <div class="flex items-center">
-                <%= radio_button(f, :function, "named_captures",
-                  class:
-                    "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
-                ) %>
+                <%= radio_button(f, :function, "named_captures", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
                 <label for="regex_live_function_named_captures" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Named Captures
@@ -142,10 +112,7 @@
                 </label>
               </div>
               <div class="flex items-center">
-                <%= radio_button(f, :function, "scan",
-                  class:
-                    "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
-                ) %>
+                <%= radio_button(f, :function, "scan", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
                 <label for="regex_live_function_scan" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Scan
@@ -307,7 +274,6 @@ pretty: true
               enables Unicode specific patterns like <code>\p</code> and change modifiers like <code>\w</code>, <code>\W</code>, <code>\s</code> and friends to also match on Unicode. It expects valid Unicode strings to be given on match
             </dd>
           </div>
-
 
           <div class="w-full p-2 md:w-1/3">
             <dt class="font-semibold">

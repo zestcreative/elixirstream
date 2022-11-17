@@ -17,7 +17,8 @@ defmodule UtilityWeb do
   and import those modules here.
   """
 
-  def static_paths, do: ~w[uploads assets fonts svg images site.webmanifest favicon.ico robots.txt]
+  def static_paths,
+    do: ~w[uploads assets fonts svg images site.webmanifest favicon.ico robots.txt]
 
   def controller do
     quote do
@@ -67,7 +68,6 @@ defmodule UtilityWeb do
   def html_helpers do
     quote do
       import Phoenix.HTML
-      import UtilityWeb.LinkHelpers
       alias Phoenix.LiveView.JS
       alias UtilityWeb.Components
       alias UtilityWeb.Icon

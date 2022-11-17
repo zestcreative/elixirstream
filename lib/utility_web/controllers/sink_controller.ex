@@ -20,7 +20,7 @@ defmodule UtilityWeb.SinkController do
   def any(conn, _params) do
     conn
     |> put_status(400)
-    |> put_view(UtilityWeb.ErrorView)
+    |> put_view(UtilityWeb.ErrorHTML)
     |> render("400.html")
   end
 end

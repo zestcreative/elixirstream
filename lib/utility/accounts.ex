@@ -11,7 +11,7 @@ defmodule Utility.Accounts do
   def admin?(_), do: false
 
   @spec update_or_create(map()) ::
-    {:create | :update, {:ok, User.t()}} | {:error, Ecto.Changeset.t()}
+          {:create | :update, {:ok, User.t()}} | {:error, Ecto.Changeset.t()}
   def update_or_create(%Ueberauth.Auth{} = auth) do
     case find(to_string(auth.provider), to_string(auth.uid)) do
       nil -> {:create, create(auth)}

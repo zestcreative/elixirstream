@@ -1,33 +1,25 @@
-<footer
-  id="footer"
-  phx-hook="ThemeChooser"
-  class="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8"
->
-  <div id="themeFooter" phx-update="ignore" class="flex justify-center md:order-2 block print:hidden">
-    <select
-      id="themeChooser"
-      class="dark:border-gray-800 border-gray-200 focus:ring-indigo-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
-    >
+<footer id="footer" phx-hook="ThemeChooser" class="max-w-screen-xl mx-auto py-12 px-4 sm:px-6 md:flex md:items-center md:justify-between lg:px-8">
+  <div id="themeFooter" phx-update="ignore" class="flex place-items-center justify-center md:order-2 block print:hidden">
+    <select id="themeChooser" class="dark:border-gray-800 border-gray-200 focus:ring-indigo-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
       <option disabled>Site theme</option>
       <%= for theme <- themes() do %>
         <option id={"theme-#{theme}"} value={theme}><%= theme %></option>
       <% end %>
     </select>
 
-    <%= outbound_link to: "https://twitter.com/bernheisel", title: "Twitter", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+    <Components.outbound_link href="https://twitter.com/bernheisel" title="Twitter" class="ml-6 text-gray-400 hover:text-gray-500">
       <span class="sr-only">Twitter</span>
       <Icon.twitter class="h-6 w-6" />
-    <% end %>
-    <%= outbound_link to: "https://github.com/zestcreative/utility", title: "GitHub", class: "ml-6 text-gray-400 hover:text-gray-500" do %>
+    </Components.outbound_link>
+    <Components.outbound_link href="https://github.com/zestcreative/utility" title="GitHub" class="ml-6 text-gray-400 hover:text-gray-500">
       <span class="sr-only">GitHub</span>
       <Icon.github class="h-6 w-6" />
-    <% end %>
+    </Components.outbound_link>
   </div>
 
   <div class="mt-8 md:mt-0 md:order-1">
     <p class="text-center text-base leading-6 text-gray-400">
-      &copy; <%= Date.utc_today().year %> Zest Creative, LLC
-      <span class="hidden print:inline">bernheisel.com</span>
+      &copy; <%= Date.utc_today().year %> Zest Creative, LLC <span class="hidden print:inline">bernheisel.com</span>
     </p>
   </div>
 </footer>

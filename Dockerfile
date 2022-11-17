@@ -28,29 +28,25 @@ COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
 RUN mix release
 
-## DEP - SILICON
-RUN apk add --no-cache curl cmake expat-dev libxcb pkgconfig fontconfig fontconfig-dev \
-  freetype-dev freetype python3 libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-RUN /root/.cargo/bin/cargo install --root / silicon
-
 # APP LAYER
-
 FROM docker:20.10.21-alpine3.16 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
-    ip6tables pigz sysstat procps lsof sudo bind-tools
+    ip6tables pigz sysstat procps lsof sudo bind-tools \
+    expat-dev pkgconfig \
+    fontconfig fontconfig-dev freetype-dev freetype libxcb libxcb-dev xclip \
+    harfbuzz harfbuzz-dev libxkbcommon-dev libxml2 libxml2-dev cargo \
+    font-fira-code-nerd
 RUN addgroup -S docker && \
     addgroup -S --gid 1000 app && \
     adduser -D -G app --uid 1000 app && \
     addgroup -S app docker && \
     echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup" >> /etc/sudoers
+RUN cargo install --root / silicon --version 0.4.3
 
 ## COPY RELEASE
 WORKDIR /app
 RUN chown -R 1000:1000 /app
 COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
-COPY --from=build /bin/silicon /bin/silicon
 COPY priv/docker-setup /sbin/docker-setup
 COPY priv/docker-daemon.json /etc/docker/daemon.json
 RUN chmod 711 /sbin/docker-setup

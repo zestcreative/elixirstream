@@ -1,6 +1,8 @@
-defmodule UtilityWeb.GenDiffView do
+defmodule UtilityWeb.GenDiffHTML do
   use UtilityWeb, :html
   require Logger
+
+  embed_templates "gen_diff_html/*"
 
   def themes, do: UtilityWeb.Layouts.themes()
 
@@ -13,12 +15,26 @@ defmodule UtilityWeb.GenDiffView do
         Phoenix.Template.render_to_iodata(__MODULE__, "diff_header", "html", generator: generator)
 
       IO.binwrite(file, html_patch)
+      IO.binwrite(file, diff_header())
       render_diff_body(generator, file, stream)
-      html_patch = Phoenix.Template.render_to_iodata(__MODULE__, "diff_footer", "html", [])
-      IO.binwrite(file, html_patch)
+      IO.binwrite(file, diff_footer())
     end)
 
     {:ok, path}
+  end
+
+  defp diff_header do
+    """
+    <div id="diff-content">
+      <div class="ghd-container">
+    """
+  end
+
+  defp diff_footer do
+    """
+      </div>
+    </div>
+    """
   end
 
   defp render_diff_body(_generator, file, nil) do
@@ -83,13 +99,22 @@ defmodule UtilityWeb.GenDiffView do
   def line_type(line), do: to_string(line.type)
 
   def line_text("+" <> text),
-    do: [Phoenix.HTML.Tag.content_tag(:span, "+ ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
+    do: [
+      Phoenix.HTML.Tag.content_tag(:span, "+ ", class: "ghd-line-status"),
+      Phoenix.HTML.Tag.content_tag(:span, text)
+    ]
 
   def line_text("-" <> text),
-    do: [Phoenix.HTML.Tag.content_tag(:span, "- ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
+    do: [
+      Phoenix.HTML.Tag.content_tag(:span, "- ", class: "ghd-line-status"),
+      Phoenix.HTML.Tag.content_tag(:span, text)
+    ]
 
   def line_text(" " <> text),
-    do: [Phoenix.HTML.Tag.content_tag(:span, "  ", class: "ghd-line-status"), Phoenix.HTML.Tag.content_tag(:span, text)]
+    do: [
+      Phoenix.HTML.Tag.content_tag(:span, "  ", class: "ghd-line-status"),
+      Phoenix.HTML.Tag.content_tag(:span, text)
+    ]
 
   def line_text(text), do: [Phoenix.HTML.Tag.content_tag(:span, text)]
 end

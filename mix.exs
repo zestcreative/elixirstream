@@ -57,6 +57,7 @@ defmodule Utility.MixProject do
       {:phoenix, "~> 1.7.0-rc.0", override: true},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 3.0"},
+      {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:phoenix_live_view, "~> 0.18"},
       {:plug_cowboy, "~> 2.3"},

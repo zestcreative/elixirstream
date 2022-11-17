@@ -1,0 +1,28 @@
+<div class="max-w-screen-xl flex justify-between mx-auto py-2 px-4 sm:px-6 lg:px-8">
+  <div class="flex items-center relative group">
+    <div class="absolute -inset-0.5 dark:bg-gradient-to-r dark:from-brand-200 dark:to-brand-700 rounded-lg blur-md opacity-90 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+    <.link navigate={~p"/gendiff"} class="relative transition group-hover:duration-200 group-hover:text-brand-400 dark:group-hover:text-accent-300">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+    </.link>
+  </div>
+  <div class="flex items-center justify-end md:order-2 block print:hidden">
+    <select id="themeChooser" class="dark:border-gray-800 border-gray-200 focus:ring-indigo-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
+      <option disabled>Site theme</option>
+      <%= for theme <- themes() do %>
+        <option id={"theme-#{theme}"} value={theme}><%= theme %></option>
+      <% end %>
+    </select>
+
+    <Components.outbound_link href="https://twitter.com/bernheisel" title="Twitter" class="ml-6 text-gray-400 hover:text-gray-500">
+      <span class="sr-only">Twitter</span>
+      <Icon.twitter class="h-6 w-6" />
+    </Components.outbound_link>
+
+    <Components.outbound_link href="https://github.com/zestcreative/elixir-utilities-web" title="GitHub" class="ml-6 text-gray-400 hover:text-gray-500">
+      <span class="sr-only">GitHub</span>
+      <Icon.github class="h-6 w-6" />
+    </Components.outbound_link>
+  </div>
+</div>

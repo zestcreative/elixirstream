@@ -2,11 +2,7 @@ defmodule UtilityWeb.Components.Tip do
   @moduledoc false
   use UtilityWeb, :component
   import Utility.Accounts, only: [admin?: 1]
-  import Phoenix.HTML.Form, only: [label: 4, text_input: 3, textarea: 3, submit: 2, date_input: 3]
-
-  def show_edit?(%{id: nil}, _), do: false
-  def show_edit?(%{contributor_id: user_id}, %{id: user_id}), do: true
-  def show_edit?(_tip, current_user), do: admin?(current_user)
+  import Phoenix.HTML.Form, only: [label: 4, text_input: 3, textarea: 3]
 
   def show_approve?(%{approved: true}, _current_user), do: false
   def show_approve?(_tip, current_user), do: admin?(current_user)
@@ -17,7 +13,10 @@ defmodule UtilityWeb.Components.Tip do
   def max_characters, do: UtilityWeb.TipLive.character_limit()
 
   @warning_threshold_below_max 20
-  def color_for_bar(count, max_count) when count > max_count do
+  @warning_threshold_below_min 20
+  def color_for_bar(count, max_count)
+      when count <= @warning_threshold_below_min
+      when count > max_count do
     {"bg-red-200 dark:bg-red-800", "bg-red-500"}
   end
 
@@ -30,11 +29,12 @@ defmodule UtilityWeb.Components.Tip do
   end
 
   attr :user, Utility.Accounts.User, required: true
+
   def contributor(assigns) do
     ~H"""
     <div class="flex space-x-3">
       <div class="flex-shrink-0">
-        <img class="h-10 w-10 rounded-full" src={@user.avatar} alt="">
+        <img class="h-10 w-10 rounded-full" src={@user.avatar} alt="" />
       </div>
       <div class="min-w-0 flex-1 text-gray-500 dark:text-gray-400">
         <p class="text-sm font-medium dark:text-gray-300 text-gray-900">
@@ -44,8 +44,7 @@ defmodule UtilityWeb.Components.Tip do
 
           <p class="inline-flex items-center">
             <Icon.github class="-ml-0.5 mr-1 h-3 w-3" />
-            <a href={"https://github.com/#{@user.username}"} target="_blank" rel="nofollow"
-              class="hover:underline text-xs text-gray-500">
+            <a href={"https://github.com/#{@user.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs text-gray-500">
               <%= @user.username %>
             </a>
           </p>
@@ -53,8 +52,7 @@ defmodule UtilityWeb.Components.Tip do
           <%= if @user.twitter do %>
             <p class="ml-3 inline-flex items-center">
               <Icon.twitter class="-ml-0.5 mr-1 h-3 w-3" />
-              <a href={"https://twitter.com/#{@user.twitter}"} rel="nofollow" target="_blank"
-                class="hover:underline text-xs text-gray-500">
+              <a href={"https://twitter.com/#{@user.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs text-gray-500">
                 <%= @user.twitter %>
               </a>
             </p>
@@ -75,29 +73,29 @@ defmodule UtilityWeb.Components.Tip do
   attr :tip_form, UtilityWeb.TipLive, required: true
   attr :tip, Utility.TipCatalog.Tip, required: true
   attr :character_percent, :float, required: true
+  attr :preview_image_url, :string, default: nil
   attr :upvoted_tip_ids, :list, default: []
   attr :character_count, :integer, required: true
   attr :current_user, Utility.Accounts.User, required: true
 
   def edit(assigns) do
     ~H"""
-    <.form let={f} for={@changeset} phx-change={@phx_change} phx-submit={@phx_submit}>
+    <.form id="tipform" :let={f} for={@changeset} phx-change={@phx_change} phx-submit={@phx_submit}>
       <.contributor user={@tip_form.contributor} />
 
-      <%# form %>
       <div class="mt-2 text-sm dark:text-gray-300 text-gray-700 space-y-4">
         <div class="mt-1">
-          <%= label f, :title, "Title" , class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
+          <%= label(f, :title, "Title", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
           <div class="mt-1">
-            <%= text_input f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
+            <%= text_input(f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md") %>
             <Components.errors form={f} field={:title} />
           </div>
         </div>
 
         <div class="mt-1">
-          <%= label f, :description, "Description", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
+          <%= label(f, :description, "Description", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
           <div class="mt-1">
-            <%= textarea f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
+            <%= textarea(f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md") %>
             <Components.errors form={f} field={:description} />
           </div>
 
@@ -113,59 +111,22 @@ defmodule UtilityWeb.Components.Tip do
       </div>
 
       <div class="mt-1">
-        <%= label f, :code, "Code", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
-        <div class="w-full" phx-hook="CodeMirror" phx-update="ignore" id="code-editor-content"
-          data-mount-replace-selector="#code-editor-mount-replace"
-          data-mount-selector="#code-editor-mount"
-          class="mt-1">
-          <%= textarea f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace" %>
-          <div phx-update="ignore" class="h-64 hidden" id="code-editor-mount"></div>
+        <%= label(f, :code, "Code", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
+        <div class="w-full" id="code-editor-content" class="mt-1" phx-hook="CodeMirror" data-mount-replace-selector="#code-editor-mount-replace" data-mount-selector="#code-editor-container">
+          <div id="code-editor-container" phx-update="ignore">
+            <%= textarea(f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full
+              sm:text-sm dark:border-gray-700 border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace") %>
+          </div>
           <span class="text-gray-500 text-xs"><kbd>ESC</kbd> toggles trapping tab</span>
           <Components.errors form={f} field={:code} />
         </div>
       </div>
 
-      <%# Preview %>
       <div class="mt-2">
         <Components.button type="button" phx-click="preview">Preview</Components.button>
-        <img id="img-preview" src={@preview_image_url} class="mt-2 h-80" />
+        <img id="img-preview" src={@preview_image_url} class="mt-2 max-h-80" />
       </div>
-      <div class="mt-3 text-center sm:ml-4 sm:text-left">
-      </div>
-
-      <div class="mt-6 flex justify-between space-x-8">
-        <div class="flex text-sm">
-          <%# New Actions %>
-          <%= if @action == :new do %>
-            <div class="inline-flex items-center text-sm">
-              <%= label f, :published_at, "Publish On", class: "block text-sm font-medium dark:text-gray-300 text-gray-700" %>
-              <div class="ml-2">
-                <%= date_input f, :published_at,
-                    min: Date.to_iso8601(Date.utc_today()),
-                    class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" %>
-                <Components.errors form={f} field={:published_at} />
-              </div>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="mt-6 flex justify-between space-x-8">
-          <div class="flex space-x-6">
-            <span class="inline-flex items-center text-sm">
-              <.upvote current_user={@current_user} tip={@tip} upvoted_tip_ids={@upvoted_tip_ids} />
-            </span>
-          </div>
-
-          <div class="flex text-sm">
-            <%= if show_edit?(@tip, @current_user) do %>
-              <.link patch={~p"/tips/#{@tip.id}"} class="ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500">
-                <Icon.pencil class="h-5 w-5" />
-                <span class="font-medium text-gray-900">Edit</span>
-              </.link>
-            <% end %>
-          </div>
-        </div>
-      </div>
+      <div class="mt-3 text-center sm:ml-4 sm:text-left"></div>
     </.form>
     """
   end
@@ -173,12 +134,12 @@ defmodule UtilityWeb.Components.Tip do
   attr :current_user, Utility.Accounts.User, required: true
   attr :tip, Utility.TipCatalog.Tip, required: true
   attr :upvoted_tip_ids, :list, required: true
+
   def upvote(%{current_user: %{id: user_id}, tip: %{contributor_id: contributor_id}} = assigns)
       when user_id != contributor_id do
     if assigns.tip.id in assigns.upvoted_tip_ids do
       ~H"""
-      <button phx-click="downvote-tip" phx-value-tip-id={@tip.id}
-        class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
+      <button phx-click="downvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-green-400 hover:text-red-500">
         <Icon.thumbs_up class="h-5 w-5 transform duration-300 hover:rotate-180" />
         <span class="font-medium text-gray-900">
           <%= @tip.upvote_count + @tip.twitter_like_count %>
@@ -188,8 +149,7 @@ defmodule UtilityWeb.Components.Tip do
       """
     else
       ~H"""
-      <button phx-click="upvote-tip" phx-value-tip-id={@tip.id}
-        class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
+      <button phx-click="upvote-tip" phx-value-tip-id={@tip.id} class="focus:ring-0 focus:outline-none inline-flex space-x-2 text-gray-400 hover:text-green-500">
         <Icon.thumbs_up class="h-5 w-5" />
         <span class="font-medium text-gray-900">
           <%= @tip.upvote_count + @tip.twitter_like_count %>
@@ -216,34 +176,33 @@ defmodule UtilityWeb.Components.Tip do
   attr :phx_change, :string, required: true
   attr :meta, Quarto.Config, default: nil
   attr :id, :string, required: true
+
   def search(assigns) do
     ~H"""
     <label for="search" class="sr-only">Search Tips</label>
-    <div class="mt-1 flex justify-center rounded-md shadow-sm">
-
-      <Components.button phx-click="prev-page" class={"#{if !@meta.before, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-l-md px-4 py-2 text-sm font-medium"}>
-        <Icon.chevron_left class="h-5 w-5 mr-1"/>
-        Previous
+    <div class="mt-1 flex justify-center rounded-md">
+      <Components.button phx-click="prev-page" class={"#{if !@meta.before, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-l-md px-4 py-2 text-sm shadow-sm font-medium"}>
+        <Icon.chevron_left class="h-5 w-5 mr-1" /> Previous
       </Components.button>
 
-      <div class="relative flex flex-grow items-stretch focus-within:z-10">
-
+      <div class="relative flex flex-grow items-stretch shadow-sm focus-within:z-10">
         <div class="pointer-events-none absolute inset-y-0 left-0 pl-3 flex items-center">
           <Icon.search class="h-5 w-5 text-gray-400" />
         </div>
 
-        <.form let={f} as={:search} for={@changeset} phx-submit="" phx-change={@phx_change} id={"#{@id}-form"}>
-          <%= Phoenix.HTML.Form.search_input f, :q, phx_debounce: "250",
+        <.form :let={f} as={:search} for={@changeset} phx-submit="" phx-change={@phx_change} id={"#{@id}-form"}>
+          <%= Phoenix.HTML.Form.search_input(f, :q,
+            phx_debounce: "250",
             class: "block w-full rounded-none border-brand-500 pl-10 focus:border-brand-700 focus:ring-brand-500 sm:text-sm",
             maxlength: "75",
             phx_hook: "RegisterSlash",
             placeholder: "Search tips",
-            id: @id %>
+            id: @id
+          ) %>
         </.form>
       </div>
-      <Components.button phx-click="next-page" class={"#{if !@meta.after, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-r-md px-4 py-2 text-sm font-medium"}>
-        Next
-        <Icon.chevron_right class="h-5 w-5"/>
+      <Components.button phx-click="next-page" class={"#{if !@meta.after, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-r-md px-4 py-2 text-sm font-medium shadow-sm"}>
+        Next <Icon.chevron_right class="h-5 w-5" />
       </Components.button>
     </div>
     """
@@ -251,7 +210,10 @@ defmodule UtilityWeb.Components.Tip do
 
   attr :tip, Utility.TipCatalog.Tip, required: true
   attr :current_user, Utility.Accounts.User, required: true
+  attr :editable?, :boolean, default: false
   attr :class, :string, default: nil
+  attr :upvoted_tip_ids, :list, default: []
+
   def show(assigns) do
     ~H"""
     <li class="xs:px-0 sm:px-6 py-12 sm:px-0">
@@ -259,7 +221,7 @@ defmodule UtilityWeb.Components.Tip do
         <div>
           <div class="flex space-x-3">
             <div class="flex-shrink-0">
-              <img class="h-10 w-10 rounded-full" src={@tip.contributor.avatar} alt="">
+              <img class="h-10 w-10 rounded-full" src={@tip.contributor.avatar} alt="" />
             </div>
             <div class="min-w-0 flex-1 text-gray-500 dark:text-gray-400">
               <p class="flex mr-4 items-center justify-between text-sm font-medium dark:text-gray-300 text-gray-900">
@@ -268,14 +230,12 @@ defmodule UtilityWeb.Components.Tip do
               </p>
               <p class="inline-flex items-center">
                 <Icon.github class="-ml-0.5 mr-1 h-3 w-3" />
-                <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow"
-                class="hover:underline text-xs"><%= @tip.contributor.username %></a>
+                <a href={"https://github.com/#{@tip.contributor.username}"} target="_blank" rel="nofollow" class="hover:underline text-xs"><%= @tip.contributor.username %></a>
               </p>
               <%= if @tip.contributor.twitter do %>
                 <p class="ml-3 inline-flex items-center">
                   <Icon.twitter class="-ml-0.5 mr-1 h-3 w-3" />
-                  <a href={"https://twitter.com/#{@tip.contributor.twitter}"} rel="nofollow" target="_blank"
-                  class="hover:underline text-xs"><%= @tip.contributor.twitter %></a>
+                  <a href={"https://twitter.com/#{@tip.contributor.twitter}"} rel="nofollow" target="_blank" class="hover:underline text-xs"><%= @tip.contributor.twitter %></a>
                 </p>
               <% end %>
             </div>
@@ -319,7 +279,7 @@ defmodule UtilityWeb.Components.Tip do
             </span>
           </div>
           <div class="flex text-sm">
-            <%= if show_edit?(@tip, @current_user) do %>
+            <%= if @editable? do %>
               <.link patch={~p"/tips/#{@tip.id}/edit"} class="ml-2 inline-flex space-x-2 text-gray-400 hover:text-gray-500">
                 <Icon.pencil class="h-5 w-5" />
                 <span class="font-medium dark:text-gray-300 text-gray-900">Edit</span>
@@ -344,11 +304,9 @@ defmodule UtilityWeb.Components.Tip do
               </span>
             <% end %>
           </div>
-
         </div>
       </article>
     </li>
     """
   end
-
 end

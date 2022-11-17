@@ -20,11 +20,11 @@ defmodule UtilityWeb.GenDiffController do
     header = [
       Phoenix.Template.render_to_iodata(UtilityWeb.Layouts, "head", "html", conn: conn),
       "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">",
-      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffView, "head", "html", conn: conn)
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffHTML, "head", "html", conn: conn)
     ]
 
     footer = [
-      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffView, "footer", "html", conn: conn),
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffHTML, "footer", "html", conn: conn),
       "</body>"
     ]
 

@@ -60,6 +60,7 @@ defmodule UtilityWeb.AuthController do
   def sign_in_message(:create, user) do
     "Welcome #{user.name}. Be sure to update your profile!"
   end
+
   def sign_in_message(:update, user) do
     "Welcome back #{user.name}"
   end

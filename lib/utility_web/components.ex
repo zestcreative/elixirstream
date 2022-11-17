@@ -3,10 +3,21 @@ defmodule UtilityWeb.Components do
 
   use UtilityWeb, :component
 
+  attr :href, :string, required: true
+  attr :rest, :global, include: ~w(download hreflang referrerpolicy target type)
+  slot :inner_block, required: true
+
+  def outbound_link(assigns) do
+    ~H"""
+    <.link rel="nofollow noopener" href={@href} {@rest}><%= render_slot(@inner_block) %></.link>
+    """
+  end
+
   attr :type, :string, default: nil
   attr :class, :string, default: nil
   attr :rest, :global, include: ~w[disabled form name value]
   slot :inner_block, required: true
+
   def button(assigns) do
     ~H"""
     <button
@@ -29,6 +40,7 @@ defmodule UtilityWeb.Components do
   attr :group, :string, required: true
   attr :id, :string, required: true
   slot :inner_block, required: true
+
   def tab(assigns) do
     assigns =
       assign_new(assigns, :active_class, fn %{active: active} ->
@@ -45,6 +57,7 @@ defmodule UtilityWeb.Components do
   attr :title, :string, required: true
   attr :group, :string, required: true
   slot :inner_block, required: true
+
   def tab_select(assigns) do
     ~H"""
     <label class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700" for={"#{@group}-select"}>
@@ -55,7 +68,8 @@ defmodule UtilityWeb.Components do
       data-tab-group={@group}
       aria-label={@title}
       id={"#{@group}-select"}
-      phx-change={JS.dispatch("changeTab", detail: %{active: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]})}>
+      phx-change={JS.dispatch("changeTab", detail: %{active: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]})}
+    >
       <%= render_slot(@inner_block) %>
     </select>
     """
@@ -66,12 +80,14 @@ defmodule UtilityWeb.Components do
   attr :active, :string, default: "false"
   attr :group, :string, required: true
   slot :inner_block, required: true
+
   def tab_button(assigns) do
-    assigns = assign_new(assigns, :active_class, fn %{active: active} ->
-      if active == "true" do
-        ["border-brand-300 ", "text-gray-700 ", "dark:text-gray-300 "]
-      end
-    end)
+    assigns =
+      assign_new(assigns, :active_class, fn %{active: active} ->
+        if active == "true" do
+          ["border-brand-300 ", "text-gray-700 ", "dark:text-gray-300 "]
+        end
+      end)
 
     ~H"""
     <button
@@ -81,7 +97,7 @@ defmodule UtilityWeb.Components do
       data-tab-group={@group}
       phx-click={JS.dispatch("changeTab", detail: %{active: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]})}
       class={"ring-brand-900 px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 dark:hover:text-gray-300 hover:text-gray-700 hover:border-brand-500 focus:outline-none dark:focus:text-gray-300 focus:text-gray-700 focus:border-brand-500 #{@active_class}"}
-      >
+    >
       <%= render_slot(@inner_block) %>
     </button>
     """
@@ -93,6 +109,7 @@ defmodule UtilityWeb.Components do
   slot :call_to_action, default: []
   slot :navigation, default: []
   slot :content, required: true
+
   def page_panel(assigns) do
     ~H"""
     <div class="max-w-3xl mt-6 lg:mt-0 mx-auto sm:mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
@@ -114,9 +131,9 @@ defmodule UtilityWeb.Components do
               </div>
             </div>
             <%= if @navigation != [] do %>
-            <div class="mt-5">
-              <%= render_slot(@navigation) %>
-            </div>
+              <div class="mt-5">
+                <%= render_slot(@navigation) %>
+              </div>
             <% end %>
 
             <%= render_slot(@content) %>
@@ -132,6 +149,7 @@ defmodule UtilityWeb.Components do
   attr :next, :string, default: "next-page"
   attr :prev, :string, default: "prev-page"
   attr :class, :string, default: ""
+
   def pagination(assigns) do
     ~H"""
     <%= if @page_metadata && (@page_metadata.before || @page_metadata.after) do %>
@@ -167,10 +185,12 @@ defmodule UtilityWeb.Components do
   attr :id, :any
   attr :name, :any
   attr :label, :string, default: nil
+
   attr :type, :string,
     default: "text",
     values: ~w[checkbox color date datetime-local email file hidden month number password
                range radio search select tel text textarea time url week]
+
   attr :value, :any
   attr :field, :any, doc: "a %Phoenix.HTML.Form{}/field name tuple, for example: {f, :email}"
   attr :errors, :list
@@ -181,6 +201,7 @@ defmodule UtilityWeb.Components do
   attr :rest, :global, include: ~w[autocomplete disabled form max maxlength min minlength
                                    pattern placeholder readonly required size step]
   slot :inner_block
+
   def input(%{field: {f, field}} = assigns) do
     assigns
     |> assign(field: nil)
@@ -200,15 +221,7 @@ defmodule UtilityWeb.Components do
     ~H"""
     <label phx-feedback-for={@name} class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
       <input type="hidden" name={@name} value="false" />
-      <input
-        type="checkbox"
-        id={@id || @name}
-        name={@name}
-        value="true"
-        checked={@checked}
-        class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-        {@rest}
-      />
+      <input type="checkbox" id={@id || @name} name={@name} value="true" checked={@checked} class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900" {@rest} />
       <%= @label %>
     </label>
     """
@@ -218,13 +231,7 @@ defmodule UtilityWeb.Components do
     ~H"""
     <div phx-feedback-for={@name}>
       <.label for={@id}><%= @label %></.label>
-      <select
-        id={@id}
-        name={@name}
-        class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"
-        multiple={@multiple}
-        {@rest}
-      >
+      <select id={@id} name={@name} class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm" multiple={@multiple} {@rest}>
         <option :if={@prompt}><%= @prompt %></option>
         <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
       </select>
@@ -278,6 +285,7 @@ defmodule UtilityWeb.Components do
 
   defp input_border([] = _errors),
     do: "border-zinc-300 focus:border-zinc-400 focus:ring-zinc-800/5"
+
   defp input_border([_ | _] = _errors),
     do: "border-rose-400 focus:border-rose-400 focus:ring-rose-400/10"
 
@@ -286,6 +294,7 @@ defmodule UtilityWeb.Components do
   """
   attr :for, :string, default: nil
   slot :inner_block, required: true
+
   def label(assigns) do
     ~H"""
     <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
@@ -298,6 +307,7 @@ defmodule UtilityWeb.Components do
   Generates a generic error message.
   """
   slot :inner_block, required: true
+
   def error(assigns) do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
@@ -308,6 +318,7 @@ defmodule UtilityWeb.Components do
 
   attr :form, :any, required: true
   attr :field, :atom, required: true
+
   def errors(assigns) do
     ~H"""
     <.error :for={msg <- translate_errors(@form.errors || [], @field)}><%= msg %></.error>
@@ -329,6 +340,7 @@ defmodule UtilityWeb.Components do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
   defp input_equals?(val1, val2) do
     Phoenix.HTML.html_escape(val1) == Phoenix.HTML.html_escape(val2)
   end

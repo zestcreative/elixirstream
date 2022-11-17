@@ -61,12 +61,12 @@ defmodule Utility.ProjectBuilder do
       fn elem, :ok -> {[elem], :ok} end,
       fn :ok -> File.rm(path) end
     )
-    |> UtilityWeb.GenDiffView.render_diff(generator)
+    |> UtilityWeb.GenDiffHTML.render_diff(generator)
   end
 
   def render_diff(generator, false, _from, _to, path) do
     File.rm(path)
-    UtilityWeb.GenDiffView.render_diff(nil, generator)
+    UtilityWeb.GenDiffHTML.render_diff(nil, generator)
   end
 
   def git_diff(path_from, path_to, path_out) do

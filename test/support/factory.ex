@@ -2,7 +2,7 @@ defmodule Utility.Test.Factory do
   def build(:user) do
     %Utility.Accounts.User{
       source_id: "#{:erlang.unique_integer([:positive, :monotonic])}",
-      source: "github",
+      source: :github,
       name: "User Name",
       avatar: "https://url.example/avatar.jpg",
       username: "username"
@@ -118,5 +118,9 @@ defmodule Utility.Test.Factory do
 
   def insert!(name, attrs \\ []) do
     name |> build(attrs) |> Utility.Repo.insert!()
+  end
+
+  def insert(name, attrs \\ []) do
+    name |> build(attrs) |> Utility.Repo.insert()
   end
 end

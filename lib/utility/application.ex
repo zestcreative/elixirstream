@@ -7,23 +7,22 @@ defmodule Utility.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # Start the Telemetry supervisor
-      UtilityWeb.Telemetry,
-      Utility.Repo,
-      Utility.PackageRepo,
-      # Start the PubSub system
-      {Phoenix.PubSub, name: Utility.PubSub},
-      # Start the Endpoint (http/https)
-      UtilityWeb.Endpoint,
-      Utility.Redix,
-      Utility.Package.Updater,
-      Utility.GenDiff.PruneMasterCache,
-      Utility.ProjectRunnerBuilder,
-      {Oban, oban_config()}
-      # Start a worker by calling: Utility.Worker.start_link(arg)
-      # {Utility.Worker, arg}
-    ]
+    children =
+      [
+        # Start the Telemetry supervisor
+        UtilityWeb.Telemetry,
+        Utility.Repo,
+        Utility.PackageRepo,
+        # Start the PubSub system
+        {Phoenix.PubSub, name: Utility.PubSub},
+        # Start the Endpoint (http/https)
+        UtilityWeb.Endpoint,
+        Utility.Redix,
+        {Oban, oban_config()}
+        # Start a worker by calling: Utility.Worker.start_link(arg)
+        # {Utility.Worker, arg}
+      ]
+      |> project_runner_builder()
 
     events = [[:oban, :job, :exception], [:oban, :circuit, :trip]]
     :ok = Oban.Telemetry.attach_default_logger()
@@ -51,5 +50,20 @@ defmodule Utility.Application do
 
   def oban_config do
     Application.get_env(:utility, Oban)
+  end
+
+  if Mix.env() == :test do
+    defp project_runner_builder(apps) do
+      apps
+    end
+  else
+    defp project_runner_builder(apps) do
+      apps ++
+        [
+          Utility.Package.Updater,
+          Utility.ProjectRunnerBuilder,
+          Utility.GenDiff.PruneMasterCache
+        ]
+    end
   end
 end

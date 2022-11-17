@@ -24,6 +24,7 @@ defmodule UtilityWeb.Endpoint do
     from: :utility,
     gzip: true,
     only: UtilityWeb.static_paths()
+
   #
   # if Application.compile_env(:utility, :tip_storage) == Utility.TipCatalog.StorageLocal do
   #   plug Plug.Static,

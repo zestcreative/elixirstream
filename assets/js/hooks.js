@@ -112,12 +112,11 @@ hooks.CodeMirror = {
           if (v.docChanged) {
             this.pushEvent("code-updated", v.state.doc.text.join("\n"))
           }
-        }, 500))
+        }, 200))
       ],
       parent: mountEl
     })
     replaceEl.classList.add("hidden")
-    mountEl.classList.remove("hidden")
     this.themeListener = document.addEventListener('theme', (e) => {
       const cmTheme = e.detail === 'dark' ? oneDark : lightTheme
       this.editor.dispatch({ effects: editorTheme.reconfigure(cmTheme) })

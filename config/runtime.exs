@@ -73,6 +73,7 @@ if config_env() == :prod do
   if storage_dir = System.get_env("STORAGE_DIR") do
     File.mkdir_p(storage_dir)
     config :utility, gendiff_storage_dir: storage_dir
+    config :utility, tip_storage_dir: storage_dir
   end
 
   database_url =

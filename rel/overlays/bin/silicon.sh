@@ -10,7 +10,12 @@ function generate() {
 
   local tmpfile=$(mktemp "$TMPDIR/$(uuidgen)-XXXXXX.png")
 
-  echo "$code" | silicon -o "$tmpfile" --font "$font" -l ex
+  echo "$code" | silicon -o "$tmpfile" \
+    --background '#7A12CE' \
+    --font "$font" \
+    --language ex \
+    --pad-vert 40 \
+    --pad-horiz 40
   echo "$tmpfile"
 }
 

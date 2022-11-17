@@ -2,7 +2,7 @@
 <browserconfig>
     <msapplication>
         <tile>
-          <square150x150logo src="<%= Routes.static_path(@conn, "/images/mstile-150x150.png") %>"/>
+          <square150x150logo src="<%= ~p"/images/mstile-150x150.png" %>"/>
             <TileColor>#603cba</TileColor>
         </tile>
     </msapplication>

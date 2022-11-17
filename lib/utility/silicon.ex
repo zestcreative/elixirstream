@@ -1,7 +1,7 @@
 defmodule Utility.Silicon do
   require Logger
   @silicon_bin "bin/silicon.sh"
-  @default_font "Fira Code"
+  @default_font "FiraCode Nerd Font"
   @default_theme "Monokai Extended Bright"
 
   def generate(tip, opts \\ [])
