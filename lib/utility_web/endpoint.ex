@@ -25,14 +25,6 @@ defmodule UtilityWeb.Endpoint do
     gzip: true,
     only: UtilityWeb.static_paths()
 
-  #
-  # if Application.compile_env(:utility, :tip_storage) == Utility.TipCatalog.StorageLocal do
-  #   plug Plug.Static,
-  #     at: "/uploads",
-  #     from: Application.compile_env(:utility, :tip_storage_dir),
-  #     gzip: false
-  # end
-
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
