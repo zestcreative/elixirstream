@@ -3,6 +3,6 @@ defmodule UtilityWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, "/")
-    assert redirected_to(conn) =~ Routes.regex_path(conn, :new)
+    assert redirected_to(conn) =~ ~p"/regex"
   end
 end

@@ -23,7 +23,8 @@ config :utility, UtilityWeb.Endpoint,
   server: false
 
 config :utility,
-  storage_dir: Path.expand("tmp/test")
+  gendiff_storage_dir: Path.expand("tmp/test"),
+  tip_storage_dir: Path.expand("tmp/test")
 
 config :utility, Oban,
   crontab: false,
@@ -31,4 +32,4 @@ config :utility, Oban,
   plugins: false
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :warning

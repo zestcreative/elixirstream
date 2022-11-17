@@ -3,7 +3,7 @@ defmodule UtilityWeb.GenDiffController do
   require Logger
 
   def show(conn, %{"project" => project, "id" => id} = _params) do
-    case Utility.Storage.get(project, id) do
+    case Utility.GenDiff.Storage.get(project, id) do
       {:ok, diff_stream} ->
         conn
         |> put_resp_content_type("text/html")
@@ -12,19 +12,19 @@ defmodule UtilityWeb.GenDiffController do
       {:error, :not_found} ->
         conn
         |> put_flash(:error, "Diff not found. Please specify diff parameters")
-        |> redirect(to: Routes.gen_diff_path(conn, :new))
+        |> redirect(to: ~p"/gendiff")
     end
   end
 
   defp stream_diff(conn, stream) do
     header = [
-      Phoenix.View.render_to_iodata(UtilityWeb.LayoutView, "head.html", conn: conn),
+      Phoenix.Template.render_to_iodata(UtilityWeb.Layouts, "head", "html", conn: conn),
       "<body class=\"antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100\">",
-      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "head.html", conn: conn)
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffHTML, "head", "html", conn: conn)
     ]
 
     footer = [
-      Phoenix.View.render_to_iodata(UtilityWeb.GenDiffView, "footer.html", conn: conn),
+      Phoenix.Template.render_to_iodata(UtilityWeb.GenDiffHTML, "footer", "html", conn: conn),
       "</body>"
     ]
 

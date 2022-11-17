@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%= Phoenix.Template.render(UtilityWeb.Layouts, "head", "html", assigns) %>
+  <body class="overflow-scroll antialiased leading-tight bg-white dark:bg-black text-gray-900 dark:text-gray-100" data-version={Application.spec(:utility, :vsn)}>
+    <%= @inner_content %>
+  </body>
+</html>

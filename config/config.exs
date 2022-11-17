@@ -12,8 +12,9 @@ config :utility,
   generators: [binary_id: true],
   redis_url: System.get_env("REDIS_URL", "redis://127.0.0.1:6379"),
   redis_pool_size: 5,
-  storage: Utility.Storage.LocalImplementation,
-  cache: Utility.Cache.RedisImplementation,
+  gendiff_storage: Utility.GenDiff.StorageLocal,
+  tip_storage: Utility.TipCatalog.StorageLocal,
+  cache: Utility.Cache.Redis,
   cache_version: 2,
   builder_mount: System.tmp_dir!(),
   app_env: Mix.env()
@@ -23,11 +24,17 @@ config :utility, Oban,
   plugins: [Oban.Plugins.Pruner],
   queues: [builder: 1]
 
+config :utility, Utility.Repo, migration_timestamps: [type: :utc_datetime]
+
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "gJjLZxqBoWFJVdwbLjZe1v2jd2txjpePiZan9WJrhOZsnKhLGftHdjSDHOmDQ+tP",
-  render_errors: [view: UtilityWeb.ErrorView, accepts: ~w(html json), layout: false],
+  signing_salt: "foobar",
+  render_errors: [
+    formats: [html: UtilityWeb.ErrorHTML, json: UtilityWeb.ErrorJSON],
+    layout: false
+  ],
   pubsub_server: Utility.PubSub,
   live_view: [signing_salt: "pni4F/on"]
 
@@ -35,7 +42,7 @@ config :esbuild,
   version: "0.14.41",
   default: [
     args:
-      ~w(js/app.js --bundle --target=es2017 --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
+      ~w(js/app.js --bundle --target=es2017 --loader:.ttf=file --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
     cd: Path.expand("../assets", __DIR__),
     env: %{"NODE_PATH" => Path.expand("../deps", __DIR__)}
   ]
@@ -50,10 +57,6 @@ config :tailwind,
     ],
     cd: Path.expand("../assets", __DIR__)
   ]
-
-config :utility, :basic_auth,
-  auth_user: System.get_env("AUTH_USER", "admin"),
-  auth_pass: System.get_env("AUTH_PASS", "admin")
 
 config :mime, :types, %{
   "application/xml" => ["xml"],
@@ -70,6 +73,32 @@ config :logger, :console,
 
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
+
+config :utility, Utility.TipCatalog.Storage, bucket: "elixirstream.dev"
+
+config :ex_aws,
+  json_codec: Jason,
+  http_client: Utility.ExAwsClient,
+  region: "us-east-1"
+
+config :ex_aws, :s3, host: "minio.bernheisel.com"
+
+config :utility, Utility.Accounts.Guardian,
+  issuer: "utility",
+  secret_key: "9uLgRESJMtHUcFDBAwm3S8rqNtftKmzNbdZc+yf1vf1i+gF5gvBuaI7PtHfjuXop"
+
+config :ueberauth, Ueberauth,
+  json_library: Jason,
+  providers: [
+    github:
+      {Ueberauth.Strategy.Github,
+       [
+         allow_private_emails: true,
+         send_redirect_uri: true,
+         default_scope: "read:user"
+       ]},
+    twitter: {Ueberauth.Strategy.Twitter, []}
+  ]
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

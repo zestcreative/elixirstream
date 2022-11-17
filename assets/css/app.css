@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+.cm-editor .cm-scroller {
+  @apply font-mono text-sm overflow-y-auto h-64 max-h-64;
+}
+
+.cm-editor {
+  @apply shadow-sm rounded-md border dark:border-gray-700 border-gray-300;
+  @apply px-2 py-1;
+}
+
+.cm-editor.cm-focused {
+  @apply border ring-brand-500 border-brand-500 ring-1;
+  @apply outline-none outline-offset-0 !important;
+}
+
+
 @layer base {
   html.dark [type='text'],
   html.dark [type='email'],
@@ -25,6 +40,33 @@
     @apply border-b border-accent-700;
     filter: brightness(1.5);
   }
+
+  /* fira-sans-regular - latin */
+  @font-face {
+    font-family: 'Fira Sans';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/fonts/fira-sans-v10-latin-regular.eot'); /* IE9 Compat Modes */
+    src: local(''),
+        url('/fonts/fira-sans-v10-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+        url('/fonts/fira-sans-v10-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+        url('/fonts/fira-sans-v10-latin-regular.woff') format('woff'), /* Modern Browsers */
+        url('/fonts/fira-sans-v10-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+        url('/fonts/fira-sans-v10-latin-regular.svg#FiraSans') format('svg'); /* Legacy iOS */
+  }
+  /* fira-sans-600 - latin */
+  @font-face {
+    font-family: 'Fira Sans';
+    font-style: normal;
+    font-weight: 600;
+    src: url('/fonts/fira-sans-v10-latin-600.eot'); /* IE9 Compat Modes */
+    src: local(''),
+        url('/fonts/fira-sans-v10-latin-600.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+        url('/fonts/fira-sans-v10-latin-600.woff2') format('woff2'), /* Super Modern Browsers */
+        url('/fonts/fira-sans-v10-latin-600.woff') format('woff'), /* Modern Browsers */
+        url('/fonts/fira-sans-v10-latin-600.ttf') format('truetype'), /* Safari, Android, iOS */
+        url('/fonts/fira-sans-v10-latin-600.svg#FiraSans') format('svg'); /* Legacy iOS */
+  }
 }
 
 @layer components {
@@ -45,10 +87,6 @@
 
   html.dark .nav-link.active {
     @apply text-brand-100 bg-brand-900;
-  }
-
-  .error-input {
-    @apply font-semibold text-red-500;
   }
 
   .link {
@@ -291,4 +329,145 @@
     white-space: pre;
     padding: 0 90px;
   }
+
+  .highlight .hll {
+    background-color: #ffffcc;
+  }
+  .highlight {
+    @apply font-mono bg-white overflow-x-auto;
+    padding: 1rem;
+  }
+
+  .highlight .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .highlight .c {color: #008000; } /* :comment */
+  .highlight .c1 {color: #008000; } /* :comment_single */
+  .highlight .ch {color: #008000; } /* :comment_hashbang */
+  .highlight .cm {color: #008000; } /* :comment_multiline */
+  .highlight .cp {color: #0000ff; } /* :comment_preproc */
+  .highlight .cpf {color: #0000ff; } /* :comment_preproc_file */
+  .highlight .cs {color: #008000; } /* :comment_special */
+  .highlight .dl {color: #a31515; } /* :string_delimiter */
+  .highlight .err {border: #FF0000; } /* :error */
+  .highlight .ge {font-style: italic; } /* :generic_emph */
+  .highlight .gh {font-weight: bold; } /* :generic_heading */
+  .highlight .gp {font-weight: bold; } /* :generic_prompt */
+  .highlight .gs {font-weight: bold; } /* :generic_strong */
+  .highlight .gu {font-weight: bold; } /* :generic_subheading */
+  .highlight .k {color: #0000ff; } /* :keyword */
+  .highlight .kc {color: #0000ff; } /* :keyword_constant */
+  .highlight .kd {color: #0000ff; } /* :keyword_declaration */
+  .highlight .kn {color: #0000ff; } /* :keyword_namespace */
+  .highlight .kp {color: #0000ff; } /* :keyword_pseudo */
+  .highlight .kr {color: #0000ff; } /* :keyword_reserved */
+  .highlight .kt {color: #2b91af; } /* :keyword_type */
+  .highlight .nc {color: #2b91af; } /* :name_class */
+  .highlight .ow {color: #0000ff; } /* :operator_word */
+  .highlight .s {color: #a31515; } /* :string */
+  .highlight .s1 {color: #a31515; } /* :string_single */
+  .highlight .s2 {color: #a31515; } /* :string_double */
+  .highlight .sa {color: #a31515; } /* :string_affix */
+  .highlight .sb {color: #a31515; } /* :string_backtick */
+  .highlight .sc {color: #a31515; } /* :string_char */
+  .highlight .sd {color: #a31515; } /* :string_doc */
+  .highlight .se {color: #a31515; } /* :string_escape */
+  .highlight .sh {color: #a31515; } /* :string_heredoc */
+  .highlight .si {color: #a31515; } /* :string_interpol */
+  .highlight .sr {color: #a31515; } /* :string_regex */
+  .highlight .ss {color: #a31515; } /* :string_symbol */
+  .highlight .sx {color: #a31515; } /* :string_other */
+  .highlight .sx {color: #a31515; } /* :string_sigil */
+
+
+  .dark .highlight .hll {background-color: #49483e}
+  .dark .highlight {
+    color: #f8f8f2;
+    background-color: #272822
+  }
+
+  .dark .highlight .unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .dark .highlight .bp {color: #f8f8f2; } /* :name_builtin_pseudo */
+  .dark .highlight .c {color: #75715e; } /* :comment */
+  .dark .highlight .c1 {color: #75715e; } /* :comment_single */
+  .dark .highlight .ch {color: #75715e; } /* :comment_hashbang */
+  .dark .highlight .cm {color: #75715e; } /* :comment_multiline */
+  .dark .highlight .cp {color: #75715e; } /* :comment_preproc */
+  .dark .highlight .cpf {color: #75715e; } /* :comment_preproc_file */
+  .dark .highlight .cs {color: #75715e; } /* :comment_special */
+  .dark .highlight .dl {color: #e6db74; } /* :string_delimiter */
+  .dark .highlight .err {color: #960050; background-color: #1e0010; } /* :error */
+  .dark .highlight .fm {color: #a6e22e; } /* :name_function_magic */
+  .dark .highlight .gd {color: #f92672; } /* :generic_deleted */
+  .dark .highlight .ge {font-style: italic; } /* :generic_emph */
+  .dark .highlight .gi {color: #a6e22e; } /* :generic_inserted */
+  .dark .highlight .gs {font-weight: bold; } /* :generic_strong */
+  .dark .highlight .gu {color: #75715e; } /* :generic_subheading */
+  .dark .highlight .il {color: #ae81ff; } /* :number_integer_long */
+  .dark .highlight .k {color: #66d9ef; } /* :keyword */
+  .dark .highlight .kc {color: #66d9ef; } /* :keyword_constant */
+  .dark .highlight .kd {color: #66d9ef; } /* :keyword_declaration */
+  .dark .highlight .kn {color: #f92672; } /* :keyword_namespace */
+  .dark .highlight .kp {color: #66d9ef; } /* :keyword_pseudo */
+  .dark .highlight .kr {color: #66d9ef; } /* :keyword_reserved */
+  .dark .highlight .kt {color: #66d9ef; } /* :keyword_type */
+  .dark .highlight .l {color: #ae81ff; } /* :literal */
+  .dark .highlight .ld {color: #ae81ff; } /* :literal_date */
+  .dark .highlight .m {color: #ae81ff; } /* :number */
+  .dark .highlight .mb {color: #ae81ff; } /* :number_bin */
+  .dark .highlight .mf {color: #ae81ff; } /* :number_float */
+  .dark .highlight .mh {color: #ae81ff; } /* :number_hex */
+  .dark .highlight .mi {color: #ae81ff; } /* :number_integer */
+  .dark .highlight .mo {color: #ae81ff; } /* :number_oct */
+  .dark .highlight .n {color: #f8f8f2; } /* :name */
+  .dark .highlight .na {color: #a6e22e; } /* :name_attribute */
+  .dark .highlight .nb {color: #f8f8f2; } /* :name_builtin */
+  .dark .highlight .nc {color: #a6e22e; } /* :name_class */
+  .dark .highlight .nd {color: #a6e22e; } /* :name_decorator */
+  .dark .highlight .ne {color: #a6e22e; } /* :name_exception */
+  .dark .highlight .nf {color: #a6e22e; } /* :name_function */
+  .dark .highlight .ni {color: #f8f8f2; } /* :name_entity */
+  .dark .highlight .nl {color: #f8f8f2; } /* :name_label */
+  .dark .highlight .nn {color: #f8f8f2; } /* :name_namespace */
+  .dark .highlight .no {color: #66d9ef; } /* :name_constant */
+  .dark .highlight .nt {color: #f92672; } /* :name_tag */
+  .dark .highlight .nv {color: #f8f8f2; } /* :name_variable */
+  .dark .highlight .nx {color: #a6e22e; } /* :name_other */
+  .dark .highlight .o {color: #f92672; } /* :operator */
+  .dark .highlight .ow {color: #f92672; } /* :operator_word */
+  .dark .highlight .p {color: #f8f8f2; } /* :punctuation */
+  .dark .highlight .py {color: #f8f8f2; } /* :name_property */
+  .dark .highlight .s {color: #e6db74; } /* :string */
+  .dark .highlight .s1 {color: #e6db74; } /* :string_single */
+  .dark .highlight .s2 {color: #e6db74; } /* :string_double */
+  .dark .highlight .sa {color: #e6db74; } /* :string_affix */
+  .dark .highlight .sb {color: #e6db74; } /* :string_backtick */
+  .dark .highlight .sc {color: #e6db74; } /* :string_char */
+  .dark .highlight .sd {color: #e6db74; } /* :string_doc */
+  .dark .highlight .se {color: #ae81ff; } /* :string_escape */
+  .dark .highlight .sh {color: #e6db74; } /* :string_heredoc */
+  .dark .highlight .si {color: #e6db74; } /* :string_interpol */
+  .dark .highlight .sr {color: #e6db74; } /* :string_regex */
+  .dark .highlight .ss {color: #e6db74; } /* :string_symbol */
+  .dark .highlight .sx {color: #e6db74; } /* :string_other */
+  .dark .highlight .sx {color: #e6db74; } /* :string_sigil */
+  .dark .highlight .vc {color: #f8f8f2; } /* :name_variable_class */
+  .dark .highlight .vg {color: #f8f8f2; } /* :name_variable_global */
+  .dark .highlight .vi {color: #f8f8f2; } /* :name_variable_instance */
+  .dark .highlight .vm {color: #f8f8f2; } /* :name_variable_magic */
 }
+

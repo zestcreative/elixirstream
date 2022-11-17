@@ -1,4 +1,4 @@
-defmodule Utility.Cache.RedisImplementation do
+defmodule Utility.Cache.Redis do
   @behaviour Utility.Cache
 
   @function_to_redis %{

@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.13.3-erlang-24.3.3-alpine-3.15.3 AS build
+FROM hexpm/elixir:1.14.2-erlang-25.1.2-alpine-3.16.2 AS build
 RUN apk add --no-cache build-base npm gcompat
 WORKDIR /app
 
@@ -29,15 +29,19 @@ COPY rel ./rel
 RUN mix release
 
 # APP LAYER
-
-FROM docker:20.10.14-alpine3.15 AS app
+FROM docker:20.10.21-alpine3.16 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
-    ip6tables pigz sysstat procps lsof sudo bind-tools
+    ip6tables pigz sysstat procps lsof sudo bind-tools \
+    expat-dev pkgconfig \
+    fontconfig fontconfig-dev freetype-dev freetype libxcb libxcb-dev xclip \
+    harfbuzz harfbuzz-dev libxkbcommon-dev libxml2 libxml2-dev cargo \
+    font-fira-code-nerd
 RUN addgroup -S docker && \
     addgroup -S --gid 1000 app && \
     adduser -D -G app --uid 1000 app && \
     addgroup -S app docker && \
     echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup" >> /etc/sudoers
+RUN cargo install --root / silicon --version 0.4.3
 
 ## COPY RELEASE
 WORKDIR /app

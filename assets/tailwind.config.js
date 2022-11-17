@@ -1,3 +1,5 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+
 module.exports = {
   content: [
     '../lib/utility_web/**/*.*ex',
@@ -6,6 +8,11 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter var', 'Inter', ...defaultTheme.fontFamily.sans],
+        mono: ['Fira Code VF', 'Fira Code', ...defaultTheme.fontFamily.mono],
+        brand: ['Fira Sans', ...defaultTheme.fontFamily.sans],
+      },
       colors: {
         brand: {
           '50': '#FDFAFF',

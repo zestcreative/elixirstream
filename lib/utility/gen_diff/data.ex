@@ -1,4 +1,8 @@
 defmodule Utility.GenDiff.Data do
+  @moduledoc """
+  Hard-coded data for supported projects. Largely to provide a safe known source
+  of variables to run in docker containers.
+  """
   @known %{
     "phx_new" => %{
       url: "https://hex.pm/packages/phx_new",

@@ -1,6 +1,8 @@
 defmodule Utility.ProjectBuilder do
   require Logger
-  alias Utility.GenDiff.{Data, Generator}
+  alias Utility.GenDiff.Data
+  alias Utility.GenDiff.Generator
+  alias Utility.GenDiff.Storage
   alias Utility.ProjectRunner
 
   @known_packages Utility.GenDiff.Data.projects()
@@ -33,7 +35,7 @@ defmodule Utility.ProjectBuilder do
            {nil, _success} <- Map.pop(results, :error),
            {:ok, any?} <- git_diff(generated_from, generated_to, path_diff),
            {:ok, html} <- render_diff(generator, any?, generated_from, generated_to, path_diff) do
-        result = Utility.Storage.put(generator, html)
+        result = Storage.put(generator, html)
         File.rm_rf(html)
         result
       else
@@ -59,12 +61,12 @@ defmodule Utility.ProjectBuilder do
       fn elem, :ok -> {[elem], :ok} end,
       fn :ok -> File.rm(path) end
     )
-    |> UtilityWeb.GenDiffView.render_diff(generator)
+    |> UtilityWeb.GenDiffHTML.render_diff(generator)
   end
 
   def render_diff(generator, false, _from, _to, path) do
     File.rm(path)
-    UtilityWeb.GenDiffView.render_diff(nil, generator)
+    UtilityWeb.GenDiffHTML.render_diff(nil, generator)
   end
 
   def git_diff(path_from, path_to, path_out) do
@@ -331,7 +333,7 @@ defmodule Utility.ProjectBuilder do
 
   defp tmp_path(prefix) do
     Path.join([
-      Application.get_env(:utility, :storage_dir),
+      Application.get_env(:utility, :gendiff_storage_dir),
       "builder",
       prefix <> Base.encode16(:crypto.strong_rand_bytes(4))
     ])

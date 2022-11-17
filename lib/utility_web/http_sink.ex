@@ -1,4 +1,5 @@
-defmodule UtilityWeb.HttpSink do
+defmodule UtilityWeb.HTTPSink do
+  @moduledoc false
   @topic "sink"
 
   defstruct [:id, :method, :received_at, :query_string, :body_params, :headers, format: :text]

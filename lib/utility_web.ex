@@ -1,12 +1,12 @@
 defmodule UtilityWeb do
   @moduledoc """
   The entrypoint for defining your web interface, such
-  as controllers, views, channels and so on.
+  as controllers, components, channels and so on.
 
   This can be used in your application as:
 
       use UtilityWeb, :controller
-      use UtilityWeb, :view
+      use UtilityWeb, :html
 
   The definitions below will be executed for every view,
   controller, etc, so keep them short and clean, focused
@@ -17,21 +17,28 @@ defmodule UtilityWeb do
   and import those modules here.
   """
 
+  def static_paths,
+    do: ~w[uploads assets fonts svg images site.webmanifest favicon.ico robots.txt]
+
   def controller do
     quote do
-      use Phoenix.Controller, namespace: UtilityWeb
+      use Phoenix.Controller,
+        namespace: UtilityWeb,
+        formats: [:html, :json],
+        layouts: [html: UtilityWeb.Layouts]
 
       import Plug.Conn
-      import Phoenix.LiveView.Controller
       alias UtilityWeb.Router.Helpers, as: Routes
+
+      unquote(verified_routes())
     end
   end
 
   def live_view do
     quote do
-      use Phoenix.LiveView, layout: {UtilityWeb.LayoutView, "live.html"}
+      use Phoenix.LiveView, layout: {UtilityWeb.Layouts, :app}
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
@@ -39,34 +46,38 @@ defmodule UtilityWeb do
     quote do
       use Phoenix.LiveComponent
 
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
   def component do
     quote do
       use Phoenix.Component
-      unquote(view_helpers())
+      unquote(html_helpers())
     end
   end
 
-  def view do
+  def html do
     quote do
-      use Phoenix.View,
-        root: "lib/utility_web/templates",
-        namespace: UtilityWeb
+      use Phoenix.Component
+      import Phoenix.Controller, only: [get_csrf_token: 0, view_module: 1, view_template: 1]
+      unquote(html_helpers())
+    end
+  end
 
-      # Import convenience functions from controllers
-      import Phoenix.Controller, only: [get_flash: 1, get_flash: 2, view_module: 1]
-
-      # Include shared imports and aliases for views
-      unquote(view_helpers())
+  def html_helpers do
+    quote do
+      import Phoenix.HTML
+      alias Phoenix.LiveView.JS
+      alias UtilityWeb.Components
+      alias UtilityWeb.Icon
+      unquote(verified_routes())
     end
   end
 
   def router do
     quote do
-      use Phoenix.Router
+      use Phoenix.Router, helpers: false
 
       import Plug.Conn
       import Phoenix.Controller
@@ -74,28 +85,12 @@ defmodule UtilityWeb do
     end
   end
 
-  def channel do
+  def verified_routes do
     quote do
-      use Phoenix.Channel
-      import UtilityWeb.Gettext
-    end
-  end
-
-  def view_helpers do
-    quote do
-      # Use all HTML functionality (forms, tags, etc)
-      use Phoenix.HTML
-
-      # Import LiveView helpers (live_render, live_component, live_patch, etc)
-      import Phoenix.LiveView.Helpers
-
-      # Import basic rendering functionality (render, render_layout, etc)
-      import Phoenix.View
-      import UtilityWeb.Views.LinkHelpers
-
-      import UtilityWeb.ErrorHelpers
-      import UtilityWeb.Gettext
-      alias UtilityWeb.Router.Helpers, as: Routes
+      use Phoenix.VerifiedRoutes,
+        endpoint: UtilityWeb.Endpoint,
+        router: UtilityWeb.Router,
+        statics: UtilityWeb.static_paths()
     end
   end
 

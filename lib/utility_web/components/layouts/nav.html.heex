@@ -1,0 +1,72 @@
+<header class="pb-24 bg-gradient-to-r from-brand-800 to-brand-600">
+  <div class="max-w-3xl mx-auto pt-4 lg:pt-0 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+    <div class="py-5 relative flex flex-wrap items-center justify-center lg:justify-between">
+      <!-- Logo -->
+      <div class="absolute left-0 py-5 flex-shrink-0 lg:static">
+        <nav class="flex space-x-4">
+          <div class="inline-flex items-center select-none text-white text font-bold rounded-md bg-white bg-opacity-0" aria-current="page">
+            <img src={~p"/images/logo.svg"} class="w-8 h-8 mr-1" alt="Elixir Stream" />
+            <span class="leading-none text-md font-brand">Elixir<br />Stream</span>
+          </div>
+          <!-- Desktop nav -->
+          <div class="hidden lg:block lg:col-span-2">
+            <nav class="flex space-x-4">
+              <.link navigate={~p"/regex"} class={"nav-link #{if @active_tab == :regex, do: "active"}"}>Regex Tester</.link>
+              <.link navigate={~p"/sink"} class={"nav-link #{if @active_tab == :sink, do: "active"}"}>HTTP Sink</.link>
+              <.link navigate={~p"/gendiff"} class={"nav-link #{if @active_tab == :gendiff, do: "active"}"}>Generator Diff</.link>
+              <.link navigate={~p"/about"} class={"nav-link #{if @active_tab == nil, do: "active"}"}>About</.link>
+            </nav>
+          </div>
+        </nav>
+      </div>
+      <!-- Right section on desktop -->
+      <div class="hidden lg:ml-4 lg:flex lg:items-center lg:py-5 lg:pr-0.5"></div>
+      <!-- Menu button -->
+      <div class="absolute right-0 flex-shrink-0 lg:hidden">
+        <!-- Mobile menu button -->
+        <button phx-click={show_mobile_nav()} class="bg-transparent p-2 rounded-md inline-flex items-center justify-center text-brand-200 hover:text-white hover:bg-white hover:bg-opacity-10 focus:outline-none focus:ring-2 focus:ring-white" aria-expanded="false">
+          <span class="sr-only">Open main menu</span>
+          <svg id="mobileNavIconOpen" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobileNavIconClose" class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobileNavShade" class="z-20 fixed hidden inset-0 bg-black bg-opacity-25 lg:hidden" aria-hidden="true"></div>
+
+  <div id="mobileNav" class="hidden z-30 absolute top-0 inset-x-0 max-w-3xl mx-auto w-full p-2 transition transform origin-top lg:hidden">
+    <div class="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-black bg-white divide-y divide-gray-200">
+      <!-- Mobile Nav -->
+      <div class="pt-3 pb-2">
+        <div class="flex items-center justify-between px-4">
+          <div class="inline-flex items-center select-none text-white text font-bold rounded-md bg-white bg-opacity-0" aria-current="page">
+            <img src={~p"/images/logo.svg"} class="w-8 h-8 mr-1" alt="Elixir Stream" /> Elixir Stream
+          </div>
+          <div class="-mr-2">
+            <button phx-click={hide_mobile_nav()} type="button" class="dark:bg-gray-800 bg-white rounded-md p-2 inline-flex items-center justify-center dark:text-gray-100 text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand-500">
+              <span class="sr-only">Close menu</span>
+              <!-- Heroicon name: outline/x -->
+              <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="mt-3 px-2 space-y-1">
+          <.link navigate={~p"/regex"} class={"block rounded-md px-3 py-2 text-base dark:text-gray-100 text-gray-900 font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-200 #{if @active_tab == :regex, do: "active"}"}>Regex Tester</.link>
+
+          <.link navigate={~p"/sink"} class={"block rounded-md px-3 py-2 text-base dark:text-gray-100 text-gray-900 font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-200 #{if @active_tab == :sink, do: "active"}"}>HTTP Sink</.link>
+
+          <.link navigate={~p"/gendiff"} class={"block rounded-md px-3 py-2 text-base dark:text-gray-100 text-gray-900 font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-200 #{if @active_tab == :gendiff, do: "active"}"}>Generator Diff</.link>
+
+          <.link navigate={~p"/about"} class={"block rounded-md px-3 py-2 text-base dark:text-gray-100 text-gray-900 font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-500 dark:hover:text-gray-200 #{if @active_tab == nil, do: "active"}"}>About</.link>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

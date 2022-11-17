@@ -23,7 +23,7 @@ defmodule UtilityWeb.Endpoint do
     at: "/",
     from: :utility,
     gzip: true,
-    only: ~w(assets fonts svg images site.webmanifest favicon.ico robots.txt)
+    only: UtilityWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

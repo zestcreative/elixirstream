@@ -1,224 +1,138 @@
-<div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-  <div class="rounded-lg dark:bg-gray-900 bg-white overflow-hidden shadow">
-    <h2 class="sr-only" id="gendiff-title">Generator Diffs</h2>
-    <div class="dark:bg-gray-800 bg-white p-6">
-      <div class="sm:flex sm:items-center sm:justify-between">
-        <div class="sm:flex sm:space-x-5">
-          <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-            <p class="text-xl font-bold dark:text-gray-100 text-gray-900 sm:text-2xl">
-              HTTP Sink
+<Components.page_panel title="HTTP Sink" id="http-sink">
+  <:call_to_action>
+    <button
+      type="button"
+      class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150"
+      id="clipboard-pasta"
+      phx-hook="ClipboardCopy"
+      data-target="url-pasta"
+    >
+      <Icon.clipboard class="w-4 h-4 mr-2 transition ease-in-out duration-150" /> Copy URL
+    </button>
+  </:call_to_action>
+  <:content>
+    <div class="mt-6">
+      <div class="flex flex-row gap-4">
+        <h2 class="text-lg leading-9 font-bold tracking-tight dark:text-gray-100 text-gray-900">
+          Send your JSON requests to:
+        </h2>
+      </div>
+      <div class="w-full my-2">
+        <svg class="font-mono w-full h-full dark:text-brand-200 text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
+          <foreignObject class="w-full h-full">
+            <p>
+              <%= url(~p"/sink/#{@id}") %>
             </p>
+          </foreignObject>
+        </svg>
+        <input type="text" class="hide-away" aria-hidden="true" readonly id="url-pasta" value={url(~p"/sink/#{@id}")} />
+      </div>
+      <!-- Warning Box -->
+      <div id="warning-box" class="rounded-md dark:bg-red-900 bg-red-50 p-4 mt-4">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <Icon.exclamation class="h-5 w-5 dark:text-red-100 text-red-400" />
+          </div>
+
+          <div class="ml-3">
+            <h3 class="text-sm leading-5 font-bold dark:text-red-100 text-red-800">
+              Heads up!
+            </h3>
+            <div class="mt-2 text-sm leading-5 text-red-700 dark:text-red-100">
+              <ul class="list-disc">
+                <li>Do not send any sensitive information. Do not consider this private.</li>
+                <li>All information will be lost on page reload or navigating away.</li>
+                <li>Maximum size is 5MB</li>
+                <li>
+                  The body may not be 100% representative of the raw data sent, and may be be coerced into a map.
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="ml-auto pl-3">
+            <div class="-mx-1.5 -my-1.5">
+              <button phx-click={hide_warning()} class="inline-flex dark:bg-red-900 bg-red-50 rounded-md p-1.5 text-red-500 dark:hover:bg-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-red-900 focus:ring-offset-red-50 focus:ring-red-600">
+                <span class="sr-only">Dismiss</span>
+                <Icon.x class="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
-        <div class="mt-5 flex justify-center sm:mt-0">
-          <button
-            type="button"
-            class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150"
-            id="clipboard-pasta"
-            phx-hook="ClipboardCopy"
-            data-target="url-pasta"
-          >
-            <svg
-              class="w-4 h-4 mr-2 transition ease-in-out duration-150"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            Copy URL
-          </button>
+      </div>
+      <div class="mt-4">
+        <button phx-click={toggle_help()} class="px-2 py-1 rounded transition-colors bg-opacity-0 dark:bg-gray-600 bg-gray-200 hover:bg-opacity-50">
+          Not sure how this works? <Icon.caret class="text-gray-500 w-4 h-4 transform duration-150 inline" id="help-caret" />
+        </button>
+        <div id="help-box" class="hidden border-l-4 border-brand-500 pl-6 mt-6 space-y-2">
+          <p>For example, in a shell:</p>
+          <pre class="p-4 bg-gray-100 text-gray-800 dark:bg-black
+              dark:text-gray-50 rounded-md select-all
+              overflow-x-auto"><code>curl '<%= url(~p"/sink/#{@id}/?query=param") %>' \
+  --silent \
+  --header "Content-Type: application/json" \
+  --data '{"foo": "bar"}'</code></pre>
+          <p>
+            <.link class="link" href="https://youtu.be/wO5m1dQI308" target="_blank" rel="nofollow">
+              Watch this example video
+            </.link>
+          </p>
         </div>
       </div>
 
-      <div class="mt-6">
-        <div class="flex flex-row gap-4">
-          <h2 class="text-lg leading-9 font-bold tracking-tight dark:text-gray-100 text-gray-900">
-            Send your JSON requests to:
-          </h2>
-        </div>
-        <div class="w-full my-2">
-          <svg
-            class="font-mono w-full h-full dark:text-brand-200 text-brand-600 select-all"
-            viewbox="0 0 650 24"
-            preserveAspectRatio="xMinYMin meet"
-          >
-            <foreignObject class="w-full h-full">
-              <p><%= Routes.sink_url(@socket, :any, @id) %></p>
-            </foreignObject>
-          </svg>
-          <input
-            type="text"
-            class="hide-away"
-            aria-hidden="true"
-            readonly
-            id="url-pasta"
-            value={Routes.sink_url(@socket, :any, @id)}
-          />
-        </div>
-        <!-- Warning Box -->
-        <div id="warning-box" class="rounded-md dark:bg-red-900 bg-red-50 p-4 mt-4">
-          <div class="flex">
-            <div class="flex-shrink-0">
-              <!-- Heroicon name: exclamation -->
-              <svg
-                class="h-5 w-5 dark:text-red-100 text-red-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-
-            <div class="ml-3">
-              <h3 class="text-sm leading-5 font-bold dark:text-red-100 text-red-800">
-                Heads up!
-              </h3>
-              <div class="mt-2 text-sm leading-5 text-red-700 dark:text-red-100">
-                <ul class="list-disc">
-                  <li>Do not send any sensitive information. Do not consider this private.</li>
-                  <li>All information will be lost on page reload or navigating away.</li>
-                  <li>Maximum size is 5MB</li>
-                  <li>
-                    The body may not be 100% representative of the raw data sent, and may be be coerced into a map.
-                  </li>
-                </ul>
-              </div>
-            </div>
-            <div class="ml-auto pl-3">
-              <div class="-mx-1.5 -my-1.5">
-                <button
-                  phx-click={hide_warning()}
-                  class="inline-flex dark:bg-red-900 bg-red-50 rounded-md p-1.5 text-red-500 dark:hover:bg-red-800 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-red-900 focus:ring-offset-red-50 focus:ring-red-600"
-                >
-                  <span class="sr-only">Dismiss</span>
-                  <!-- Heroicon name: solid/x -->
-                  <svg
-                    class="h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    aria-hidden="true"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                </button>
-              </div>
+      <div id="requests" phx-update="prepend">
+        <%= for request <- @requests do %>
+          <div class="my-6 dark:bg-gray-900 bg-gray-50 overflow-hidden shadow sm:rounded-lg" id={request.id}>
+            <div>
+              <dl>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                  <dt class="text-sm leading-5 font-medium text-gray-500">
+                    Method
+                  </dt>
+                  <dd class="mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <%= request.method %>
+                  </dd>
+                  <dt class="text-right text-sm leading-5 font-medium text-gray-500">
+                    Received at
+                  </dt>
+                  <dd class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
+                    <%= request.received_at %>
+                  </dd>
+                </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                  <dt class="text-sm leading-5 font-medium text-gray-500">
+                    Headers
+                  </dt>
+                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                    <ul>
+                      <%= for {header, value} <- request.headers do %>
+                        <li class="p-1 flex items-center justify-between text-sm leading-5">
+                          <%= header %>: <%= value %>
+                        </li>
+                      <% end %>
+                    </ul>
+                  </dd>
+                </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                  <dt class="text-sm leading-5 font-medium text-gray-500">
+                    Query Params
+                  </dt>
+                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                    <%= request.query_string %>
+                  </dd>
+                </div>
+                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                  <dt class="text-sm leading-5 font-medium text-gray-500">
+                    Body
+                  </dt>
+                  <dd class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                    <%= render_body(request) %>
+                  </dd>
+                </div>
+              </dl>
             </div>
           </div>
-        </div>
-
-        <div class="mt-4">
-          <button
-            phx-click={toggle_help()}
-            class="px-2 py-1 rounded transition-colors bg-opacity-0 dark:bg-gray-600 bg-gray-200 hover:bg-opacity-50"
-          >
-            Not sure how this works?
-            <svg
-              id="help-caret"
-              class="text-gray-500 w-4 h-4 transform duration-150 inline"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 15l7-7 7 7"
-              />
-            </svg>
-          </button>
-          <div id="help-box" class="hidden border-l-4 border-brand-500 pl-6 mt-6 space-y-2">
-            <p>For example, in a shell:</p>
-            <pre
-              class="p-4 bg-gray-100 text-gray-800 dark:bg-black dark:text-gray-50 rounded-md select-all overflow-x-auto"
-            ><code>curl '<%= Routes.sink_url(@socket, :any, @id) %>?query=param' \
-    --silent \
-    --header "Content-Type: application/json" \
-    --data '{"foo": "bar"}'</code></pre>
-            <p>
-              <a class="link" href="https://youtu.be/wO5m1dQI308" target="_blank" rel="nofollow">
-                Watch this example video
-              </a>
-            </p>
-          </div>
-        </div>
-
-        <div id="requests" phx-update="prepend">
-          <%= for request <- @requests do %>
-            <div
-              class="my-6 dark:bg-gray-900 bg-gray-50 overflow-hidden shadow sm:rounded-lg"
-              id={request.id}
-            >
-              <div>
-                <dl>
-                  <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                    <dt class="text-sm leading-5 font-medium text-gray-500">
-                      Method
-                    </dt>
-                    <dd class="mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
-                      <%= request.method %>
-                    </dd>
-                    <dt class="text-right text-sm leading-5 font-medium text-gray-500">
-                      Received at
-                    </dt>
-                    <dd class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
-                      <%= request.received_at %>
-                    </dd>
-                  </div>
-                  <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                    <dt class="text-sm leading-5 font-medium text-gray-500">
-                      Headers
-                    </dt>
-                    <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                      <ul>
-                        <%= for {header, value} <- request.headers do %>
-                          <li class="p-1 flex items-center justify-between text-sm leading-5">
-                            <%= header %>: <%= value %>
-                          </li>
-                        <% end %>
-                      </ul>
-                    </dd>
-                  </div>
-                  <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                    <dt class="text-sm leading-5 font-medium text-gray-500">
-                      Query Params
-                    </dt>
-                    <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                      <%= request.query_string %>
-                    </dd>
-                  </div>
-                  <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                    <dt class="text-sm leading-5 font-medium text-gray-500">
-                      Body
-                    </dt>
-                    <dd class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                      <%= render_body(request) %>
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            </div>
-          <% end %>
-        </div>
+        <% end %>
       </div>
     </div>
-  </div>
-</div>
+  </:content>
+</Components.page_panel>

@@ -14,37 +14,43 @@ defmodule UtilityWeb.PageLive do
         <article class="p-6 prose dark:prose-invert lg:prose-lg">
           <p>
             Made with 💚💙💜💛❤️ by
-            <%= outbound_link("@dbernheisel", to: "https://twitter.com/bernheisel", class: "link") %>
+            <Components.outbound_link href="https://twitter.com/bernheisel" class="link">
+              @dbernheisel
+            </Components.outbound_link>
           </p>
 
           <p>
             If you're interested in the source code,
-            <%= link("check it out",
-              to: "https://github.com/zestcreative/elixir-utilities-web",
-              class: "link"
-            ) %>
+            <.link href="https://github.com/zestcreative/elixir-utilities-web" class="link">check it out</.link>
             .
             Have any ideas on what would be helpful here? Drop me a line by
-            <%= outbound_link("starting a discussion on GitHub",
-              to: "https://github.com/zestcreative/elixir-utilities-web/discussions/categories/ideas",
-              class: "link"
-            ) %>.
+            <Components.outbound_link href="https://github.com/zestcreative/elixir-utilities-web/discussions/categories/ideas" class="link">
+              starting a discussion on GitHub
+            </Components.outbound_link>
+            .
           </p>
 
           <h3>What does this site use?</h3>
           <ul>
-            <li><%= outbound_link("Elixir", to: "https://elixir-lang.org", class: "link") %></li>
             <li>
-              <%= outbound_link("Phoenix Framework", to: "https://phoenixframework.org", class: "link") %>
+              <Components.outbound_link href="https://elixir-lang.org" class="link">
+                Elixir
+              </Components.outbound_link>
             </li>
             <li>
-              <%= outbound_link("Phoenix LiveView",
-                to: "https://github.com/phoenixframework/phoenix_live_view",
-                class: "link"
-              ) %>
+              <Components.outbound_link href="https://phoenixframework.org" class="link">
+                Phoenix Framework
+              </Components.outbound_link>
             </li>
             <li>
-              <%= outbound_link("Tailwind CSS", to: "https://tailwindcss.com", class: "link") %>
+              <Components.outbound_link href="https://github.com/phoenixframework/phoenix_live_view" class="link">
+                Phoenix LiveView
+              </Components.outbound_link>
+            </li>
+            <li>
+              <Components.outbound_link href="https://tailwindcss.com" class="link">
+                Tailwind CSS
+              </Components.outbound_link>
             </li>
           </ul>
 
@@ -60,7 +66,7 @@ defmodule UtilityWeb.PageLive do
             <li>
               Phoenix LiveView is a welcome addition that enables normally-backend-developers like me produce reactive Web
               UIs like the
-              <%= link("Regex Tester", to: Routes.regex_path(@socket, :new), class: "link") %>
+              <.link navigate={~p"/regex"} class="link">Regex Tester</.link>
               without having to split the codebase into "backend" and "frontend" so much. This isn't a knock on frontend frameworks; this is just another highly-efficient tool in the developer's toolbelt to rapidly produce good web applications.
             </li>
           </ul>
@@ -75,25 +81,27 @@ defmodule UtilityWeb.PageLive do
 
           <h3>How do you deploy the app?</h3>
           <p>
-            We're using <%= outbound_link("fly.io", to: "https://www.fly.io", class: "link") %>
+            We're using
+            <Components.outbound_link href="https://www.fly.io" class="link">fly.io</Components.outbound_link>
             .
-            When it's time to deploy, all we do is commit to the main branch and a GitHub Action will run
-            <code>flyctl deploy</code> automatically if tests pass.
+            When it's time to deploy, all we do is commit to the main branch and a GitHub Action will run <code>flyctl deploy</code>
+            automatically if tests pass.
           </p>
           <p>
             Since it costs money, it would be wonderful if you considered
-            <%= outbound_link("sponsoring us at GitHub",
-              to: "https://github.com/sponsors/dbernheisel",
-              class: "link"
-            ) %>.
+            <Components.outbound_link href="https://github.com/sponsors/dbernheisel" class="link">sponsoring us at GitHub</Components.outbound_link>.
           </p>
 
           <h3>While I have you here...</h3>
           <p>
             Check out
-            <%= outbound_link("Thinking Elixir", to: "https://thinkingelixir.com", class: "link") %>
+            <Components.outbound_link href="https://thinkingelixir.com" class="link">
+              Thinking Elixir
+            </Components.outbound_link>
             and the
-            <%= outbound_link("podcast", to: "https://thinkingelixir.com/the-podcast", class: "link") %>
+            <Components.outbound_link href="https://podcast.thinkingelixir.com" class="link">
+              podcast
+            </Components.outbound_link>
             .
           </p>
           <p>Remember to stay positive!</p>

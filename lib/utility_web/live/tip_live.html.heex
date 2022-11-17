@@ -1,0 +1,100 @@
+<Components.page_panel title="Elixir Tips" id="elixir-tips">
+  <:call_to_action>
+    <div class="flex flex-1 justify-end">
+      <%= if @live_action == :index do %>
+        <.link patch={~p"/tips/new"} class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+          New Tip
+        </.link>
+      <% end %>
+
+      <%= if @live_action == :show && @editable? do %>
+        <.link patch={~p"/tips/#{@tip.id}/edit"} class="ml-6 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
+          Edit
+        </.link>
+      <% end %>
+
+      <%= if @live_action == :new && @current_user.id do %>
+        <div class="inline-flex items-center text-sm">
+          <label for="tip_live_published_at" class="block text-sm font-medium dark:text-gray-300 text-gray-700">Publish On</label>
+          <div phx-update="ignore" id="tip_published_at" class="ml-2">
+            <input type="date" name="tip_live[published_at]" form="tipform" min={Date.to_iso8601(Date.utc_today())} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" />
+          </div>
+        </div>
+        <%= submit form: "tipform", id: "create-tip", class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+          <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" /> Submit!
+        <% end %>
+      <% end %>
+
+      <%= if @live_action == :edit && @editable? do %>
+        <%= submit id: "update-tip", class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+          <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" /> Update
+        <% end %>
+        <%= if @tip.twitter_status_id do %>
+          <p class="text-xs mx-2 text-gray-600">
+            Tweet is already published. <br />Updating will not update the tweet
+          </p>
+        <% end %>
+      <% end %>
+
+      <Components.User.login current_user={@current_user} />
+      <Components.User.user_menu class="ml-3" current_user={@current_user} />
+    </div>
+  </:call_to_action>
+
+  <:navigation>
+    <%= if @live_action == :index do %>
+      <div class="flex justify-center">
+        <Components.Tip.search meta={@page_metadata} changeset={@search_changeset} phx_change="search" id="search-form" />
+      </div>
+    <% end %>
+  </:navigation>
+
+  <:content>
+    <div :if={@live_action in [:new, :edit]} class="px-4 py-6 mb-4 sm:p-6 sm:rounded-lg" id="tip-form">
+      <%= if @current_user.id do %>
+        <Components.Tip.edit
+          tip={@tip}
+          tip_form={@tip_form}
+          upvoted_tip_ids={@upvoted_tip_ids}
+          preview_image_url={@preview_image_url}
+          current_user={@current_user}
+          changeset={@changeset}
+          character_percent={@character_percent}
+          character_count={@character_count}
+          action={@live_action}
+          phx_change="validate"
+          phx_submit={if @live_action == :new, do: "create", else: "update"}
+        />
+      <% else %>
+        You must be logged in to submit tips
+      <% end %>
+    </div>
+
+    <div :if={@live_action == :show}>
+      <ul role="list" class="list-none divide-y dark:divide-gray-600 divide-gray-200">
+        <Components.Tip.show editable?={@editable?} current_user={@current_user} upvoted_tip_ids={@upvoted_tip_ids} tip={@tip} />
+      </ul>
+    </div>
+
+    <div :if={@live_action in [:index]}>
+      <ul role="list" class="list-none divide-y dark:divide-gray-600 divide-gray-200">
+        <Components.Tip.show :for={tip <- @tips} current_user={@current_user} upvoted_tip_ids={@upvoted_tip_ids} tip={tip} />
+      </ul>
+
+      <%= if @tips == [] do %>
+        No found tips!
+      <% end %>
+
+      <%= if @page_metadata && (@page_metadata.before || @page_metadata.after) do %>
+        <nav id="bottom-pagination-nav" aria-label="Pagination" class="shrink-0 flex justify-between sm:justify-end">
+          <Components.button phx-click="prev-page" class={"#{if !@page_metadata.before, do: "invisible"}"}>
+            <Icon.chevron_left class="h-5 w-5 mr-1" /> Previous Page
+          </Components.button>
+          <Components.button phx-click="next-page" class={"#{if !@page_metadata.after, do: "invisible"}"}>
+            Next Page <Icon.chevron_right class="h-5 w-5" />
+          </Components.button>
+        </nav>
+      <% end %>
+    </div>
+  </:content>
+</Components.page_panel>

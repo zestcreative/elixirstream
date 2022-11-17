@@ -11,9 +11,10 @@ defmodule UtilityWeb.Nav do
         {UtilityWeb.RegexLive, _} -> :regex
         {UtilityWeb.GenDiffLive, _} -> :gendiff
         {UtilityWeb.SinkLive, _} -> :sink
+        {UtilityWeb.TipLive, _} -> :tips
         {_, _} -> nil
       end
 
-    {:cont, assign(socket, active_tab: active_tab)}
+    {:cont, Phoenix.Component.assign(socket, active_tab: active_tab)}
   end
 end

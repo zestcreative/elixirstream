@@ -2,7 +2,7 @@ defmodule UtilityWeb.PageController do
   use UtilityWeb, :controller
 
   def show(conn, _params) do
-    redirect(conn, to: Routes.regex_path(conn, :new))
+    redirect(conn, to: ~p"/regex")
   end
 
   def healthcheck(conn, _params), do: conn |> send_resp(200, "ok") |> halt()
@@ -13,12 +13,12 @@ defmodule UtilityWeb.PageController do
       short_name: "Utilities",
       icons: [
         %{
-          src: Routes.static_path(conn, "/images/android-chrome-192x192.png"),
+          src: ~p"/images/android-chrome-192x192.png",
           sizes: "192x192",
           type: "image/png"
         },
         %{
-          src: Routes.static_path(conn, "/images/android-chrome-512x512.png"),
+          src: ~p"/images/android-chrome-512x512.png",
           sizes: "512x512",
           type: "image/png"
         }
