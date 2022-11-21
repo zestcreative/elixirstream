@@ -21,10 +21,10 @@ defmodule UtilityWeb.PageLive do
 
           <p>
             If you're interested in the source code,
-            <.link href="https://github.com/zestcreative/elixir-utilities-web" class="link">check it out</.link>
+            <.link href="https://github.com/zestcreative/utility" class="link">check it out</.link>
             .
             Have any ideas on what would be helpful here? Drop me a line by
-            <Components.outbound_link href="https://github.com/zestcreative/elixir-utilities-web/discussions/categories/ideas" class="link">
+            <Components.outbound_link href="https://github.com/zestcreative/utility/discussions/categories/ideas" class="link">
               starting a discussion on GitHub
             </Components.outbound_link>
             .
