@@ -6,6 +6,7 @@ RUN apk add --no-cache build-base npm gcompat \
     libxcb libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev \
     libxml2 libxml2-dev cargo
 WORKDIR /app
+RUN cargo install --root / silicon --version 0.4.3
 
 ## HEX
 ENV HEX_HTTP_TIMEOUT=20
@@ -30,7 +31,6 @@ RUN mix assets.deploy
 COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
 RUN mix release
-RUN cargo install --root / silicon --version 0.4.3
 
 # APP LAYER
 FROM docker:20.10.21-dind-alpine3.16 AS app
