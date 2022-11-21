@@ -12,7 +12,11 @@ defmodule UtilityWeb.Endpoint do
   ]
 
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: [timeout: 45_000, connect_info: [session: @session_options]],
+    websocket: [
+      check_origin: ["https://elixirstream.dev", "https://utils.zest.dev"],
+      timeout: 45_000,
+      connect_info: [session: @session_options]
+    ],
     longpoll: false
 
   # Serve at "/" the static files from "priv/static" directory.
