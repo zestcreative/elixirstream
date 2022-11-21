@@ -42,8 +42,6 @@ defmodule Utility.MixProject do
       {:castore, ">= 0.0.0"},
       {:ecto_sql, "~> 3.8"},
       {:etso, "~> 1.0"},
-      {:ex_aws, "~> 2.1"},
-      {:ex_aws_s3, "~> 2.0"},
       {:finch, "~> 0.6"},
       {:gettext, "~> 0.11"},
       {:git_diff, "~> 0.6.3"},

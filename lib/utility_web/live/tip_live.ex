@@ -219,8 +219,9 @@ defmodule UtilityWeb.TipLive do
 
     if tip.code do
       case TipCatalog.generate_codeshot(tip) do
-        {:ok, %{code_image_url: url}, _file} ->
-          {:noreply, assign(socket, :preview_image_url, url)}
+        {:ok, _tip, file} ->
+          data = File.read!(file)
+          {:noreply, push_event(socket, "preview", %{data: Base.encode64(data)})}
 
         {:error, error} ->
           Logger.error(inspect(error))
@@ -344,7 +345,6 @@ defmodule UtilityWeb.TipLive do
     |> assign(tip: %TipCatalog.Tip{})
     |> assign(upvoted_tip_ids: [])
     |> assign(tip_form: tip_form)
-    |> assign(preview_image_url: nil)
     |> assign(page_title: "New tip")
     |> assign(changeset: changeset)
     |> assign_computed()

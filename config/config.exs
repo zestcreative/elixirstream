@@ -76,13 +76,6 @@ config :phoenix, :json_library, Jason
 
 config :utility, Utility.TipCatalog.Storage, bucket: "elixirstream.dev"
 
-config :ex_aws,
-  json_codec: Jason,
-  http_client: Utility.ExAwsClient,
-  region: "us-east-1"
-
-config :ex_aws, :s3, host: "minio.bernheisel.com"
-
 config :utility, Utility.Accounts.Guardian,
   issuer: "utility",
   secret_key: "9uLgRESJMtHUcFDBAwm3S8rqNtftKmzNbdZc+yf1vf1i+gF5gvBuaI7PtHfjuXop"

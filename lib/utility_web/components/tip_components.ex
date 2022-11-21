@@ -73,7 +73,6 @@ defmodule UtilityWeb.Components.Tip do
   attr :tip_form, UtilityWeb.TipLive, required: true
   attr :tip, Utility.TipCatalog.Tip, required: true
   attr :character_percent, :float, required: true
-  attr :preview_image_url, :string, default: nil
   attr :upvoted_tip_ids, :list, default: []
   attr :character_count, :integer, required: true
   attr :current_user, Utility.Accounts.User, required: true
@@ -124,7 +123,7 @@ defmodule UtilityWeb.Components.Tip do
 
       <div class="mt-2">
         <Components.button type="button" phx-click="preview">Preview</Components.button>
-        <img id="img-preview" src={@preview_image_url} class="mt-2 max-h-80" />
+        <img phx-hook="PreviewImage" id="preview-image" class="mt-2 max-h-80" />
       </div>
       <div class="mt-3 text-center sm:ml-4 sm:text-left"></div>
     </.form>

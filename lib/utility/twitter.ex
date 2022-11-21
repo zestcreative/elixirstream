@@ -21,7 +21,9 @@ defmodule Utility.Twitter do
              Client.upload_media(file, filename: url_safe(tip.title) <> Path.extname(file)),
            {:ok, %{body: %{"id_str" => twitter_status_id}}} <-
              Client.update_status(tweet_body(tip), [media_id]) do
-        TipCatalog.add_twitter_status_id(tip, twitter_status_id)
+        result = TipCatalog.add_twitter_status_id(tip, twitter_status_id)
+        File.rm(file)
+        result
       end
     else
       {:ok, tip}

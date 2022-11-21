@@ -18,9 +18,6 @@ config :utility, UtilityWeb.Endpoint,
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :utility,
-  tip_storage: Utility.TipCatalog.StorageS3
-
 # ## SSL Support
 #
 # To get SSL working, you will need to add the `https` key

@@ -128,4 +128,12 @@ hooks.CodeMirror = {
   }
 }
 
+hooks.PreviewImage = {
+  mounted() {
+    this.handleEvent("preview", ({ data }) => {
+      this.el.src = `data:image/png;base64,${data}`
+    })
+  }
+}
+
 export default hooks;
