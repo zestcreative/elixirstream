@@ -26,12 +26,10 @@ defmodule Utility.Silicon do
     end
   end
 
-  def path_for(relative_path) do
-    if Application.get_env(:utility, :app_env) == :prod do
-      relative_path
-    else
-      Path.join(["rel", "overlays", relative_path])
-    end
+  if Mix.env() == :prod do
+    def path_for(relative_path), do: relative_path
+  else
+    def path_for(relative_path), do: Path.join(["rel", "overlays", relative_path])
   end
 
   def fonts() do
