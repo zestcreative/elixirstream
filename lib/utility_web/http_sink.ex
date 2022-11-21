@@ -6,12 +6,18 @@ defmodule UtilityWeb.HTTPSink do
   @reject_headers ~w[
     fly-client-ip
     fly-dispatch-start
+    fly-forwarded-port
     fly-forwarded-proto
     fly-forwarded-ssl
     fly-region
     fly-request-id
+    fly-traceparent
+    fly-tracestate
+    host
     via
+    x-forwarded-for
     x-forwarded-port
+    x-forwarded-proto
     x-forwarded-ssl
     x-request-start
   ]
