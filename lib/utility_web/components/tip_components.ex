@@ -239,16 +239,16 @@ defmodule UtilityWeb.Components.Tip do
               <% end %>
             </div>
           </div>
-          <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-base font-semibold text-gray-900 dark:text-gray-300">
+          <h2 id={"tip-title-#{@tip.id}"} class="mt-4 text-xl font-semibold text-gray-900 dark:text-gray-300">
             <.link patch={~p"/tips/#{@tip.id}"}><%= @tip.title %></.link>
           </h2>
         </div>
 
-        <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 space-y-4">
+        <div class="mt-2 text-lg text-gray-700 dark:text-gray-300 space-y-4">
           <%= @tip.description %>
         </div>
 
-        <div class="mt-2 text-sm">
+        <div class="mt-2 text-base">
           <%= Phoenix.HTML.raw(Makeup.highlight(@tip.code)) %>
         </div>
 
