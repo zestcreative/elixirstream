@@ -13,7 +13,6 @@ defmodule UtilityWeb.Endpoint do
 
   socket "/live", Phoenix.LiveView.Socket,
     websocket: [
-      check_origin: ["https://elixirstream.dev", "https://utils.zest.dev"],
       timeout: 45_000,
       connect_info: [session: @session_options]
     ],

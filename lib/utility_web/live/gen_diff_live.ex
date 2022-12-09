@@ -125,6 +125,13 @@ defmodule UtilityWeb.GenDiffLive do
     changeset = Generator.changeset(record, params)
 
     project = Changeset.get_field(changeset, :project)
+
+    changeset =
+      case Data.commands_for_project(project) do
+        [command] -> Changeset.put_change(changeset, :command, command)
+        _ -> changeset
+      end
+
     from = Changeset.get_field(changeset, :from_version)
     to = Changeset.get_field(changeset, :to_version)
     command = Changeset.get_field(changeset, :command)
@@ -216,7 +223,7 @@ defmodule UtilityWeb.GenDiffLive do
     |> Enum.map(&[key: &1, value: &1])
     |> case do
       [generator] ->
-        [Keyword.put(generator, :selected, "true")]
+        @generator_placeholder ++ [Keyword.put(generator, :selected, true)]
 
       generators ->
         @generator_placeholder ++ generators
