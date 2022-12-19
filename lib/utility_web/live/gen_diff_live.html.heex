@@ -50,8 +50,7 @@
       </div>
 
       <div class="mt-6">
-        <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
-        <div class={"my-4 #{if is_flags_hidden, do: "hidden" }"}>
+        <div class="my-4">
           <div class="flex -space-x-px shadow-sm">
             <div class="w-1/2 flex-1 min-w-0">
               <%= label(f, :from_version, "From Version", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
