@@ -9,7 +9,7 @@ defmodule Utility.Accounts.User do
           avatar: String.t(),
           username: String.t(),
           twitter: String.t(),
-          editor_choice: :gui | :emacs | :vim,
+          fediverse: String.t(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
         }
@@ -25,13 +25,13 @@ defmodule Utility.Accounts.User do
     field :avatar, :string
     field :username, :string
     field :twitter, :string
-    field :editor_choice, Ecto.Enum, values: [:gui, :emacs, :vim]
+    field :fediverse, :string
 
     timestamps(type: :utc_datetime_usec)
   end
 
   @required_fields ~w[source source_id]a
-  @optional_fields ~w[name avatar username twitter editor_choice]a
+  @optional_fields ~w[name avatar username twitter fediverse]a
 
   @doc """
   Required: #{inspect(@required_fields)}

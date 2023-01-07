@@ -194,6 +194,12 @@ defmodule Utility.TipCatalog do
     |> Repo.update()
   end
 
+  def add_fedi_status_id(tip, fedi_status_id) do
+    tip
+    |> Tip.changeset(%{fedi_status_id: fedi_status_id})
+    |> Repo.update()
+  end
+
   @spec create_tip(map()) :: {:ok, Tip.t()}
   def create_tip(attrs) do
     %Tip{}

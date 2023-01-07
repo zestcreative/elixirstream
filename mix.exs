@@ -69,6 +69,7 @@ defmodule Utility.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:ueberauth, "~> 0.6"},
       {:ueberauth_github, "~> 0.7"},
+      {:ueberauth_mastodon, "~> 0.2"},
       {:ueberauth_twitter, "~> 0.3"},
       # Test/Dev
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

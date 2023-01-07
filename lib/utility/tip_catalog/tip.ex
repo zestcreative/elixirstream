@@ -14,9 +14,11 @@ defmodule Utility.TipCatalog.Tip do
           approved: boolean(),
           upvote_count: pos_integer(),
           twitter_like_count: pos_integer(),
+          fedi_like_count: pos_integer(),
           total_upvote_count: pos_integer(),
           published_at: DateTime.t(),
           twitter_status_id: String.t(),
+          fedi_status_id: String.t(),
           contributor_id: Ecto.UUID.t(),
           inserted_at: DateTime.t(),
           updated_at: DateTime.t()
@@ -33,10 +35,12 @@ defmodule Utility.TipCatalog.Tip do
     field :approved, :boolean, default: false
     field :upvote_count, :integer, default: 0
     field :twitter_like_count, :integer, default: 0
+    field :fedi_like_count, :integer, default: 0
     field :total_upvote_count, :integer
 
     field :published_at, :utc_datetime_usec
     field :twitter_status_id, :string
+    field :fedi_status_id, :string
 
     belongs_to :contributor, Accounts.User
     has_many :upvotes, TipCatalog.Upvote
@@ -45,7 +49,7 @@ defmodule Utility.TipCatalog.Tip do
   end
 
   @required_fields ~w[approved title description code]a
-  @optional_fields ~w[twitter_like_count code_image_url upvote_count published_at contributor_id twitter_status_id]a
+  @optional_fields ~w[twitter_like_count code_image_url upvote_count published_at contributor_id fedi_like_count fedi_status_id twitter_status_id]a
 
   def changeset(struct_or_changeset, attrs) do
     struct_or_changeset

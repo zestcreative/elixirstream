@@ -4,7 +4,7 @@ defmodule UtilityWeb.Components do
   use UtilityWeb, :component
 
   attr :href, :string, required: true
-  attr :rest, :global, include: ~w(download hreflang referrerpolicy target type)
+  attr :rest, :global, include: ~w(download rel hreflang referrerpolicy target type)
   slot :inner_block, required: true
 
   def outbound_link(assigns) do

@@ -1,27 +1,18 @@
-defmodule Utility.Twitter do
+defmodule Utility.Mastodon do
+  @moduledoc "Posting tips to Mastodon"
+
   alias Utility.TipCatalog
-  alias Utility.Twitter.Client
+  alias Utility.Mastodon.Client
   use UtilityWeb, :verified_routes
   @endpoint UtilityWeb.Endpoint
-
-  def get_status(%{twitter_status_id: nil}), do: {:error, :no_tweet}
-
-  def get_status(%{twitter_status_id: tweet_id}) do
-    case Client.get_tweet(tweet_id) do
-      {:ok, %{body: %{"data" => data}}} -> {:ok, data}
-      {:ok, %{body: %{"errors" => errors}}} -> {:error, errors}
-      {:error, _} = error -> error
-    end
-  end
 
   def publish(tip) do
     if config()[:publish] do
       with {:ok, tip, file} <- TipCatalog.generate_codeshot(tip),
-           {:ok, media_id} <-
-             Client.upload_media(file, filename: url_safe(tip.title) <> Path.extname(file)),
-           {:ok, %{body: %{"id_str" => twitter_status_id}}} <-
-             Client.update_status(tweet_body(tip), [media_id]) do
-        result = TipCatalog.add_twitter_status_id(tip, twitter_status_id)
+           {:ok, media_id} <- Client.upload_media(file, description: tip.code),
+           {:ok, %{body: %{"id" => fedi_status_id}}} <-
+             Client.update_status(status_body(tip), [media_id]) do
+        result = TipCatalog.add_fedi_status_id(tip, fedi_status_id)
         File.rm(file)
         result
       end
@@ -30,12 +21,7 @@ defmodule Utility.Twitter do
     end
   end
 
-  defp url_safe(string) do
-    string = string |> String.replace(" ", "-") |> String.downcase()
-    Regex.replace(~r/[^a-zA-Z0-9_-]/, string, "")
-  end
-
-  def tweet_body(tip) do
+  def status_body(tip) do
     []
     |> put_url(tip)
     |> put_contributor(tip)
@@ -53,7 +39,7 @@ defmodule Utility.Twitter do
 
   def put_url(body, %{id: tip_id}), do: [" ", ~p"/tips/#{tip_id}" | body]
 
-  @status_limit 280
+  @status_limit 500
   def fill_with_description(body, %{description: description}) do
     description = "\n\n#{description}"
     taken_chars = String.length(body)

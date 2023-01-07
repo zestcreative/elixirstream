@@ -63,14 +63,6 @@ defmodule Utility.Accounts do
     |> Repo.update()
   end
 
-  @spec update_editor_choice(User.t(), String.t()) ::
-          {:ok, User.t()} | {:error, Ecto.Changeset.t() | atom()}
-  def update_editor_choice(user, choice) do
-    user
-    |> User.changeset(%{editor_choice: choice})
-    |> Repo.update()
-  end
-
   defp username_from_auth(%{info: %{nickname: username}}), do: username
 
   defp name_from_auth(%{info: %{name: name}}) when is_binary(name), do: name

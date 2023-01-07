@@ -15,6 +15,8 @@ defmodule Utility.Application do
         Utility.PackageRepo,
         # Start the PubSub system
         {Phoenix.PubSub, name: Utility.PubSub},
+        {Finch, name: TwitterFinch},
+        {Finch, name: MastodonFinch},
         # Start the Endpoint (http/https)
         UtilityWeb.Endpoint,
         Utility.Redix,

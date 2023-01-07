@@ -3,8 +3,10 @@ defmodule Utility.Twitter.Multipart do
   Ripped from Tesla
 
   Multipart functionality.
+
   ## Example
-  ```
+
+  ```elixir
   mp =
     Multipart.new()
     |> Multipart.add_content_type_param("charset=utf-8")
@@ -15,6 +17,7 @@ defmodule Utility.Twitter.Multipart do
     |> Multipart.add_file("test/tesla/multipart_test_file.sh")
     |> Multipart.add_file("test/tesla/multipart_test_file.sh", name: "foobar")
     |> Multipart.add_file_content("sample file content", "sample.txt")
+
   response = client.post(url, mp)
   ```
   """
@@ -160,11 +163,7 @@ defmodule Utility.Twitter.Multipart do
   def part_headers_for_disposition([]), do: []
 
   def part_headers_for_disposition(kvs) do
-    ds =
-      kvs
-      |> Enum.map(fn {k, v} -> "#{k}=\"#{v}\"" end)
-      |> Enum.join("; ")
-
+    ds = Enum.map_join(kvs, "; ", fn {k, v} -> "#{k}=\"#{v}\"" end)
     ["content-disposition: form-data; #{ds}\r\n"]
   end
 

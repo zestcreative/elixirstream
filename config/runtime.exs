@@ -10,6 +10,7 @@ if config_env() != :test do
 end
 
 config :utility, Utility.Twitter, publish: System.get_env("TWITTER_PUBLISH", "false") == "true"
+config :utility, Utility.Mastodon, publish: System.get_env("MASTODON_PUBLISH", "false") == "true"
 
 if config_env() == :prod do
   host = System.get_env("HOST")
@@ -58,11 +59,20 @@ if config_env() == :prod do
     consumer_key: System.get_env("TWITTER_LOGIN_CONSUMER_KEY"),
     consumer_secret: System.get_env("TWITTER_LOGIN_CONSUMER_SECRET")
 
+  config :ueberauth, Ueberauth.Strategy.Mastodon.OAuth,
+    consumer_key: System.get_env("HACHYDERM_LOGIN_CLIENT_KEY"),
+    consumer_secret: System.get_env("HACHYDERM_LOGIN_CLIENT_SECRET")
+
   config :utility, Utility.Twitter.Client,
     consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
     consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
     token: System.get_env("TWITTER_TOKEN"),
     token_secret: System.get_env("TWITTER_TOKEN_SECRET")
+
+  config :utility, Utility.Mastodon.Client,
+    consumer_key: System.get_env("HACHYDERM_CLIENT_KEY"),
+    consumer_secret: System.get_env("HACHYDERM_CLIENT_SECRET"),
+    access_token: System.get_env("HACHYDERM_ACCESS_TOKEN")
 
   config :utility, UtilityWeb.Endpoint,
     http: [port: System.get_env("PORT"), compress: true],
