@@ -76,6 +76,7 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 config :utility, Utility.TipCatalog.Storage, bucket: "elixirstream.dev"
+config :oauth2, adapter: Tesla.Adapter.Hackney
 
 config :utility, Utility.Accounts.Guardian,
   issuer: "utility",
