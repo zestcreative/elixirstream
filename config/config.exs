@@ -88,7 +88,7 @@ config :ueberauth, Ueberauth,
       {Ueberauth.Strategy.Github,
        [
          allow_private_emails: true,
-         send_redirect_uri: true,
+         send_redirect_uri: false,
          default_scope: "read:user"
        ]},
     twitter: {Ueberauth.Strategy.Twitter, []}
