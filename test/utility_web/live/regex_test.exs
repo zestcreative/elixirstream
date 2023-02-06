@@ -162,13 +162,13 @@ defmodule UtilityWeb.RegexLiveTest do
       params = %{
         "regex_live" => %{
           "function" => "run",
-          "string" => "asdf 1234",
+          "string" => "asdf 1234/",
           "flags" => "i",
-          "regex" => "[0-9]+"
+          "regex" => ~S"[0-9\/]+"
         }
       }
 
-      assert render_change(view, :validate, params) =~ "Regex.run(~r/[0-9]+/i, string)"
+      assert render_change(view, :validate, params) =~ ~S"Regex.run(~r/[0-9\\/]+/i, string)"
     end
 
     test "renders result", %{conn: conn} do

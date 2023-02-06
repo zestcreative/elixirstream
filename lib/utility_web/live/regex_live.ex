@@ -135,16 +135,21 @@ defmodule UtilityWeb.RegexLive do
   defp escape(empty), do: empty
 
   defp put_result(%{valid?: true} = changeset) do
-    case Changeset.get_field(changeset, :regex) do
-      empty when empty in [nil, ""] ->
+    string = Changeset.get_field(changeset, :string)
+    regex = Changeset.get_field(changeset, :regex)
+
+    case {string, regex} do
+      {string, regex} when string in [nil] or regex in [nil, ""] ->
         changeset
 
-      string when is_binary(string) ->
-        :telemetry.execute(
-          [:utility, :regex, :payload],
-          %{payload: byte_size(string)},
-          %{}
-        )
+      {string, regex} when is_binary(regex) and is_binary(string) ->
+        if is_binary(string) do
+          :telemetry.execute(
+            [:utility, :regex, :payload],
+            %{payload: byte_size(string)},
+            %{}
+          )
+        end
 
         {result, indexes, changeset} =
           do_result(
