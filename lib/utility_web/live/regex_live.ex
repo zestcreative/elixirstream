@@ -135,38 +135,38 @@ defmodule UtilityWeb.RegexLive do
   defp escape(empty), do: empty
 
   defp put_result(%{valid?: true} = changeset) do
-    string = Changeset.get_field(changeset, :string)
+    case Changeset.get_field(changeset, :regex) do
+      empty when empty in [nil, ""] ->
+        changeset
 
-    if Changeset.get_field(changeset, :regex) == "" do
-      changeset
-    else
-      :telemetry.execute(
-        [:utility, :regex, :payload],
-        %{payload: byte_size(string)},
-        %{}
-      )
-
-      {result, indexes, changeset} =
-        do_result(
-          Changeset.get_field(changeset, :function),
-          Regex.compile(
-            Changeset.get_field(changeset, :regex),
-            Changeset.get_field(changeset, :flags)
-          ),
-          string,
-          changeset
+      string when is_binary(string) ->
+        :telemetry.execute(
+          [:utility, :regex, :payload],
+          %{payload: byte_size(string)},
+          %{}
         )
 
-      parts =
-        indexes
-        |> get_parts(string)
-        |> List.flatten()
-        |> Enum.sort_by(fn {_, x, _} -> x end)
-        |> Enum.map(fn {result, _, string} -> {result, string} end)
+        {result, indexes, changeset} =
+          do_result(
+            Changeset.get_field(changeset, :function),
+            Regex.compile(
+              Changeset.get_field(changeset, :regex),
+              Changeset.get_field(changeset, :flags)
+            ),
+            string,
+            changeset
+          )
 
-      changeset
-      |> Changeset.put_change(:result, result)
-      |> Changeset.put_change(:matched, parts)
+        parts =
+          indexes
+          |> get_parts(string)
+          |> List.flatten()
+          |> Enum.sort_by(fn {_, x, _} -> x end)
+          |> Enum.map(fn {result, _, string} -> {result, string} end)
+
+        changeset
+        |> Changeset.put_change(:result, result)
+        |> Changeset.put_change(:matched, parts)
     end
   end
 
