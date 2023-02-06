@@ -28,6 +28,7 @@ config :utility, Utility.Repo, migration_timestamps: [type: :utc_datetime]
 
 # Configures the endpoint
 config :utility, UtilityWeb.Endpoint,
+  adapter: Bandit.PhoenixAdapter,
   url: [host: "localhost"],
   secret_key_base: "gJjLZxqBoWFJVdwbLjZe1v2jd2txjpePiZan9WJrhOZsnKhLGftHdjSDHOmDQ+tP",
   signing_salt: "foobar",

@@ -58,7 +58,7 @@ defmodule Utility.MixProject do
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:phoenix_live_view, "~> 0.18"},
-      {:plug_cowboy, "~> 2.3"},
+      {:bandit, ">= 0.6.8"},
       {:postgrex, ">= 0.0.0"},
       {:quarto, "~> 1.0"},
       {:redix, ">= 0.0.0"},
