@@ -15,7 +15,7 @@ defmodule UtilityWeb.AuthController do
 
     conn
     |> put_flash(:error, "Failed to authenticate.")
-    |> redirect(to: "/")
+    |> redirect(to: "/tips")
   end
 
   def callback(%{assigns: %{ueberauth_auth: %{provider: :github} = auth}} = conn, _params) do

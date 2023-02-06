@@ -43,7 +43,6 @@ defmodule Utility.MixProject do
       {:ecto_sql, "~> 3.8"},
       {:etso, "~> 1.0"},
       {:finch, "~> 0.6"},
-      {:gettext, "~> 0.11"},
       {:git_diff, "~> 0.6.3"},
       {:guardian, "~> 2.0"},
       {:hackney, "~> 1.15"},
@@ -67,8 +66,8 @@ defmodule Utility.MixProject do
       {:telemetry, "~> 1.1", override: true},
       {:telemetry_metrics, "~> 0.4"},
       {:telemetry_poller, "~> 1.0"},
-      {:ueberauth, "~> 0.6"},
-      {:ueberauth_github, "~> 0.7"},
+      {:ueberauth, "~> 0.10"},
+      {:ueberauth_github, tag: "v0.8.2", github: "ueberauth/ueberauth_github"},
       {:ueberauth_twitter, "~> 0.3"},
       # Test/Dev
       {:credo, "~> 1.6", only: [:dev, :test], runtime: false},

@@ -326,7 +326,7 @@ defmodule UtilityWeb.Components do
   end
 
   @doc """
-  Translates an error message using gettext.
+  Translates an error message.
   """
   def translate_error({msg, opts}) do
     Enum.reduce(opts, msg, fn {key, value}, acc ->

@@ -1,7 +1,7 @@
 # BUILD LAYER
 
 FROM hexpm/elixir:1.14.2-erlang-25.1.2-alpine-3.16.2 AS build
-RUN apk add --no-cache build-base npm gcompat \
+RUN apk add --no-cache build-base npm git gcompat \
     expat-dev pkgconfig fontconfig fontconfig-dev freetype-dev freetype \
     libxcb libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev \
     libxml2 libxml2-dev cargo
