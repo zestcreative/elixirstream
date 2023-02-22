@@ -41,6 +41,7 @@ if config_env() == :prod do
   if dsn = System.get_env("SENTRY_DSN") do
     config :sentry,
       dsn: dsn,
+      filter: Utility.SentryFilter,
       environment_name: Application.get_env(:utility, :app_env),
       included_environments: [:prod],
       enable_source_code_context: true,
