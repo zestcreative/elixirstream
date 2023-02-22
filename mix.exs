@@ -51,7 +51,7 @@ defmodule Utility.MixProject do
       {:makeup, "~> 1.0"},
       {:makeup_elixir, "~> 0.14"},
       {:oban, "~> 2.3"},
-      {:phoenix, "~> 1.7.0-rc.2", override: true},
+      {:phoenix, "~> 1.7.0-rc.3", override: true},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 3.0"},
       {:phoenix_view, "~> 2.0"},
