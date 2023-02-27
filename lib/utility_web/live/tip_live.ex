@@ -233,7 +233,7 @@ defmodule UtilityWeb.TipLive do
   end
 
   def handle_event("search", %{"search" => search}, socket) do
-    params = %{"search" => search}
+    params = [search: search]
     {:noreply, socket |> push_patch(to: ~p"/tips?#{params}")}
   end
 
