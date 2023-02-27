@@ -38,6 +38,7 @@ defmodule Utility.GenDiff.Generator do
     |> put_defaults_for_command()
     |> validate_flags()
     |> validate_not_same()
+    |> validate_flags_for_command()
     |> put_id()
   end
 
@@ -74,6 +75,43 @@ defmodule Utility.GenDiff.Generator do
     valid_commands = changeset |> get_field(:project) |> Data.commands_for_project()
     validate_inclusion(changeset, :command, valid_commands)
   end
+
+  def validate_flags_for_command(changeset) do
+    validate_flags_for_command(
+      changeset,
+      get_field(changeset, :project),
+      get_field(changeset, :command)
+    )
+  end
+
+  def validate_flags_for_command(changeset, "phx_new", "phx.gen.auth") do
+    from_version = get_field(changeset, :from_version)
+    from_flags = get_field(changeset, :from_flags) || []
+    to_version = get_field(changeset, :to_version)
+    to_flags = get_field(changeset, :to_flags) || []
+
+    Enum.reduce(
+      [{:from_version, from_version, from_flags}, {:to_version, to_version, to_flags}],
+      changeset,
+      fn
+        {_field, empty, _flags}, acc_changeset when empty in [nil, false] ->
+          acc_changeset
+
+        {field, version, flags}, acc_changeset ->
+          if Version.compare(version, "1.6.16") == :gt do
+            if "--live" not in flags and "--no-live" not in flags do
+              add_error(acc_changeset, field, "must specify either --live or --no-live flag")
+            else
+              acc_changeset
+            end
+          else
+            acc_changeset
+          end
+      end
+    )
+  end
+
+  def validate_flags_for_command(changeset, _, _), do: changeset
 
   def validate_not_same(%{valid?: false} = changeset), do: changeset
 
