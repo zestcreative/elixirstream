@@ -197,10 +197,12 @@ defmodule Utility.ProjectBuilder do
     else
       _ ->
         # phx.gen.auth is merged into phx_new package
+        # sed will make sure the actual version is used and not a later version.
         """
         elixir --version &&
         #{run_command("phx.new", version_string, ["my_app"])} &&
           cd my_app &&
+          (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
           mix deps.get &&
           mix phx.gen.auth #{Enum.join(flags, " ")} &&
           rm -rf _build deps mix.lock
