@@ -1,4 +1,4 @@
-defmodule Utility.GenDiff.PruneMasterCache do
+defmodule Utility.GenDiff.PruneMainBranchCache do
   use GenServer
   require Logger
   alias Utility.GenDiff.Storage
@@ -34,18 +34,21 @@ defmodule Utility.GenDiff.PruneMasterCache do
   end
 
   defp do_prune() do
-    Logger.info("PruneMasterCache: Starting to prune")
+    Logger.info("PruneMainBranchCache: Starting to prune")
 
     Utility.GenDiff.Data.projects()
     |> Enum.map(fn project ->
-      {project,
-       project
-       |> Storage.list("*master*")
-       |> Enum.map(fn cached_diff ->
-         Logger.info("PruneMastercache: pruning #{cached_diff}")
-         Storage.delete(cached_diff)
-         cached_diff
-       end)}
+      {project, list_branch(project, "master") ++ list_branch(project, "main")}
+    end)
+  end
+
+  defp list_branch(project, branch) do
+    project
+    |> Storage.list("*#{branch}*")
+    |> Enum.map(fn cached_diff ->
+      Logger.info("PruneMainBranchCache: pruning #{cached_diff}")
+      Storage.delete(cached_diff)
+      cached_diff
     end)
   end
 

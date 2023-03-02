@@ -140,7 +140,7 @@ defmodule Utility.ProjectBuilder do
 
   @phx_new_proper Version.parse!("1.4.0-dev.0")
   @phx_new_github Version.parse!("1.3.0")
-  def install_archive("phx_new", "master") do
+  def install_archive("phx_new", "main") do
     """
     git clone https://github.com/phoenixframework/phoenix.git &&
       (cd phoenix/installer && MIX_ENV=prod mix do deps.get, compile, archive.build, archive.install --force) &&
@@ -212,6 +212,7 @@ defmodule Utility.ProjectBuilder do
   end
 
   def run_command("phx.new", "master", flags), do: run_command("phx.new", "999.0.0", flags)
+  def run_command("phx.new", "main", flags), do: run_command("phx.new", "999.0.0", flags)
 
   def run_command("phx.new", :standard, [where | _] = flags) do
     """
@@ -317,6 +318,7 @@ defmodule Utility.ProjectBuilder do
   @phx_112_at Version.parse!("1.6.0")
   @phx_111_at Version.parse!("1.3.0")
   def docker_tag_for("phx.new", "master"), do: "latest"
+  def docker_tag_for("phx.new", "main"), do: "latest"
 
   def docker_tag_for("phx.new", version) do
     version = Version.parse!(version)

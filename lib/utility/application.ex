@@ -62,7 +62,7 @@ defmodule Utility.Application do
         [
           Utility.Package.Updater,
           Utility.ProjectRunnerBuilder,
-          Utility.GenDiff.PruneMasterCache
+          Utility.GenDiff.PruneMainBranchCache
         ]
     end
   end

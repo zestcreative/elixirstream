@@ -192,11 +192,11 @@ defmodule UtilityWeb.GenDiffLive do
       {nil, nil, versions} ->
         versions
 
-      {"master", :gt, versions} ->
+      {main, :gt, versions} when main in ["master", "main"] ->
         versions
 
-      {"master", :lt, _versions} ->
-        ["master"]
+      {main, :lt, _versions} when main in ["master", "main"] ->
+        [main]
 
       {limit, compare, versions} ->
         Enum.reject(versions, fn version ->

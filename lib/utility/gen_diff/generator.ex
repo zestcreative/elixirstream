@@ -57,8 +57,8 @@ defmodule Utility.GenDiff.Generator do
     build_id(command, from, to, from_flags, to_flags)
   end
 
-  def build_id(command, from, "master", from_flags, to_flags) do
-    build_id(command, from, "9999.999.99", from_flags, to_flags) <> "|master"
+  def build_id(command, from, main, from_flags, to_flags) when main in ["master", "main"] do
+    build_id(command, from, "9999.999.99", from_flags, to_flags) <> "|" <> main
   end
 
   def build_id(command, from, to, from_flags, to_flags) do

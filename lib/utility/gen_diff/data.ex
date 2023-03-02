@@ -215,7 +215,7 @@ defmodule Utility.GenDiff.Data do
   def flags_for_command(_project, nil, _version), do: []
 
   def flags_for_command(project, command, version) do
-    version = if version == "master", do: "9999.0.0", else: version
+    version = if version in ["main", "master"], do: "9999.0.0", else: version
 
     case {version, get_by(project: project, command: command)} do
       {nil, %{flags: [{_, _} | _] = flags}} ->
