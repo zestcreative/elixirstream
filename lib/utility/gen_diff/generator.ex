@@ -97,6 +97,13 @@ defmodule Utility.GenDiff.Generator do
         {_field, empty, _flags}, acc_changeset when empty in [nil, false] ->
           acc_changeset
 
+        {field, "main", flags}, acc_changeset ->
+          if "--live" not in flags and "--no-live" not in flags do
+            add_error(acc_changeset, field, "must specify either --live or --no-live flag")
+          else
+            acc_changeset
+          end
+
         {field, version, flags}, acc_changeset ->
           if Version.compare(version, "1.6.16") == :gt do
             if "--live" not in flags and "--no-live" not in flags do
