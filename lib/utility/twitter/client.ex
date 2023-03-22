@@ -32,7 +32,7 @@ defmodule Utility.Twitter.Client do
       | query:
           URI.encode_query(
             status: status,
-            media_ids: media_ids |> List.wrap() |> Enum.map(&to_string/1) |> Enum.join(","),
+            media_ids: media_ids |> List.wrap() |> Enum.map_join(",", &to_string/1),
             trim_user: 1
           )
     }

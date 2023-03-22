@@ -1,4 +1,6 @@
 defmodule Utility.Test.Factory do
+  @moduledoc "Test Factories"
+
   def build(:user) do
     %Utility.Accounts.User{
       source_id: "#{:erlang.unique_integer([:positive, :monotonic])}",
@@ -68,7 +70,7 @@ defmodule Utility.Test.Factory do
             "plan" => %{
               "collaborators" => 0,
               "name" => "free",
-              "private_repos" => 10000,
+              "private_repos" => 10_000,
               "space" => 976_562_499
             },
             "node_id" => "",

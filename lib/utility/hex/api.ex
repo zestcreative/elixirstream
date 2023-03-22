@@ -9,9 +9,10 @@ defmodule Utility.Hex.Api do
   }
 
   def get_package(package) do
-    with {:ok, {200, _, results}} <- :hex_repo.get_package(@config, package) do
-      {:ok, results}
-    else
+    case :hex_repo.get_package(@config, package) do
+      {:ok, {200, _, results}} ->
+        {:ok, results}
+
       {:ok, {_status, _, _}} ->
         {:error, :not_found}
 

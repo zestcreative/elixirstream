@@ -37,7 +37,7 @@ defmodule Utility.Release do
       query = """
       SELECT tablename from "pg_tables"
       WHERE schemaname = 'public'
-        AND tablename NOT IN (#{@excluded_tables |> Enum.map(&"'#{&1}'") |> Enum.join(", ")});
+        AND tablename NOT IN (#{@excluded_tables |> Enum.map_join(", ", &"'#{&1}'")});
       """
 
       for repo <- repos() do
