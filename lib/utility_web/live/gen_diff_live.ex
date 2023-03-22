@@ -146,8 +146,8 @@ defmodule UtilityWeb.GenDiffLive do
     |> assign(:docs_url, Changeset.get_field(changeset, :docs_url))
     |> assign(:from_version, from)
     |> assign(:to_version, to)
-    |> assign(:from_versions, versions_for(project, ceiling: to))
-    |> assign(:to_versions, versions_for(project, floor: from))
+    |> assign(:from_versions, versions_for(project, command, ceiling: to))
+    |> assign(:to_versions, versions_for(project, command, floor: from))
     |> assign(:from_flags, Changeset.get_field(changeset, :from_flags, []))
     |> assign(:to_flags, Changeset.get_field(changeset, :to_flags, []))
     |> assign(:available_from_flags, Data.flags_for_command(project, command, from))
@@ -171,9 +171,10 @@ defmodule UtilityWeb.GenDiffLive do
 
   defp maybe_reset(params, _changeset, record), do: {params, record}
 
-  defp versions_for(nil, _opts), do: []
+  defp versions_for(nil, _command, _opts), do: []
+  defp versions_for(_project, nil, _opts), do: []
 
-  defp versions_for(project, opts) do
+  defp versions_for(project, command, opts) do
     {compare, limit} = if floor = opts[:floor], do: {:lt, floor}, else: {nil, nil}
     {compare, limit} = if ceil = opts[:ceiling], do: {:gt, ceil}, else: {compare, limit}
 
@@ -185,7 +186,7 @@ defmodule UtilityWeb.GenDiffLive do
         end
       end
 
-    case {limit, compare, Data.versions_for_project(project)} do
+    case {limit, compare, Data.versions_for_project(project, command)} do
       {_, _, []} ->
         []
 

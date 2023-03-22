@@ -5,13 +5,14 @@ defmodule Utility.Hex.Api do
   @config %{
     :hex_core.default_config()
     | http_adapter: {Utility.Hex.Api.Adapter, %{}},
-      http_user_agent_fragment: "hexpm_diff"
+      http_user_agent_fragment: "elixirstreamdev_diff"
   }
 
   def get_package(package) do
-    with {:ok, {200, _, results}} <- :hex_repo.get_package(@config, package) do
-      {:ok, results}
-    else
+    case :hex_repo.get_package(@config, package) do
+      {:ok, {200, _, results}} ->
+        {:ok, results}
+
       {:ok, {_status, _, _}} ->
         {:error, :not_found}
 

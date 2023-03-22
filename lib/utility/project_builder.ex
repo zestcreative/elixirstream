@@ -168,6 +168,8 @@ defmodule Utility.ProjectBuilder do
     "mix archive.install --force hex phx_new 1.5.7"
   end
 
+  def install_archive("credo", _version), do: "true"
+
   def install_archive("rails", version) do
     "gem install rails --version #{version}"
   end
@@ -305,6 +307,18 @@ defmodule Utility.ProjectBuilder do
       (sed -i 's/-setcookie.*/-setcookie foo/g' #{where}/rel/vm.args &> /dev/null || true)
     """
     |> String.trim()
+  end
+
+  def run_command("credo.gen.config", version_string, _flags) do
+    """
+    elixir --version &&
+      mix new my_app &&
+      sed -i 's/\# {:dep_from_hexpm, "~> 0.3.0"},/{:credo, "#{version_string}", only: [:dev, :test], runtime: false}/g' my_app/mix.exs &&
+      cd my_app &&
+      mix deps.get &&
+      mix credo.gen.config &&
+      rm -rf _build deps mix.exs mix.lock
+    """
   end
 
   def run_command(command, _version_string, flags) do

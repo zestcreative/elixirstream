@@ -160,11 +160,7 @@ defmodule Utility.Twitter.Multipart do
   def part_headers_for_disposition([]), do: []
 
   def part_headers_for_disposition(kvs) do
-    ds =
-      kvs
-      |> Enum.map(fn {k, v} -> "#{k}=\"#{v}\"" end)
-      |> Enum.join("; ")
-
+    ds = Enum.map_join(kvs, "; ", fn {k, v} -> "#{k}=\"#{v}\"" end)
     ["content-disposition: form-data; #{ds}\r\n"]
   end
 

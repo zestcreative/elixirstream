@@ -23,11 +23,12 @@ defmodule Utility.GenDiff.Generator do
     field :default_flags, {:array, :string}
     field :flags, {:array, :string}
     field :help, :string
+    field :since, :string
     field :source, :string
   end
 
   @required ~w[command project from_version to_version]a
-  @optional ~w[from_flags to_flags]a
+  @optional ~w[from_flags to_flags since]a
   def changeset(struct_or_changeset \\ %__MODULE__{}, attrs) do
     struct_or_changeset
     |> cast(attrs, @required ++ @optional)
@@ -106,11 +107,7 @@ defmodule Utility.GenDiff.Generator do
 
         {field, version, flags}, acc_changeset ->
           if Version.compare(version, "1.6.16") == :gt do
-            if "--live" not in flags and "--no-live" not in flags do
-              add_error(acc_changeset, field, "must specify either --live or --no-live flag")
-            else
-              acc_changeset
-            end
+            ensure_live_flag(acc_changeset, field, flags)
           else
             acc_changeset
           end
@@ -119,6 +116,14 @@ defmodule Utility.GenDiff.Generator do
   end
 
   def validate_flags_for_command(changeset, _, _), do: changeset
+
+  defp ensure_live_flag(changeset, field, flags) do
+    if "--live" not in flags and "--no-live" not in flags do
+      add_error(changeset, field, "must specify either --live or --no-live flag")
+    else
+      changeset
+    end
+  end
 
   def validate_not_same(%{valid?: false} = changeset), do: changeset
 
