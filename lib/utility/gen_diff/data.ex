@@ -73,12 +73,26 @@ defmodule Utility.GenDiff.Data do
         }
       ]
     },
+    "credo" => %{
+      url: "https://hexdocs.pm/credo",
+      source: :hex,
+      generators: [
+        %{
+          command: "credo.gen.config",
+          since: "1.0.0-rc.1",
+          docs_url: "https://hexdocs.pm/credo/config_file.html",
+          default_flags: [],
+          flags: []
+        }
+      ]
+    },
     "nerves_bootstrap" => %{
       url: "https://hex.pm/packages/nerves_bootstrap",
       source: :hex,
       generators: [
         %{
           command: "nerves.new",
+          since: "1.0.0-rc1",
           docs_url: "https://hexdocs.pm/nerves_bootstrap/Mix.Tasks.Nerves.New.html",
           default_flags: ["my_app"],
           flags: []
@@ -267,24 +281,37 @@ defmodule Utility.GenDiff.Data do
     end
   end
 
-  def versions_for_project(project) do
+  def versions_for_project(project, command) do
     case source_for_project(project) do
-      :hex -> get_hex_versions(project)
-      :gem -> get_gem_versions(project)
+      :hex -> get_hex_versions(project, command)
+      :gem -> get_gem_versions(project, command)
     end
   end
 
-  def get_hex_versions(project) do
+  def get_hex_versions(project, command) do
+    case Utility.PackageRepo.get_by(Utility.Package, name: project) do
+      %{versions: versions} ->
+        limit_versions(versions, project, command)
+
+      _ ->
+        []
+    end
+  end
+
+  def get_gem_versions(project, _command) do
     case Utility.PackageRepo.get_by(Utility.Package, name: project) do
       %{versions: versions} -> versions
       _ -> []
     end
   end
 
-  def get_gem_versions(project) do
-    case Utility.PackageRepo.get_by(Utility.Package, name: project) do
-      %{versions: versions} -> versions
-      _ -> []
+  defp limit_versions(versions, project, command) do
+    case get_by(project: project, command: command) do
+      %{since: since_version} ->
+        Enum.filter(versions, &(Version.compare(&1, since_version) != :lt))
+
+      _ ->
+        versions
     end
   end
 end

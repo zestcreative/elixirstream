@@ -70,7 +70,7 @@ defmodule Utility.MixProject do
       {:ueberauth_github, tag: "v0.8.2", github: "ueberauth/ueberauth_github"},
       {:ueberauth_twitter, "~> 0.3"},
       # Test/Dev
-      {:credo, "~> 1.6", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:esbuild, "~> 0.3", runtime: Mix.env() == :dev},
       {:floki, ">= 0.0.0", only: :test},
       {:phoenix_live_reload, "~> 1.2", only: :dev},

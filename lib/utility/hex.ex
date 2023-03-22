@@ -11,7 +11,8 @@ defmodule Utility.Hex do
   end
 
   def cache_versions({package, _}) do
-    PackageRepo.get(Package, package)
+    Package
+    |> PackageRepo.get(package)
     |> case do
       nil -> %Package{name: package}
       package -> package

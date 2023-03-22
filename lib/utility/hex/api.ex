@@ -5,7 +5,7 @@ defmodule Utility.Hex.Api do
   @config %{
     :hex_core.default_config()
     | http_adapter: {Utility.Hex.Api.Adapter, %{}},
-      http_user_agent_fragment: "hexpm_diff"
+      http_user_agent_fragment: "elixirstreamdev_diff"
   }
 
   def get_package(package) do

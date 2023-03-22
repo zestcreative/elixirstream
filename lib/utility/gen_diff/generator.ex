@@ -23,11 +23,12 @@ defmodule Utility.GenDiff.Generator do
     field :default_flags, {:array, :string}
     field :flags, {:array, :string}
     field :help, :string
+    field :since, :string
     field :source, :string
   end
 
   @required ~w[command project from_version to_version]a
-  @optional ~w[from_flags to_flags]a
+  @optional ~w[from_flags to_flags since]a
   def changeset(struct_or_changeset \\ %__MODULE__{}, attrs) do
     struct_or_changeset
     |> cast(attrs, @required ++ @optional)
