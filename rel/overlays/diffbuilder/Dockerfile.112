@@ -1,5 +1,9 @@
 FROM hexpm/elixir:1.12.2-erlang-24.0.4-debian-stretch-20210326
 
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' \
+           -e 's/security.debian.org/archive.debian.org/g' \
+           -e '/stretch-updates/d' /etc/apt/sources.list
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         curl \
