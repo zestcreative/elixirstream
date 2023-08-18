@@ -3,9 +3,10 @@
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "utility"
+app = "elixirstream"
 kill_signal = "SIGINT"
 kill_timeout = 5
+primary_region = "dfw"
 processes = []
 
 [deploy]
@@ -27,7 +28,7 @@ processes = []
   destination = "/storage"
   encrypted = false
   processes = []
-  source = "utility_data"
+  source = "elixirstream_data"
 
 [[services]]
   http_checks = []
