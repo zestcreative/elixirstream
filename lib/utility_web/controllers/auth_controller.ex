@@ -11,7 +11,7 @@ defmodule UtilityWeb.AuthController do
   end
 
   def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
-    Logger.warn(inspect(fails))
+    Logger.warning(inspect(fails))
 
     conn
     |> put_flash(:error, "Failed to authenticate.")
