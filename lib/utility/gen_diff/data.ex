@@ -16,6 +16,8 @@ defmodule Utility.GenDiff.Data do
             "Command is `phoenix.new` prior to version 1.3.0. Not all flags exist on all versions and may result in an error or be ignored.",
           flags: [
             {"--binary-id", [from: "1.0.0"]},
+            {"--adapter=cowboy", [from: "1.7.8"]},
+            {"--adapter=bandit", [from: "1.7.8"]},
             {"--database=mongodb", [from: "1.0.0", until: "1.3.3"]},
             {"--database=mssql", [from: "1.0.0"]},
             {"--database=mysql", [from: "1.0.0"]},
