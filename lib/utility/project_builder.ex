@@ -220,6 +220,7 @@ defmodule Utility.ProjectBuilder do
     """
     elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
+      shopt -s globstar &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex* &> /dev/null || true)
     """
@@ -229,6 +230,7 @@ defmodule Utility.ProjectBuilder do
     """
     elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
+      shopt -s globstar &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true)
     """
@@ -242,6 +244,7 @@ defmodule Utility.ProjectBuilder do
         """
         elixir --version &&
         yes n | mix phoenix.new #{Enum.join(flags, " ")} &&
+          shopt -s globstar &&
           sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &&
           sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex*
         """
