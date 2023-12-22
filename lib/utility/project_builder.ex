@@ -149,6 +149,15 @@ defmodule Utility.ProjectBuilder do
     |> String.trim()
   end
 
+  def install_archive("phx_new", "1.3.5") do
+    """
+    git clone https://github.com/phoenixframework/phoenix.git &&
+      (cd phoenix/installer && git checkout v1.3.5 && MIX_ENV=prod mix do deps.get, compile, archive.build, archive.install --force) &&
+      rm -rf phoenix
+    """
+    |> String.trim()
+  end
+
   def install_archive("phx_new", version_string) do
     version = Version.parse!(version_string)
 
