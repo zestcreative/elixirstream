@@ -2,11 +2,11 @@
   <div class="px-4 py-5 sm:p-6">
     <ul>
       <li>
-        <code class="ghd-line-type-remove">VERSION=<%= @generator.from_version %> <%= @generator.command %> <%= Enum.join(@generator.default_flags || [], " ") %> <%= Enum.join(@generator.from_flags || [], " ") %></code>
+        <code class="ghd-line-type-remove">VERSION=<%= @generator.from_version %> <%= @generator.command %> <%= Enum.join(@generator.from_default_flags || [], " ") %> <%= Enum.join(@generator.from_flags || [], " ") %></code>
       </li>
 
       <li>
-        <code class="ghd-line-type-add">VERSION=<%= @generator.to_version %> <%= @generator.command %> <%= Enum.join(@generator.default_flags || [], " ") %> <%= Enum.join(@generator.to_flags || [], " ") %></code>
+        <code class="ghd-line-type-add">VERSION=<%= @generator.to_version %> <%= @generator.command %> <%= Enum.join(@generator.from_default_flags || [], " ") %> <%= Enum.join(@generator.to_flags || [], " ") %></code>
       </li>
     </ul>
   </div>

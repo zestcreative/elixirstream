@@ -125,6 +125,34 @@ defmodule Utility.GenDiff.Data do
         }
       ]
     },
+    "surface" => %{
+      url: "https://hex.pm/packages/surface",
+      source: :hex,
+      generators: [
+        %{
+          command: "surface.init",
+          since: "0.6.0",
+          docs_url: "https://hexdocs.pm/surface/Mix.Tasks.Surface.Init.html",
+          default_flags: [
+            {"--yes", [from: "0.6.0"]},
+            {"--no-install", [from: "0.8.0"]},
+            {"--no-dep-install", [from: "0.6.0", until: "0.8.0"]}
+          ],
+          help:
+            "Ran on Phoenix 1.7.7 project when version >= 0.10.0 and Phoenix 1.6.16 on prior versions, main also runs on Phoenix main.",
+          flags: [
+            {"--catalogue", [from: "0.6.0"]},
+            {"--demo", [from: "0.6.0"]},
+            {"--layouts", [from: "0.8.0"]},
+            {"--no-error-tag", [from: "0.6.0"]},
+            {"--no-formatter", [from: "0.6.0"]},
+            {"--no-js-hooks", [from: "0.6.0"]},
+            {"--no-scoped-css", [from: "0.8.0"]},
+            {"--tailwind", [from: "0.8.0", until: "0.9.4"]}
+          ]
+        }
+      ]
+    },
     "rails" => %{
       url: "https://guides.rubyonrails.org/",
       source: :gem,
@@ -274,12 +302,32 @@ defmodule Utility.GenDiff.Data do
     end
   end
 
-  def default_flags_for_command(nil, _), do: []
+  def default_flags_for_command(nil, _, _), do: []
+  def default_flags_for_command(_, nil, _), do: []
 
-  def default_flags_for_command(project, command) do
-    case get_by(project: project, command: command) do
-      %{default_flags: default_flags} -> default_flags
-      _ -> []
+  def default_flags_for_command(project, command, version) do
+    version = if version in ["main", "master"], do: "9999.0.0", else: version
+
+    case {version, get_by(project: project, command: command)} do
+      {nil, %{default_flags: [{_, _} | _] = default_flags}} ->
+        Enum.map(default_flags, &elem(&1, 0))
+
+      {_version, %{default_flags: [{_, _} | _] = default_flags}} ->
+        default_flags
+        |> Enum.filter(fn
+          {_flag, [from: from, until: until]} ->
+            Version.compare(version, from) != :lt && Version.compare(version, until) == :lt
+
+          {_flag, [from: from]} ->
+            Version.compare(version, from) != :lt
+        end)
+        |> Enum.map(&elem(&1, 0))
+
+      {_version, %{default_flags: default_flags}} ->
+        default_flags
+
+      _ ->
+        []
     end
   end
 
@@ -310,7 +358,10 @@ defmodule Utility.GenDiff.Data do
   defp limit_versions(versions, project, command) do
     case get_by(project: project, command: command) do
       %{since: since_version} ->
-        Enum.filter(versions, &(Version.compare(&1, since_version) != :lt))
+        Enum.filter(
+          versions,
+          &(&1 in ["main", "master"] or Version.compare(&1, since_version) != :lt)
+        )
 
       _ ->
         versions
