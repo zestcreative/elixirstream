@@ -111,7 +111,7 @@ defmodule Utility.ProjectBuilder do
             run_command(
               command,
               version,
-              Data.default_flags_for_command(project, command) ++ flags
+              Data.default_flags_for_command(project, command, version) ++ flags
             )
           ],
           " && "
@@ -177,6 +177,10 @@ defmodule Utility.ProjectBuilder do
     "mix archive.install --force hex phx_new 1.5.7"
   end
 
+  def install_archive("surface", version) do
+    install_archive("phx_new", surface_phoenix_version(version))
+  end
+
   def install_archive("credo", _version), do: "true"
 
   def install_archive("rails", version) do
@@ -220,6 +224,28 @@ defmodule Utility.ProjectBuilder do
         """
     end
     |> String.trim()
+  end
+
+  def run_command("surface.init", version_string, flags) do
+    phoenix_version = surface_phoenix_version(version_string)
+    {extra_deps, extra_replaces} = surface_deps_changes(version_string)
+
+    deps_replaces =
+      if version_string == "main" do
+        ~s|sed -i -E 's/\\{:phoenix, "~> (.*)"\\},/{:phoenix, github: "phoenixframework\\/phoenix", override: true}, # Manually changed#{extra_deps}\\n      {:surface, github: "surface-ui\\/surface"}, # Manually changed/g' my_app/mix.exs|
+      else
+        ~s|sed -i 's/{:phoenix, "~> #{phoenix_version}"},/{:phoenix, "~> #{phoenix_version}"},#{extra_deps}\\n      {:surface, "#{version_string}"}, # Manually added/g' my_app/mix.exs|
+      end
+
+    """
+    #{run_command("phx.new", phoenix_version, ["my_app", "--no-ecto", "--no-dashboard"])} &&
+      #{deps_replaces} &&
+      #{extra_replaces}
+      cd my_app &&
+      mix deps.get &&
+      mix surface.init #{Enum.join(flags, " ")} &&
+      rm -rf _build deps mix.lock
+    """
   end
 
   def run_command("phx.new", "master", flags), do: run_command("phx.new", "999.0.0", flags)
@@ -357,6 +383,10 @@ defmodule Utility.ProjectBuilder do
     end
   end
 
+  def docker_tag_for("surface.init", version) do
+    docker_tag_for("phx.new", surface_phoenix_version(version))
+  end
+
   def docker_tag_for("rails new", _version), do: "rails"
   def docker_tag_for("rails webpacker:install", _version), do: "rails"
   def docker_tag_for(_command, _version), do: "latest"
@@ -367,5 +397,65 @@ defmodule Utility.ProjectBuilder do
       "builder",
       prefix <> Base.encode16(:crypto.strong_rand_bytes(4))
     ])
+  end
+
+  def surface_phoenix_version("main"), do: "main"
+
+  def surface_phoenix_version(version) when is_binary(version) do
+    cond do
+      Version.compare(version, "0.10.0") != :lt -> "1.7.7"
+      true -> "1.6.16"
+    end
+  end
+
+  def surface_deps_changes("main"), do: {nil, nil}
+  
+  def surface_deps_changes(version_string) do
+    version = Version.parse!(version_string)
+
+    extra_deps =
+      cond do
+        Version.compare(version, "0.11.1") != :lt ->
+          nil
+
+        Version.compare(version, "0.10.0") != :lt ->
+          ~s'\\n      {:sourceror, "~> 0.12.0"}, # Manually added'
+
+        Version.compare(version, "0.7.0") != :lt ->
+          ~s'\\n      {:sourceror, "~> 0.11.0"}, # Manually added'
+
+        true ->
+          ~s'\\n      {:phoenix_html, "~> 3.2.0"}, # Manually added'
+      end
+
+    extra_replaces =
+      cond do
+        Version.compare(version, "0.11.0") != :lt ->
+          nil
+
+        Version.compare(version, "0.10.0") != :lt ->
+          """
+          sed -i 's/{:phoenix_live_view, "~> 0.19.0"},/{:phoenix_live_view, "~> 0.18.18"}, # Manually changed/g' my_app/mix.exs &&
+          """
+          |> String.trim()
+
+        Version.compare(version, "0.9.0") != :lt ->
+          """
+          sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "0.18.16"}, # Manually changed/g' my_app/mix.exs &&
+          sed -i 's/import Phoenix.LiveView.Helpers/import Phoenix.LiveView.Helpers\\n      import Phoenix.Component # Manually added/g' my_app/lib/my_app_web.ex &&
+          """
+          |> String.trim()
+
+        Version.compare(version, "0.7.0") != :lt ->
+          nil
+
+        true ->
+          """
+          sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "~> 0.16.0"}, # Manually changed/g' my_app/mix.exs &&
+          """
+          |> String.trim()
+      end
+
+    {extra_deps, extra_replaces}
   end
 end

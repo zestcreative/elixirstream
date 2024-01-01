@@ -20,7 +20,8 @@ defmodule Utility.GenDiff.Generator do
     field :id, :string
     field :url, :string
     field :docs_url, :string
-    field :default_flags, {:array, :string}
+    field :from_default_flags, {:array, :string}
+    field :to_default_flags, {:array, :string}
     field :flags, {:array, :string}
     field :help, :string
     field :since, :string
@@ -146,15 +147,25 @@ defmodule Utility.GenDiff.Generator do
   def put_defaults_for_command(changeset) do
     if command = get_field(changeset, :command) do
       project = get_field(changeset, :project)
+      from_version = get_field(changeset, :from_version)
+      to_version = get_field(changeset, :to_version)
 
       changeset
-      |> put_change(:default_flags, Data.default_flags_for_command(project, command))
+      |> put_change(
+        :from_default_flags,
+        Data.default_flags_for_command(project, command, from_version)
+      )
+      |> put_change(
+        :to_default_flags,
+        Data.default_flags_for_command(project, command, to_version)
+      )
       |> put_change(:flags, Data.flags_for_command(project, command))
       |> put_change(:help, Data.help_for_command(project, command))
       |> put_change(:docs_url, Data.docs_url_for_command(project, command))
     else
       changeset
-      |> put_change(:default_flags, [])
+      |> put_change(:from_default_flags, [])
+      |> put_change(:to_default_flags, [])
       |> put_change(:flags, [])
     end
   end
