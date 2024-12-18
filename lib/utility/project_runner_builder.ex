@@ -8,7 +8,7 @@ defmodule Utility.ProjectRunnerBuilder do
 
   def start_link(opts \\ %{}), do: GenServer.start_link(__MODULE__, opts)
 
-  @runners ["latest", "old", "111", "112", "rails"]
+  @runners ["13", "111", "112", "114", "117", "rails27", "rails32"]
   @impl true
   def init(opts) do
     {runners, opts} = Keyword.pop(opts, :runners, @runners)
@@ -68,7 +68,7 @@ defmodule Utility.ProjectRunnerBuilder do
     end
   end
 
-  defp build(dockerfile, tag) do
+  def build(dockerfile, tag) do
     group_id = group_id()
     user_id = user_id()
     user = user()
