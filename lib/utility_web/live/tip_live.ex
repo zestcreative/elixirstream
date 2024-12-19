@@ -266,7 +266,7 @@ defmodule UtilityWeb.TipLive do
         {:noreply,
          socket
          |> put_flash(:error, "Tip not found")
-         |> push_redirect(to: ~p"/tips")}
+         |> push_navigate(to: ~p"/tips")}
 
       tip ->
         if socket.assigns.live_action == :edit && !editable?(tip, socket.assigns.current_user) do

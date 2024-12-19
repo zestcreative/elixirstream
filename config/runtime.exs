@@ -42,8 +42,7 @@ if config_env() == :prod do
     config :sentry,
       dsn: dsn,
       filter: Utility.SentryFilter,
-      environment_name: Application.get_env(:utility, :app_env),
-      included_environments: [:prod],
+      environment_name: :prod,
       enable_source_code_context: true,
       root_source_code_path: File.cwd!(),
       tags: %{

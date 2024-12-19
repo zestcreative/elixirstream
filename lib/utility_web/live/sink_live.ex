@@ -24,7 +24,7 @@ defmodule UtilityWeb.SinkLive do
 
   @impl Phoenix.LiveView
   def handle_params(_params, _uri, socket) do
-    {:noreply, push_redirect(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
+    {:noreply, push_navigate(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
   end
 
   @impl Phoenix.LiveView

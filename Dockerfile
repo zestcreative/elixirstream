@@ -30,7 +30,7 @@ RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 RUN mix assets.deploy
 COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
-RUN mix release
+RUN mix do sentry.package_source_code, release
 
 # APP LAYER
 FROM docker:20.10.24-dind-alpine3.18 AS app
