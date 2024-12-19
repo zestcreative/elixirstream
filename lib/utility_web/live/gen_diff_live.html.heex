@@ -1,75 +1,80 @@
 <Components.page_panel title="Generator Diffs" id="gendiff">
   <:call_to_action>
-    <%= submit form: "gen-diff" ,
-      class: "relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150", id: "submit-diff" , disabled: @building && !@finished_building do %>
+    <button type="submit" form="gen-diff" class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" id="submit-diff" disabled={@building && !@finished_building}>
       <Icon.diff class="w-4 h-4 mr-2 transition ease-in-out duration-150" /> Git Diff
-    <% end %>
+    </button>
   </:call_to_action>
   <:content>
-    <.form :let={f} for={@changeset} id="gen-diff" aria-labelledby="gendiff-title" phx-submit="diff" phx-change="validate" phx-hook="HandleScroll">
+    <.form for={@form} id="gen-diff" aria-labelledby="gendiff-title" phx-submit="diff" phx-change="validate" phx-hook="HandleScroll">
       <div class="mt-6">
         <div>
-          <%= label f, :project, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
+          <.label for={@form[:project]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Project
             <%= if @project_url do %>
               <a rel="nofollow" target="_blank" href={@project_url} class="mt-2 text-xs link">
                 <%= Phoenix.Naming.humanize(@project_source) %>
               </a>
             <% end %>
-          <% end %>
+          </.label>
           <div class="mt-1">
-            <%= select(f, :project, generator_package_options(),
-              autocomplete: "off",
-              class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-            ) %>
+            <.input
+              type="select"
+              field={@form[:project]}
+              autocomplete="off"
+              class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
+              options={generator_package_options()}
+            />
           </div>
         </div>
 
-        <Components.errors form={f} field={:project} />
+        <Components.errors form={@form} field={:project} />
       </div>
 
       <div class="mt-6">
-        <%= label f, :command, class: "block text-sm font-medium text-gray-700 dark:text-gray-300" do %>
+        <.label for={@form[:command]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
           Command
-          <%= if @docs_url do %>
-            <a rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
-              Docs
-            </a>
-          <% end %>
-        <% end %>
-        <%= select(f, :command, generator_options(@project),
-          autocomplete: "off",
-          class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-        ) %>
-        <Components.errors form={f} field={:command} />
-        <%= if @command_help do %>
-          <p class="mt-2 text-sm text-gray-500">
-            <%= @command_help %>
-          </p>
-        <% end %>
+          <a :if={@docs_url} rel="nofollow" target="_blank" href={@docs_url} class="mt-2 text-xs link">
+            Docs
+          </a>
+        </.label>
+        <.input type="select"
+          field={@form[:command]}
+          options={generator_options(@project)}
+          autocomplete="off"
+          class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
+        />
+        <Components.errors form={@form} field={:command} />
+        <p :if={@command_help} class="mt-2 text-sm text-gray-500">
+          <%= @command_help %>
+        </p>
       </div>
 
       <div class="mt-6">
         <div class="my-4">
           <div class="flex -space-x-px shadow-sm">
             <div class="w-1/2 flex-1 min-w-0">
-              <%= label(f, :from_version, "From Version", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
-              <%= select(f, :from_version, version_options(@from_versions),
-                autocomplete: "off",
-                placeholder: "From version...",
-                class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
-              ) %>
-              <Components.errors form={f} field={:from_version} />
+              <.label for={@form[:from_version]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                From Version
+              </.label>
+              <.input type="select"
+                field={@form[:from_version]}
+                options={version_options(@from_versions)}
+                autocomplete="off"
+                placeholder="From version..."
+                class="focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-l-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
+              />
+              <Components.errors form={@form} field={:from_version} />
             </div>
 
             <div class="flex-1 min-w-0">
-              <%= label(f, :to_version, "To Version", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
-              <%= select(f, :to_version, version_options(@to_versions),
-                autocomplete: "off",
-                placeholder: "From version...",
-                class: "focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
-              ) %>
-              <Components.errors form={f} field={:to_version} />
+              <.label for={@form[:to_version]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">To Version</.label>
+              <.input type="select" field={@form[:to_version]}
+                options={version_options(@to_versions)}
+                autocomplete="off"
+                placeholder="From version..."
+                class="focus:ring-brand-500 focus:border-brand-500 relative block w-full rounded-none rounded-r-md focus:z-10 sm:text-sm border-gray-300 dark:border-gray-700"
+              />
+              <Components.errors form={@form} field={:to_version} />
             </div>
           </div>
         </div>
@@ -78,72 +83,63 @@
           <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
           <div class={"flex flex-1 my-4 #{if is_flags_hidden, do: "hidden" }"} }>
             <div class="sm:w-full md:w-1/2">
-              <%= label(f, :from_flags, "From #{@from_version} Flags", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
-              <%= multiple_select(f, :from_flags, @available_from_flags,
-                class: "mt-1 shadow-sm focus:ring-brand-500
-focus:border-brand-500 block w-full sm:text-sm border-gray-300
-dark:border-gray-700 rounded-md overflow-y-hidden",
-                size: length(@available_from_flags)
-              ) %>
-              <Components.errors form={f} field={:from_flags} />
+              <.label for={@form[:from_flags]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                From <%= @from_version %> Flags
+              </.label>
+              <.input type="select" multiple={true} field={@form[:from_flags]} options={@available_from_flags}
+                class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden"
+                size={length(@available_from_flags)}
+              />
+              <Components.errors form={@form} field={:from_flags} />
             </div>
 
             <div class="sm:w-full md:w-1/2">
-              <%= label(f, :to_flags, "To #{@to_version} Flags", class: "block text-sm font-medium text-gray-700 dark:text-gray-300") %>
-              <%= multiple_select(f, :to_flags, @available_to_flags, class: "mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden", size: length(@available_to_flags)) %>
-              <Components.errors form={f} field={:to_flags} />
+              <.label for={@form[:to_flags]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">To <%= @to_version %> Flags</.label>
+              <.input type="select" multiple={true} field={@form[:to_flags]} options={@available_to_flags}
+                class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden"
+                size={length(@available_to_flags)}
+              />
+              <Components.errors form={@form} field={:to_flags} />
             </div>
           </div>
         </div>
       </div>
 
-      <%= if @command && is_flags_hidden do %>
-        <p class="my-4 block text-sm font-medium text-gray-700 dark:text-gray-300">
-          No flags for generator
-        </p>
-      <% end %>
+      <p :if={@command && is_flags_hidden} class="my-4 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        No flags for generator
+      </p>
     </.form>
 
     <div id="runners"></div>
 
-    <%= if @building do %>
-      <div class="relative">
-        <%= unless @finished_building do %>
-          <div class="container flex -mb-6 justify-center mx-auto md:mb-0 md:absolute md:-top-4 md:-right-4 md:justify-end">
-            <div class="rounded-full bg-white dark:bg-black dark:text-white">
-              <Icon.gear class="w-12 h-12 animate-spin" />
-            </div>
-          </div>
-        <% end %>
-
-        <div class="mt-10">
-          <div class="bg-black overflow-x-auto rounded-t-md border-b-4 border-gray-700 border-dashed" id="output-main" phx-update="append">
-            <%= for {line, id} <- @lines_main do %>
-              <span id={"line-#{id}"}>
-                <%= raw(line) %>
-              </span>
-            <% end %>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2">
-          <div class="border-b-4 border-r-0 md:border-b-0 md:border-r-4 border-gray-700 border-dashed bg-black overflow-x-auto" id="output-runner-1" phx-update="append">
-            <%= for {line, id} <- @lines_1 do %>
-              <span id={"line-#{id}"}>
-                <%= raw(line) %>
-              </span>
-            <% end %>
-          </div>
-
-          <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="append">
-            <%= for {line, id} <- @lines_2 do %>
-              <span id={"line-#{id}"}>
-                <%= raw(line) %>
-              </span>
-            <% end %>
-          </div>
+    <div :if={@building} class="relative">
+      <div :if={!@finished_building} class="container flex -mb-6 justify-center mx-auto md:mb-0 md:absolute md:-top-4 md:-right-4 md:justify-end">
+        <div class="rounded-full bg-white dark:bg-black dark:text-white">
+          <Icon.gear class="w-12 h-12 animate-spin" />
         </div>
       </div>
-    <% end %>
+
+      <div class="mt-10">
+        <div class="bg-black overflow-x-auto rounded-t-md border-b-4 border-gray-700 border-dashed" id="output-main" phx-update="stream">
+          <span :for={{id, {line, _}} <- @streams.lines_0} id={id}>
+            <%= raw(line) %>
+          </span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2">
+        <div class="border-b-4 border-r-0 md:border-b-0 md:border-r-4 border-gray-700 border-dashed bg-black overflow-x-auto" id="output-runner-1" phx-update="stream">
+          <span :for={{id, {line, _}} <- @streams.lines_1} id={id}>
+            <%= raw(line) %>
+          </span>
+        </div>
+
+        <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="stream">
+          <span :for={{id, {line, _}} <- @streams.lines_2} id={id}>
+            <%= raw(line) %>
+          </span>
+        </div>
+      </div>
+    </div>
   </:content>
 </Components.page_panel>

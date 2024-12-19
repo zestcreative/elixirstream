@@ -8,7 +8,6 @@ defmodule UtilityWeb.GenDiffLive do
   alias Utility.GenDiff.Data
   alias Utility.GenDiff.Storage
   alias Utility.GenDiff.Generator
-  import Phoenix.HTML.Form
   alias Ecto.Changeset
 
   @impl Phoenix.LiveView
@@ -19,8 +18,11 @@ defmodule UtilityWeb.GenDiffLive do
      socket
      |> assign(page_title: "Generator Diff")
      |> assign(record: record, building: false, finished_building: false)
-     |> assign(changeset: Generator.changeset(record, %{}))
-     |> assign_changeset(%{}), temporary_assigns: [lines_1: [], lines_2: [], lines_main: []]}
+     |> assign(form: record |> Generator.changeset(%{}) |> to_form())
+     |> assign_changeset(%{})
+     |> stream_configure(:lines_0, dom_id: fn {_safe_iodata, id} -> "lines-0-#{id}" end)
+     |> stream_configure(:lines_1, dom_id: fn {_safe_iodata, id} -> "lines-1-#{id}" end)
+     |> stream_configure(:lines_2, dom_id: fn {_safe_iodata, id} -> "lines-2-#{id}" end)}
   end
 
   @impl Phoenix.LiveView
@@ -58,12 +60,11 @@ defmodule UtilityWeb.GenDiffLive do
 
       {:noreply,
        socket
-       |> assign(
-         generator: generator,
-         finished_building: false,
-         building: true,
-         lines_main: [{@waiting, "waiting"}]
-       )
+       |> assign(generator: generator, finished_building: false, building: true)
+       |> stream(:lines_0, [], reset: true)
+       |> stream(:lines_1, [], reset: true)
+       |> stream(:lines_2, [], reset: true)
+       |> stream_insert(:lines_0, {@waiting, "waiting"})
        |> runner_to_id(generator, :from)
        |> runner_to_id(generator, :to)
        |> push_event("scroll", %{to: "#runners"})}
@@ -72,7 +73,7 @@ defmodule UtilityWeb.GenDiffLive do
         {:noreply, redirect(socket, to: show_path_for(generator))}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, :changeset, changeset)}
+        {:noreply, assign(socket, :form, to_form(changeset))}
     end
   end
 
@@ -102,13 +103,13 @@ defmodule UtilityWeb.GenDiffLive do
 
     cond do
       String.starts_with?(id, socket.assigns.runner_from) ->
-        {:noreply, assign(socket, :lines_1, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_1, {line, id})}
 
       String.starts_with?(id, socket.assigns.runner_to) ->
-        {:noreply, assign(socket, :lines_2, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_2, {line, id})}
 
       true ->
-        {:noreply, assign(socket, :lines_main, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_0, {line, id})}
     end
   end
 
@@ -121,7 +122,7 @@ defmodule UtilityWeb.GenDiffLive do
   end
 
   defp assign_changeset(socket, params) do
-    {params, record} = maybe_reset(params, socket.assigns.changeset, socket.assigns.record)
+    {params, record} = maybe_reset(params, socket.assigns.form, socket.assigns.record)
     changeset = Generator.changeset(record, params)
 
     project = Changeset.get_field(changeset, :project)
@@ -137,7 +138,7 @@ defmodule UtilityWeb.GenDiffLive do
     command = Changeset.get_field(changeset, :command)
 
     socket
-    |> assign(:changeset, changeset)
+    |> assign(:form, to_form(changeset))
     |> assign(:project, project)
     |> assign(:project_url, Changeset.get_field(changeset, :url))
     |> assign(:project_source, Changeset.get_field(changeset, :source))
@@ -154,8 +155,9 @@ defmodule UtilityWeb.GenDiffLive do
     |> assign(:available_to_flags, Data.flags_for_command(project, command, to))
   end
 
-  defp maybe_reset(%{"project" => project} = params, %{params: %{"project" => project}}, record),
-    do: {params, record}
+  defp maybe_reset(%{"project" => project} = params, %{params: %{"project" => project}}, record) do
+    {params, record}
+  end
 
   defp maybe_reset(
          %{"project" => different_project} = params,

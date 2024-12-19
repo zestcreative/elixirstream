@@ -98,23 +98,17 @@ defmodule UtilityWeb.GenDiffHTML do
 
   def line_type(line), do: to_string(line.type)
 
-  def line_text("+" <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "+ ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
+  attr :text, :string, required: true
+  attr :symbol, :string, default: nil
+  def diff_line(%{text: "+" <> text} = assigns) do
+    assigns =
+      case assigns.text do
+        "+" <> text -> assigns |> assign(:text, text) |> assign(:symbol, "+")
+        "-" <> text -> assigns |> assign(:text, text) |> assign(:symbol, "-")
+        " " <> text -> assigns |> assign(:text, text) |> assign(:symbol, " ")
+        true -> assign(assigns, :text, text)
+      end
 
-  def line_text("-" <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "- ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
-
-  def line_text(" " <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "  ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
-
-  def line_text(text), do: [Phoenix.HTML.Tag.content_tag(:span, text)]
+    ~H"<span :if={@symbol} class=\"ghd-line-status\"><%= @symbol %> </span><span><%= @text %></span>"
+  end
 end

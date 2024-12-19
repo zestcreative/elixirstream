@@ -16,11 +16,11 @@ defmodule Utility.Application do
         # Start the PubSub system
         {Phoenix.PubSub, name: Utility.PubSub},
         # Start the Endpoint (http/https)
-        UtilityWeb.Endpoint,
         Utility.Redix,
-        {Oban, oban_config()}
+        {Oban, oban_config()},
         # Start a worker by calling: Utility.Worker.start_link(arg)
-        # {Utility.Worker, arg}
+        # {Utility.Worker, arg},
+        UtilityWeb.Endpoint
       ]
       |> project_runner_builder()
 

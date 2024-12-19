@@ -1,8 +1,8 @@
 defmodule UtilityWeb.Components.Tip do
   @moduledoc false
   use UtilityWeb, :component
+  import UtilityWeb.Components
   import Utility.Accounts, only: [admin?: 1]
-  import Phoenix.HTML.Form, only: [label: 4, text_input: 3, textarea: 3]
 
   def show_approve?(%{approved: true}, _current_user), do: false
   def show_approve?(_tip, current_user), do: admin?(current_user)
@@ -79,23 +79,25 @@ defmodule UtilityWeb.Components.Tip do
 
   def edit(assigns) do
     ~H"""
-    <.form :let={f} id="tipform" for={@changeset} phx-change={@phx_change} phx-submit={@phx_submit}>
+    <.form id="tipform" for={@form} phx-change={@phx_change} phx-submit={@phx_submit}>
       <.contributor user={@tip_form.contributor} />
 
       <div class="mt-2 text-sm dark:text-gray-300 text-gray-700 space-y-4">
         <div class="mt-1">
-          <%= label(f, :title, "Title", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
+          <.label for={@form[:title]} class="block text-sm font-medium dark:text-gray-300 text-gray-700">Title</.label>
           <div class="mt-1">
-            <%= text_input(f, :title, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md") %>
-            <Components.errors form={f} field={:title} />
+            <.input type="text" field={@form[:title]} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" />
+            <Components.errors form={@form} field={:title} />
           </div>
         </div>
 
         <div class="mt-1">
-          <%= label(f, :description, "Description", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
+          <.label for={@form[:description]} class="block text-sm font-medium dark:text-gray-300 text-gray-700">Description</.label>
           <div class="mt-1">
-            <%= textarea(f, :description, class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md") %>
-            <Components.errors form={f} field={:description} />
+            <.input type="textarea" field={@form[:description]}
+            class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md"
+            />
+            <Components.errors form={@form} field={:description} />
           </div>
 
           <div class="relative pt-1">
@@ -110,14 +112,16 @@ defmodule UtilityWeb.Components.Tip do
       </div>
 
       <div class="mt-1">
-        <%= label(f, :code, "Code", class: "block text-sm font-medium dark:text-gray-300 text-gray-700") %>
+        <.label for={@form[:code]} class="block text-sm font-medium dark:text-gray-300 text-gray-700">Code</.label>
         <div class="w-full" id="code-editor-content" class="mt-1" phx-hook="CodeMirror" data-mount-replace-selector="#code-editor-mount-replace" data-mount-selector="#code-editor-container">
           <div id="code-editor-container" phx-update="ignore">
-            <%= textarea(f, :code, class: "font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full
-              sm:text-sm dark:border-gray-700 border-gray-300 rounded-md", rows: 12, id: "code-editor-mount-replace") %>
+            <.input type="textarea" field={@form[:code]}
+              class="font-mono shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md"
+              rows={12}
+              id="code-editor-mount-replace" />
           </div>
           <span class="text-gray-500 text-xs"><kbd>ESC</kbd> toggles trapping tab</span>
-          <Components.errors form={f} field={:code} />
+          <Components.errors form={@form} field={:code} />
         </div>
       </div>
 
@@ -171,7 +175,7 @@ defmodule UtilityWeb.Components.Tip do
     """
   end
 
-  attr :changeset, Ecto.Changeset, required: true
+  attr :form, Phoenix.HTML.Form, required: true
   attr :phx_change, :string, required: true
   attr :meta, Quarto.Config, default: nil
   attr :id, :string, required: true
@@ -189,15 +193,15 @@ defmodule UtilityWeb.Components.Tip do
           <Icon.search class="h-5 w-5 text-gray-400" />
         </div>
 
-        <.form :let={f} as={:search} for={@changeset} phx-submit="" phx-change={@phx_change} id={"#{@id}-form"}>
-          <%= Phoenix.HTML.Form.search_input(f, :q,
-            phx_debounce: "250",
-            class: "block w-full rounded-none border-brand-500 pl-10 focus:border-brand-700 focus:ring-brand-500 sm:text-sm",
-            maxlength: "75",
-            phx_hook: "RegisterSlash",
-            placeholder: "Search tips",
-            id: @id
-          ) %>
+        <.form as={:search} for={@form} phx-submit="" phx-change={@phx_change} id={"#{@id}-form"}>
+        <.input type="search" field={@form[:q]}
+            phx-debounce="250"
+            class="block w-full rounded-none border-brand-500 pl-10 focus:border-brand-700 focus:ring-brand-500 sm:text-sm"
+            maxlength={75}
+            phx-hook="RegisterSlash"
+            placeholder="Search tips"
+            id={@id}
+          />
         </.form>
       </div>
       <Components.button phx-click="next-page" class={"#{if !@meta.after, do: "invisible"} relative -ml-px inline-flex items-center space-x-2 rounded-r-md px-4 py-2 text-sm font-medium shadow-sm"}>

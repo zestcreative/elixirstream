@@ -1,8 +1,11 @@
+/** @type {import('tailwindcss').Config} */
 const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require("tailwindcss/plugin")
 
 module.exports = {
   content: [
     '../lib/utility_web/**/*.*ex',
+    '../lib/utility_web.ex',
     './js/**/*.js'
   ],
   darkMode: 'class',
@@ -110,6 +113,14 @@ module.exports = {
   plugins: [
     require('@tailwindcss/forms'),
     require('@tailwindcss/typography'),
-    require('@tailwindcss/aspect-ratio')
+    require('@tailwindcss/aspect-ratio'),
+    // Allows prefixing tailwind classes with LiveView classes to add rules
+    // only when LiveView classes are applied, for example:
+    //
+    //     <div class="phx-click-loading:animate-ping">
+    //
+    plugin(({addVariant}) => addVariant("phx-click-loading", [".phx-click-loading&", ".phx-click-loading &"])),
+    plugin(({addVariant}) => addVariant("phx-submit-loading", [".phx-submit-loading&", ".phx-submit-loading &"])),
+    plugin(({addVariant}) => addVariant("phx-change-loading", [".phx-change-loading&", ".phx-change-loading &"])),
   ],
 }

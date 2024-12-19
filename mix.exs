@@ -38,7 +38,7 @@ defmodule Utility.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:ansi_to_html, "~> 0.4"},
+      {:ansi_to_html, "~> 0.6"},
       {:castore, ">= 0.0.0"},
       {:ecto, "~> 3.11.0", override: true},
       {:ecto_sql, "~> 3.11.0", override: true},
@@ -54,10 +54,10 @@ defmodule Utility.MixProject do
       {:oban, "~> 2.3"},
       {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.0"},
-      {:phoenix_html, "~> 3.0"},
+      {:phoenix_html, "~> 4.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
-      {:phoenix_live_view, "~> 0.18"},
+      {:phoenix_live_view, "~> 1.0"},
       {:bandit, ">= 0.6.8"},
       {:postgrex, ">= 0.19.0", override: true},
       {:quarto, "~> 1.0"},

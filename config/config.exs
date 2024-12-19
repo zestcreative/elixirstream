@@ -9,7 +9,7 @@ import Config
 
 config :utility,
   ecto_repos: [Utility.Repo],
-  generators: [binary_id: true],
+  generators: [binary_id: true, timestamp_type: :utc_datetime],
   redis_url: System.get_env("REDIS_URL", "redis://127.0.0.1:6379"),
   redis_pool_size: 5,
   gendiff_storage: Utility.GenDiff.StorageLocal,
@@ -40,7 +40,7 @@ config :utility, UtilityWeb.Endpoint,
   live_view: [signing_salt: "pni4F/on"]
 
 config :esbuild,
-  version: "0.14.41",
+  version: "0.17.11",
   default: [
     args:
       ~w(js/app.js --bundle --target=es2017 --loader:.ttf=file --outdir=../priv/static/assets --external:/fonts/* --external:/images/*),
@@ -49,7 +49,7 @@ config :esbuild,
   ]
 
 config :tailwind,
-  version: "3.3.5",
+  version: "3.4.13",
   default: [
     args: ~w[
       --config=tailwind.config.js
