@@ -4,7 +4,7 @@ set -e
 # sourced from https://github.com/fly-apps/docker-daemon
 
 echo "Allowing ipv6 forwarding via sysctl"
-ip6tables-legacy -t nat -A POSTROUTING -s 2001:db8:1::/64 ! -o docker0 -j MASQUERADE
+ip6tables -t nat -A POSTROUTING -s 2001:db8:1::/64 ! -o docker0 -j MASQUERADE
 sysctl net.ipv6.conf.default.forwarding=1
 sysctl net.ipv6.conf.all.forwarding=1
 
@@ -49,4 +49,4 @@ sysctl net.ipv4.udp_wmem_min=16384
 
 export DOCKER_TMPDIR="/storage/dockertmp"
 mkdir -p /storage/docker
-dockerd -p /var/run/docker.pid &
+dockerd -p /var/run/docker.sock --tls=false &

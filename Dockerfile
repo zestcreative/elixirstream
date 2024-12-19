@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.17.3-erlang-27.2-alpine-3.21.0 AS build
+FROM hexpm/elixir:1.17.3-erlang-27.2-alpine-3.18.9 AS build
 RUN apk add --no-cache build-base npm git gcompat \
     expat-dev pkgconfig fontconfig fontconfig-dev freetype-dev freetype \
     libxcb libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev \
@@ -33,14 +33,14 @@ COPY rel ./rel
 RUN mix do sentry.package_source_code, release
 
 # APP LAYER
-FROM docker/buildx-bin:v0.12 as buildx
-FROM docker:27.4.0-dind-alpine3.21 AS app
+FROM docker:20.10.24-dind-alpine3.18 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
     ip6tables pigz sysstat procps lsof sudo bind-tools expat-dev pkgconfig \
     fontconfig fontconfig-dev freetype-dev freetype libxcb libxcb-dev \
     xclip harfbuzz harfbuzz-dev libxkbcommon-dev libxml2 libxml2-dev \
     font-fira-code-nerd uuidgen coreutils pngquant
-RUN addgroup -S --gid 1000 app && \
+RUN addgroup -S docker && \
+    addgroup -S --gid 1000 app && \
     adduser -D -G app --uid 1000 app && \
     addgroup -S app docker && \
     echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup" >> /etc/sudoers
@@ -48,7 +48,6 @@ RUN addgroup -S --gid 1000 app && \
 ## COPY RELEASE
 WORKDIR /app
 RUN chown -R 1000:1000 /app
-COPY --from=buildx /buildx /root/.docker/cli-plugins/docker-buildx
 COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
 COPY --from=build /bin/silicon /bin/silicon
 COPY priv/docker-setup /sbin/docker-setup

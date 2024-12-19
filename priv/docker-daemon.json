@@ -1,8 +1,6 @@
 {
     "data-root": "/storage/docker",
-    "experimental": true,
     "ipv6": true,
-    "ip6tables": true,
     "fixed-cidr-v6": "2001:db8:1::/64",
     "default-address-pools": [
       {
@@ -10,9 +8,6 @@
         "size": 24
       }
     ],
-    "features": {
-      "buildkit": true
-    },
     "hosts": [
         "unix:///var/run/docker.sock",
         "tcp://[::]:2375"
