@@ -100,15 +100,16 @@ defmodule UtilityWeb.GenDiffHTML do
 
   attr :text, :string, required: true
   attr :symbol, :string, default: nil
-  def diff_line(%{text: "+" <> text} = assigns) do
+
+  def diff_line(assigns) do
     assigns =
       case assigns.text do
         "+" <> text -> assigns |> assign(:text, text) |> assign(:symbol, "+")
         "-" <> text -> assigns |> assign(:text, text) |> assign(:symbol, "-")
         " " <> text -> assigns |> assign(:text, text) |> assign(:symbol, " ")
-        true -> assign(assigns, :text, text)
+        text -> assign(assigns, :text, text)
       end
 
-    ~H"<span :if={@symbol} class=\"ghd-line-status\"><%= @symbol %> </span><span><%= @text %></span>"
+    ~H|<span :if={@symbol} class="ghd-line-status">{@symbol}</span><span><%= @text %></span>|
   end
 end

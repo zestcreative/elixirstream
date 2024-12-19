@@ -280,12 +280,14 @@ defmodule UtilityWeb.RegexLive do
 
   attr :type, :atom, required: true
   attr :string, :string, required: true
-  def span_match(assigns) do
-    assigns = assign_new(assigns, :class, fn
-      %{type: :matched} -> "m"
-      _ -> "u"
-    end)
 
-    ~H"<span class={@class}><%= @string %></span>"
+  def span_match(assigns) do
+    assigns =
+      assign_new(assigns, :class, fn
+        %{type: :matched} -> "m"
+        _ -> "u"
+      end)
+
+    ~H"<span class={@class}>{@string}</span>"
   end
 end

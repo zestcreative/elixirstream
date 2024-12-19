@@ -55,7 +55,8 @@ defmodule UtilityWeb.SinkLive do
           with :json <- format, {:ok, parsed} <- Jason.encode(body, pretty: true) do
             assign(assigns, :body, parsed)
           else
-            _ -> assign(assigns, :body, inspect(body, limit: :infinity, printable_limit: :infinity))
+            _ ->
+              assign(assigns, :body, inspect(body, limit: :infinity, printable_limit: :infinity))
           end
       end
 

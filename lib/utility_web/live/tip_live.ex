@@ -91,8 +91,8 @@ defmodule UtilityWeb.TipLive do
     {:ok,
      socket
      |> assign(
-        searching: false,
-        search_form: %{} |> search_changeset() |> to_form(as: :q)
+       searching: false,
+       search_form: %{} |> search_changeset() |> to_form(as: :q)
      )
      |> mount_new_tip()}
   end

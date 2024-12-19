@@ -1,6 +1,12 @@
 <Components.page_panel title="Generator Diffs" id="gendiff">
   <:call_to_action>
-    <button type="submit" form="gen-diff" class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150" id="submit-diff" disabled={@building && !@finished_building}>
+    <button
+      type="submit"
+      form="gen-diff"
+      class="relative inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-50 transition ease-in-out duration-150"
+      id="submit-diff"
+      disabled={@building && !@finished_building}
+    >
       <Icon.diff class="w-4 h-4 mr-2 transition ease-in-out duration-150" /> Git Diff
     </button>
   </:call_to_action>
@@ -12,18 +18,12 @@
             Project
             <%= if @project_url do %>
               <a rel="nofollow" target="_blank" href={@project_url} class="mt-2 text-xs link">
-                <%= Phoenix.Naming.humanize(@project_source) %>
+                {Phoenix.Naming.humanize(@project_source)}
               </a>
             <% end %>
           </.label>
           <div class="mt-1">
-            <.input
-              type="select"
-              field={@form[:project]}
-              autocomplete="off"
-              class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-              options={generator_package_options()}
-            />
+            <.input type="select" field={@form[:project]} autocomplete="off" class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md" options={generator_package_options()} />
           </div>
         </div>
 
@@ -37,15 +37,10 @@
             Docs
           </a>
         </.label>
-        <.input type="select"
-          field={@form[:command]}
-          options={generator_options(@project)}
-          autocomplete="off"
-          class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md"
-        />
+        <.input type="select" field={@form[:command]} options={generator_options(@project)} autocomplete="off" class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md" />
         <Components.errors form={@form} field={:command} />
         <p :if={@command_help} class="mt-2 text-sm text-gray-500">
-          <%= @command_help %>
+          {@command_help}
         </p>
       </div>
 
@@ -56,7 +51,8 @@
               <.label for={@form[:from_version]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                 From Version
               </.label>
-              <.input type="select"
+              <.input
+                type="select"
                 field={@form[:from_version]}
                 options={version_options(@from_versions)}
                 autocomplete="off"
@@ -68,7 +64,9 @@
 
             <div class="flex-1 min-w-0">
               <.label for={@form[:to_version]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">To Version</.label>
-              <.input type="select" field={@form[:to_version]}
+              <.input
+                type="select"
+                field={@form[:to_version]}
                 options={version_options(@to_versions)}
                 autocomplete="off"
                 placeholder="From version..."
@@ -84,9 +82,13 @@
           <div class={"flex flex-1 my-4 #{if is_flags_hidden, do: "hidden" }"} }>
             <div class="sm:w-full md:w-1/2">
               <.label for={@form[:from_flags]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                From <%= @from_version %> Flags
+                From {@from_version} Flags
               </.label>
-              <.input type="select" multiple={true} field={@form[:from_flags]} options={@available_from_flags}
+              <.input
+                type="select"
+                multiple={true}
+                field={@form[:from_flags]}
+                options={@available_from_flags}
                 class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden"
                 size={length(@available_from_flags)}
               />
@@ -94,11 +96,8 @@
             </div>
 
             <div class="sm:w-full md:w-1/2">
-              <.label for={@form[:to_flags]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">To <%= @to_version %> Flags</.label>
-              <.input type="select" multiple={true} field={@form[:to_flags]} options={@available_to_flags}
-                class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden"
-                size={length(@available_to_flags)}
-              />
+              <.label for={@form[:to_flags]} class="block text-sm font-medium text-gray-700 dark:text-gray-300">To {@to_version} Flags</.label>
+              <.input type="select" multiple={true} field={@form[:to_flags]} options={@available_to_flags} class="mt-1 shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm border-gray-300 dark:border-gray-700 rounded-md overflow-y-hidden" size={length(@available_to_flags)} />
               <Components.errors form={@form} field={:to_flags} />
             </div>
           </div>
@@ -122,7 +121,7 @@
       <div class="mt-10">
         <div class="bg-black overflow-x-auto rounded-t-md border-b-4 border-gray-700 border-dashed" id="output-main" phx-update="stream">
           <span :for={{id, {line, _}} <- @streams.lines_0} id={id}>
-            <%= raw(line) %>
+            {raw(line)}
           </span>
         </div>
       </div>
@@ -130,13 +129,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2">
         <div class="border-b-4 border-r-0 md:border-b-0 md:border-r-4 border-gray-700 border-dashed bg-black overflow-x-auto" id="output-runner-1" phx-update="stream">
           <span :for={{id, {line, _}} <- @streams.lines_1} id={id}>
-            <%= raw(line) %>
+            {raw(line)}
           </span>
         </div>
 
         <div class="bg-black overflow-x-auto" id="output-runner-2" phx-update="stream">
           <span :for={{id, {line, _}} <- @streams.lines_2} id={id}>
-            <%= raw(line) %>
+            {raw(line)}
           </span>
         </div>
       </div>

@@ -6,11 +6,11 @@
       type="button"
       class={[
         "relative inline-flex items-center px-4 py-2 font-medium text-white bg-brand-600 border transition ease-in-out duration-150 border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700",
-        (if @record.id && !changed?(@form), do: "opacity-50 cursor-not-allowed")
+        if(@record.id && !changed?(@form), do: "opacity-50 cursor-not-allowed")
       ]}
     >
       <Icon.link class="w-4 h-5 mr-2 fill-current" />
-      <%= if @record.id && !changed?(@form), do: "Saved", else: "Permalink" %>
+      {if @record.id && !changed?(@form), do: "Saved", else: "Permalink"}
     </button>
   </:call_to_action>
 
@@ -24,12 +24,7 @@
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pr-3 font-normal tracking-widest text-gray-500 pointer-events-none">
                 ~r/
               </div>
-              <.input type="text" field={@form[:regex]}
-                autofocus={true}
-                placeholder="regex"
-                autocomplete="off"
-                class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5"
-              />
+              <.input type="text" field={@form[:regex]} autofocus={true} placeholder="regex" autocomplete="off" class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5" />
               <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">
                 /
               </div>
@@ -50,12 +45,7 @@
           <div class="sm:col-span-1">
             <.label for={@form[:flags]} class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700">Flags</.label>
             <div class="relative mt-1 rounded-md shadow-sm">
-              <.input type="text" field={@form[:flags]}
-                placeholder="flags"
-                phx-hook="MaskFlags"
-                autocomplete="off"
-                class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5"
-              />
+              <.input type="text" field={@form[:flags]} placeholder="flags" phx-hook="MaskFlags" autocomplete="off" class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5" />
             </div>
             <Components.errors form={@form} field={:flags} />
             <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
@@ -66,8 +56,7 @@
           <div class="sm:col-span-6">
             <.label for={@form[:string]} class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700">String</.label>
             <div class="mt-1 rounded-md shadow-sm">
-              <.input field={@form[:string]} type="textarea" spellcheck="false" rows={6} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5"
-              />
+              <.input field={@form[:string]} type="textarea" spellcheck="false" rows={6} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5" />
             </div>
             <Components.errors form={@form} field={:string} />
           </div>
@@ -93,12 +82,14 @@
             </p>
             <div class="flex flex-wrap mt-1 space-x-8">
               <div class="flex items-center">
-                <input type="radio"
+                <input
+                  type="radio"
                   id={@form[:function].id <> "_run"}
                   name={@form[:function].name}
                   value="run"
                   checked={@form[:function].value == "run"}
-                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" />
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
                 <label field="regex_live_function_run" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Run
@@ -106,12 +97,14 @@
                 </label>
               </div>
               <div class="flex items-center">
-                <input type="radio"
+                <input
+                  type="radio"
                   id={@form[:function].id <> "_named_captures"}
                   name={@form[:function].name}
                   value="named_captures"
                   checked={@form[:function].value == "named_captures"}
-                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" />
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
                 <label field="regex_live_function_named_captures" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Named Captures
@@ -119,12 +112,14 @@
                 </label>
               </div>
               <div class="flex items-center">
-                <input type="radio"
+                <input
+                  type="radio"
                   id={@form[:function].id <> "_scan"}
                   name={@form[:function].name}
                   value="scan"
                   checked={@form[:function].value == "scan"}
-                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out" />
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
                 <label for="regex_live_function_scan" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Scan
