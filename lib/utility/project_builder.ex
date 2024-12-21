@@ -366,20 +366,22 @@ defmodule Utility.ProjectBuilder do
     """
   end
 
-  @phx_latest_at Version.parse!("1.7.0-rc.0")
+  @phx_117_at Version.parse!("1.8.0-rc.0")
+  @phx_114_at Version.parse!("1.7.0-rc.0")
   @phx_112_at Version.parse!("1.6.0-rc.0")
   @phx_111_at Version.parse!("1.3.0")
-  def docker_tag_for("phx.new", "master"), do: "latest"
-  def docker_tag_for("phx.new", "main"), do: "latest"
+  def docker_tag_for("phx.new", "master"), do: "117"
+  def docker_tag_for("phx.new", "main"), do: "117"
 
   def docker_tag_for("phx.new", version) do
     version = Version.parse!(version)
 
     cond do
-      Version.compare(version, @phx_latest_at) != :lt -> "latest"
+      Version.compare(version, @phx_117_at) != :lt -> "117"
+      Version.compare(version, @phx_114_at) != :lt -> "114"
       Version.compare(version, @phx_112_at) != :lt -> "112"
       Version.compare(version, @phx_111_at) != :lt -> "111"
-      true -> "old"
+      true -> "13"
     end
   end
 
@@ -387,9 +389,20 @@ defmodule Utility.ProjectBuilder do
     docker_tag_for("phx.new", surface_phoenix_version(version))
   end
 
-  def docker_tag_for("rails new", _version), do: "rails"
-  def docker_tag_for("rails webpacker:install", _version), do: "rails"
-  def docker_tag_for(_command, _version), do: "latest"
+  @rails_32_at Version.parse!("7.2.0")
+  def docker_tag_for("rails new", version) do
+    cond do
+      Version.compare(version, @rails_32_at) != :lt -> "rails32"
+      true -> "rails27"
+    end
+  end
+  def docker_tag_for("rails webpacker:install", version) do
+    cond do
+      Version.compare(version, @rails_32_at) != :lt -> "rails32"
+      true -> "rails27"
+    end
+  end
+  def docker_tag_for(_command, _version), do: "117"
 
   defp tmp_path(prefix) do
     Path.join([
@@ -409,7 +422,7 @@ defmodule Utility.ProjectBuilder do
   end
 
   def surface_deps_changes("main"), do: {nil, nil}
-  
+
   def surface_deps_changes(version_string) do
     version = Version.parse!(version_string)
 

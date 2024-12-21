@@ -1,4 +1,4 @@
-FROM ruby:2.7
+FROM ruby:3.2
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
     echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
@@ -32,7 +32,7 @@ ENV LANG=en_US.UTF-8 \
     DEBIAN_FRONTEND=noninteractive
 
 RUN mkdir -p /cache/.gem && \
-    gem update --system
+    gem update --system 3.6
 
 ARG USER_ID=1000
 ARG GROUP_ID=1001
@@ -44,7 +44,10 @@ RUN groupadd --gid $GROUP_ID $USER && \
 
 USER $USER
 WORKDIR /app
-RUN echo "gem: --no-document" > $HOME/.gemrc && \
-    gem install mysql2 pg sqlite3 bundler
+RUN echo "gem: --no-document" > $HOME/.gemrc
+RUN gem install sqlite3 -v 2.4.1
+RUN gem install mysql2
+RUN gem install pg
+RUN gem install bundler
 
 CMD ["/bin/bash"]
