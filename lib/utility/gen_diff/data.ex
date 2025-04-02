@@ -29,10 +29,12 @@ defmodule Utility.GenDiff.Data do
             {"--no-brunch", [from: "1.0.0", until: "1.4.0"]},
             {"--no-dashboard", [from: "1.5.0"]},
             {"--no-ecto", [from: "1.0.0"]},
+            {"--no-esbuild", [from: "1.7.2"]},
             {"--no-gettext", [from: "1.4.12"]},
             {"--no-html", [from: "1.0.0"]},
             {"--no-live", [from: "1.6.0"]},
             {"--no-mailer", [from: "1.6.0"]},
+            {"--no-tailwind", [from: "1.7.2"]},
             {"--no-webpack", [from: "1.4.0", until: "1.6.0"]},
             {"--umbrella", [from: "1.3.0"]}
           ]
@@ -44,6 +46,7 @@ defmodule Utility.GenDiff.Data do
           help:
             "phx.gen.auth used to be distributed separately as phx_gen_auth, but was merged into Phoenix in 1.6",
           flags: [
+            {"--scope", [from: "1.8.0-rc.0"]},
             {"--live", [from: "1.7.0-rc.0"]},
             {"--no-live", [from: "1.7.0-rc.0"]},
             {"--binary-id", [from: "1.6.0"]},
