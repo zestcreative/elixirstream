@@ -196,28 +196,30 @@ defmodule Utility.ProjectBuilder do
   end
 
   @phx_gen_auth_merged Version.parse!("1.6.0")
+  @no_compile_flag Version.parse!("1.7.13")
   def run_command("phx.gen.auth", version_string, flags) do
     with {:ok, version} <- Version.parse(version_string),
-         :lt <- Version.compare(version, @phx_gen_auth_merged) do
-      # This is the separate phx_gen_auth package
+         true <- Version.compare(version, @phx_gen_auth_merged) != :lt do
+      flags = if Version.compare(version, @no_compile_flag) == :lt, do: flags, else: flags ++ ["--no-compile"]
+      # phx.gen.auth is merged into phx_new package
+      # sed will make sure the actual version is used and not a later version.
       """
       elixir --version &&
-      #{run_command("phx.new", "1.5.7", ["my_app"])} &&
-        sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
+      #{run_command("phx.new", version_string, ["my_app"])} &&
         cd my_app &&
+        (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
         mix deps.get &&
         mix phx.gen.auth #{Enum.join(flags, " ")} &&
         rm -rf _build deps mix.lock
       """
     else
       _ ->
-        # phx.gen.auth is merged into phx_new package
-        # sed will make sure the actual version is used and not a later version.
+        # This is the separate phx_gen_auth package
         """
         elixir --version &&
-        #{run_command("phx.new", version_string, ["my_app"])} &&
+        #{run_command("phx.new", "1.5.7", ["my_app"])} &&
+          sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
           cd my_app &&
-          (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
           mix deps.get &&
           mix phx.gen.auth #{Enum.join(flags, " ")} &&
           rm -rf _build deps mix.lock
