@@ -16,7 +16,7 @@ defmodule UtilityWeb.Endpoint do
       timeout: 45_000,
       connect_info: [session: @session_options]
     ],
-    longpoll: false
+    longpoll: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #

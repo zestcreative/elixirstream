@@ -20,15 +20,15 @@
             <input type="date" name="tip_live[published_at]" form="tipform" min={Date.to_iso8601(Date.utc_today())} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md" />
           </div>
         </div>
-        <%= submit form: "tipform", id: "create-tip", class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+        <button type="submit" form="tipform" id="create-tip" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
           <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" /> Submit!
-        <% end %>
+        </button>
       <% end %>
 
       <%= if @live_action == :edit && @editable? do %>
-        <%= submit id: "update-tip", class: "ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" do %>
+        <button type="submit" id="update-tip" class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500">
           <Icon.loading class="animate-spin hidden -ml-1 mr-3 h-5 w-5 text-white" /> Update
-        <% end %>
+        </button>
         <%= if @tip.twitter_status_id do %>
           <p class="text-xs mx-2 text-gray-600">
             Tweet is already published. <br />Updating will not update the tweet
@@ -42,11 +42,9 @@
   </:call_to_action>
 
   <:navigation>
-    <%= if @live_action == :index do %>
-      <div class="flex justify-center">
-        <Components.Tip.search meta={@page_metadata} changeset={@search_changeset} phx_change="search" id="search-form" />
-      </div>
-    <% end %>
+    <div :if={@live_action == :index} class="flex justify-center">
+      <Components.Tip.search meta={@page_metadata} form={@search_form} phx_change="search" id="search-form" />
+    </div>
   </:navigation>
 
   <:content>

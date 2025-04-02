@@ -9,7 +9,7 @@ defmodule UtilityWeb.Components do
 
   def outbound_link(assigns) do
     ~H"""
-    <.link rel="nofollow noopener" href={@href} {@rest}><%= render_slot(@inner_block) %></.link>
+    <.link rel="nofollow noopener" href={@href} {@rest}>{render_slot(@inner_block)}</.link>
     """
   end
 
@@ -30,7 +30,7 @@ defmodule UtilityWeb.Components do
       ]}
       {@rest}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -49,7 +49,7 @@ defmodule UtilityWeb.Components do
 
     ~H"""
     <div data-tab-group={@group} data-tab={"tab-#{@id}-content"} id={"tab-#{@id}-content"} class={"#{@class} #{@active_class}"}>
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </div>
     """
   end
@@ -61,7 +61,7 @@ defmodule UtilityWeb.Components do
   def tab_select(assigns) do
     ~H"""
     <label class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700" for={"#{@group}-select"}>
-      <%= @title %>
+      {@title}
     </label>
     <select
       class="mt-1 rounded-md focus:ring focus:ring-blue-500 focus:ring-opacity-50 focus:border-accent-500 block w-full pl-3 pr-10 py-2 text-base leading-6 dark:border-gray-700 border-gray-300 sm:text-sm sm:leading-5 transition ease-in-out duration-150"
@@ -70,7 +70,7 @@ defmodule UtilityWeb.Components do
       id={"#{@group}-select"}
       phx-change={JS.dispatch("changeTab", detail: %{active: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]})}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </select>
     """
   end
@@ -98,7 +98,7 @@ defmodule UtilityWeb.Components do
       phx-click={JS.dispatch("changeTab", detail: %{active: ["border-brand-300", "text-gray-700", "dark:text-gray-300"]})}
       class={"ring-brand-900 px-1 py-4 ml-8 text-sm font-medium text-gray-500 whitespace-no-wrap border-b-4 border-transparent leading-5 dark:hover:text-gray-300 hover:text-gray-700 hover:border-brand-500 focus:outline-none dark:focus:text-gray-300 focus:text-gray-700 focus:border-brand-500 #{@active_class}"}
     >
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </button>
     """
   end
@@ -106,37 +106,35 @@ defmodule UtilityWeb.Components do
   attr :id, :string, required: true
   attr :title, :string, required: true
   slot :title_area
-  slot :call_to_action, default: []
-  slot :navigation, default: []
+  slot :call_to_action
+  slot :navigation
   slot :content, required: true
 
   def page_panel(assigns) do
     ~H"""
-    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto sm:mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8" id={@id}>
+    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto sm:mx-auto px-0 sm:px-6 lg:max-w-7xl lg:px-8">
       <section aria-labelledby={"#{@id}-title"}>
         <div class="rounded-lg dark:bg-gray-900 bg-white overflow-hidden shadow">
-          <h2 class="sr-only" id={"#{@id}-title"}><%= @title %></h2>
+          <h2 class="sr-only" id={"#{@id}-title"}>{@title}</h2>
           <div class="dark:bg-gray-800 bg-white p-6">
             <div class="sm:flex sm:items-center sm:justify-between">
               <div class="sm:flex sm:space-x-5 items-center">
-                <%= render_slot(@title_area) %>
+                {render_slot(@title_area)}
                 <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
                   <p class="text-xl font-bold dark:text-gray-100 text-gray-900 sm:text-2xl">
-                    <%= @title %>
+                    {@title}
                   </p>
                 </div>
               </div>
               <div class="mt-5 flex items-center justify-center sm:mt-0">
-                <%= render_slot(@call_to_action) %>
+                {render_slot(@call_to_action)}
               </div>
             </div>
-            <%= if @navigation != [] do %>
-              <div class="mt-5">
-                <%= render_slot(@navigation) %>
-              </div>
-            <% end %>
+            <div :if={@navigation != []} class="mt-5">
+              {render_slot(@navigation)}
+            </div>
 
-            <%= render_slot(@content) %>
+            {render_slot(@content)}
           </div>
         </div>
       </section>
@@ -182,14 +180,15 @@ defmodule UtilityWeb.Components do
       <.input field={{f, :email}} type="email" />
       <.input name="my-input" errors={["oh no!"]} />
   """
-  attr :id, :any
+  attr :id, :any, default: nil
   attr :name, :any
   attr :label, :string, default: nil
+  attr :class, :string, default: nil
 
   attr :type, :string,
     default: "text",
-    values: ~w[checkbox color date datetime-local email file hidden month number password
-               range radio search select tel text textarea time url week]
+    values: ~w[checkbox color date datetime-local email file month number password
+               range search select tel text textarea time url week]
 
   attr :value, :any
   attr :field, :any, doc: "a %Phoenix.HTML.Form{}/field name tuple, for example: {f, :email}"
@@ -198,20 +197,19 @@ defmodule UtilityWeb.Components do
   attr :prompt, :string, default: nil, doc: "the prompt for select inputs"
   attr :options, :list, doc: "the options to pass to Phoenix.HTML.Form.options_for_select/2"
   attr :multiple, :boolean, default: false, doc: "the multiple flag for select inputs"
-  attr :rest, :global, include: ~w[autocomplete disabled form max maxlength min minlength
-                                   pattern placeholder readonly required size step]
-  slot :inner_block
 
-  def input(%{field: {f, field}} = assigns) do
+  attr :rest, :global,
+    include: ~w[accept autocomplete capture cols disabled form max maxlength min minlength
+                                   multiple pattern placeholder readonly required rows size step]
+
+  def input(%{field: %Phoenix.HTML.FormField{} = field} = assigns) do
+    errors = if Phoenix.Component.used_input?(field), do: field.errors, else: []
+
     assigns
-    |> assign(field: nil)
-    |> assign_new(:name, fn ->
-      name = Phoenix.HTML.Form.input_name(f, field)
-      if assigns.multiple, do: name <> "[]", else: name
-    end)
-    |> assign_new(:id, fn -> Phoenix.HTML.Form.input_id(f, field) end)
-    |> assign_new(:value, fn -> Phoenix.HTML.Form.input_value(f, field) end)
-    |> assign_new(:errors, fn -> translate_errors(f.errors || [], field) end)
+    |> assign(field: nil, id: assigns.id || field.id)
+    |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
+    |> assign_new(:value, fn -> field.value end)
+    |> assign_new(:errors, fn -> translate_errors(errors || [], field) end)
     |> input()
   end
 
@@ -219,52 +217,50 @@ defmodule UtilityWeb.Components do
     assigns = assign_new(assigns, :checked, fn -> input_equals?(assigns.value, "true") end)
 
     ~H"""
-    <label phx-feedback-for={@name} class="flex items-center gap-4 text-sm leading-6 text-zinc-600">
+    <label class={@class || "flex items-center gap-4 text-sm leading-6 text-zinc-600"}>
       <input type="hidden" name={@name} value="false" />
-      <input type="checkbox" id={@id || @name} name={@name} value="true" checked={@checked} class="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900" {@rest} />
-      <%= @label %>
+      <input type="checkbox" id={@id} name={@name} value="true" checked={@checked} disabled={@rest[:disabled]} class={@class || "rounded border-zinc-300 text-zinc-900 focus:ring-0"} {@rest} />
+      {@label}
     </label>
     """
   end
 
   def input(%{type: "select"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
-      <select id={@id} name={@name} class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm" multiple={@multiple} {@rest}>
-        <option :if={@prompt}><%= @prompt %></option>
-        <%= Phoenix.HTML.Form.options_for_select(@options, @value) %>
+    <div>
+      <.label for={@id}>{@label}</.label>
+      <select id={@id} name={@name} class={@class || "mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-zinc-500 focus:border-zinc-500 sm:text-sm"} multiple={@multiple} {@rest}>
+        <option :if={@prompt}>{@prompt}</option>
+        {Phoenix.HTML.Form.options_for_select(@options, @value)}
       </select>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
   def input(%{type: "textarea"} = assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+    <div>
+      <.label for={@id}>{@label}</.label>
       <textarea
         id={@id || @name}
         name={@name}
         class={[
           input_border(@errors),
-          "mt-2 block min-h-[6rem] w-full rounded-lg border-zinc-300 py-[7px] px-[11px]",
-          "text-zinc-900 focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-800/5 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5"
+          @class || "mt-2 block min-h-[6rem] w-full rounded-lg border-zinc-300 py-[7px] px-[11px] text-zinc-900 focus:border-zinc-400 focus:outline-none focus:ring-4 focus:ring-zinc-800/5 sm:text-sm sm:leading-6"
         ]}
         {@rest}
       >
     <%= @value %></textarea>
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
 
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
-      <.label for={@id}><%= @label %></.label>
+    <div>
+      <.label for={@id}>{@label}</.label>
       <input
         type={@type}
         name={@name}
@@ -272,13 +268,11 @@ defmodule UtilityWeb.Components do
         value={@value}
         class={[
           input_border(@errors),
-          "mt-2 block w-full rounded-lg border-zinc-300 py-[7px] px-[11px]",
-          "text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400 phx-no-feedback:focus:ring-zinc-800/5"
+          @class || "mt-2 block w-full rounded-lg border-zinc-300 py-[7px] px-[11px] text-zinc-900 focus:outline-none focus:ring-4 sm:text-sm sm:leading-6"
         ]}
         {@rest}
       />
-      <.error :for={msg <- @errors}><%= msg %></.error>
+      <.error :for={msg <- @errors}>{msg}</.error>
     </div>
     """
   end
@@ -293,12 +287,19 @@ defmodule UtilityWeb.Components do
   Renders a label.
   """
   attr :for, :string, default: nil
+  attr :class, :string, default: nil
   slot :inner_block, required: true
 
   def label(assigns) do
+    assigns =
+      case assigns.for do
+        %{id: id} -> assign(assigns, :for, id)
+        id -> assign(assigns, :for, id)
+      end
+
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
-      <%= render_slot(@inner_block) %>
+    <label for={@for} class={@class || "block text-sm font-semibold leading-6 text-zinc-800"}>
+      {render_slot(@inner_block)}
     </label>
     """
   end
@@ -311,7 +312,7 @@ defmodule UtilityWeb.Components do
   def error(assigns) do
     ~H"""
     <p class="phx-no-feedback:hidden mt-3 flex gap-3 text-sm leading-6 text-rose-600">
-      <%= render_slot(@inner_block) %>
+      {render_slot(@inner_block)}
     </p>
     """
   end
@@ -321,7 +322,7 @@ defmodule UtilityWeb.Components do
 
   def errors(assigns) do
     ~H"""
-    <.error :for={msg <- translate_errors(@form.errors || [], @field)}><%= msg %></.error>
+    <.error :for={msg <- translate_errors(@form.errors || [], @field)}>{msg}</.error>
     """
   end
 

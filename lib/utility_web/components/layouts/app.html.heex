@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-  <%= Phoenix.Template.render(UtilityWeb.Layouts, "nav", "html", assigns) %>
+  {Phoenix.Template.render(UtilityWeb.Layouts, "nav", "html", assigns)}
   <main class="-mt-24 pb-8">
     <%= if info = Phoenix.Flash.get(@flash, :info) do %>
       <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
@@ -17,7 +17,7 @@
                     Success!
                   </p>
                   <p class="mt-1 text-sm dark:text-gray-300 text-gray-500 leading-5">
-                    <%= info %>
+                    {info}
                   </p>
                 </div>
                 <div class="flex flex-shrink-0 ml-4">
@@ -50,7 +50,7 @@
                     Error!
                   </p>
                   <p class="mt-1 text-sm dark:text-gray-300 text-gray-500 leading-5">
-                    <%= error %>
+                    {error}
                   </p>
                 </div>
                 <div class="flex flex-shrink-0 ml-4">
@@ -67,7 +67,7 @@
       </div>
     <% end %>
 
-    <%= @inner_content %>
+    {@inner_content}
   </main>
-  <%= Phoenix.Template.render(UtilityWeb.Layouts, "footer", "html", assigns) %>
+  {Phoenix.Template.render(UtilityWeb.Layouts, "footer", "html", assigns)}
 </div>

@@ -6,8 +6,8 @@ config :utility, Utility.Repo,
   database: "utility_test#{System.get_env("MIX_TEST_PARTITION")}",
   show_sensitive_data_on_connection_error: true,
   hostname: "localhost",
-  pool_size: 10,
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  pool_size: System.schedulers_online() * 2
 
 if System.get_env("CI") do
   config :utility, Utility.Repo,
@@ -33,3 +33,7 @@ config :utility, Oban,
 
 # Print only warnings and errors during test
 config :logger, level: :warning
+
+# Enable helpful, but potentially expensive runtime checks
+config :phoenix_live_view,
+  enable_expensive_runtime_checks: true

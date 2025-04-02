@@ -1,6 +1,6 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.14.3-erlang-25.2.3-alpine-3.18.0 AS build
+FROM hexpm/elixir:1.17.3-erlang-27.2-alpine-3.18.9 AS build
 RUN apk add --no-cache build-base npm git gcompat \
     expat-dev pkgconfig fontconfig fontconfig-dev freetype-dev freetype \
     libxcb libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev \
@@ -20,7 +20,7 @@ COPY mix.exs mix.lock ./
 COPY config/config.exs ./config/config.exs
 COPY config/prod.exs ./config/prod.exs
 COPY VERSION .
-RUN mix do deps.get --only prod, deps.compile
+RUN mix do deps.get --only prod, deps.compile, tailwind.install, esbuild.install
 
 ## BUILD RELEASE
 COPY assets ./assets
@@ -30,7 +30,7 @@ RUN npm --prefix ./assets ci --progress=false --no-audit --loglevel=error
 RUN mix assets.deploy
 COPY config/runtime.exs ./config/runtime.exs
 COPY rel ./rel
-RUN mix release
+RUN mix do sentry.package_source_code, release
 
 # APP LAYER
 FROM docker:20.10.24-dind-alpine3.18 AS app

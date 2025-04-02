@@ -36,7 +36,7 @@ config :utility, UtilityWeb.Endpoint,
   live_reload: [
     iframe_attrs: [class: "hidden"],
     patterns: [
-      ~r"priv/static/(?!uploads).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
       ~r"lib/utility_web/(live|views)/.*(ex)$",
       ~r"lib/utility_web/templates/.*(eex)$"
     ]
@@ -51,3 +51,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true

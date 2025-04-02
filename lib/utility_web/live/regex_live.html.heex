@@ -1,45 +1,40 @@
 <Components.page_panel title="Regex Tester" id="regex-tester">
   <:call_to_action>
-    <% is_disabled = @record.id && !changed?(@changeset) %>
     <button
       phx-click="permalink"
-      disabled={is_disabled}
+      disabled={@record.id && !changed?(@form)}
       type="button"
-      class={
-        "relative inline-flex items-center px-4 py-2 font-medium text-white bg-brand-600 border transition ease-in-out duration-150 border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700 #{if is_disabled, do: "opacity-50 cursor-not-allowed"}"
-      }
+      class={[
+        "relative inline-flex items-center px-4 py-2 font-medium text-white bg-brand-600 border transition ease-in-out duration-150 border-transparent leading-5 rounded-md hover:bg-brand-500 focus:outline-none focus:shadow-outline-brand focus:border-brand-700 active:bg-brand-700",
+        if(@record.id && !changed?(@form), do: "opacity-50 cursor-not-allowed")
+      ]}
     >
       <Icon.link class="w-4 h-5 mr-2 fill-current" />
-      <%= if @record.id && !changed?(@changeset), do: "Saved", else: "Permalink" %>
+      {if @record.id && !changed?(@form), do: "Saved", else: "Permalink"}
     </button>
   </:call_to_action>
 
   <:content>
-    <div id="regex-tester-content" phx-hook="ConfirmBeforeLeave" data-is-changed={changed?(@changeset)}>
-      <.form :let={f} for={@changeset} phx-change="validate">
+    <div id="regex-tester-content">
+      <.form for={@form} phx-change="validate">
         <div class="mt-6 grid grid-cols-1 row-gap-6 col-gap-4 sm:grid-cols-6">
           <div class="sm:col-span-5">
-            <%= label(f, :regex, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
+            <.label for={@form[:regex]} class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700">Regex</.label>
             <div class="relative mt-1 mr-2 rounded-md shadow-sm">
               <div class="absolute inset-y-0 left-0 flex items-center pl-3 pr-3 font-normal tracking-widest text-gray-500 pointer-events-none">
                 ~r/
               </div>
-              <%= text_input(f, :regex,
-                placeholder: "regex",
-                autofocus: true,
-                autocomplete: "off",
-                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5"
-              ) %>
+              <.input type="text" field={@form[:regex]} autofocus={true} placeholder="regex" autocomplete="off" class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md pr-8 pl-10 font-mono sm:leading-5" />
               <div class="absolute inset-y-0 flex items-center pl-3 font-normal leading-normal text-gray-500 pointer-events-none right-4">
                 /
               </div>
             </div>
-            <Components.errors form={f} field={:regex} />
+            <Components.errors form={@form} field={:regex} />
             <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
               For example:
-              <%= if @function == "named_captures" do %>
+              <%= if @form[:function].value == "named_captures" do %>
                 <code class="select-all">
-                  \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z
+                  \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d&lbrace;10,11&rbrace;)(?:\.(?&lt;subseconds&gt;\d&lbrace;1,10&rbrace;))?\z
                 </code>
               <% else %>
                 <code class="select-all">\A[a-z0-9-]+\z</code>
@@ -48,31 +43,22 @@
           </div>
 
           <div class="sm:col-span-1">
-            <%= label(f, :flags, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
+            <.label for={@form[:flags]} class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700">Flags</.label>
             <div class="relative mt-1 rounded-md shadow-sm">
-              <%= text_input(f, :flags,
-                placeholder: "flags",
-                phx_hook: "MaskFlags",
-                autocomplete: "off",
-                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5"
-              ) %>
+              <.input type="text" field={@form[:flags]} placeholder="flags" phx-hook="MaskFlags" autocomplete="off" class="shadow-sm focus:ring-brand-500 focus:border-brand-500 block w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono sm:leading-5" />
             </div>
-            <Components.errors form={f} field={:flags} />
+            <Components.errors form={@form} field={:flags} />
             <p class="p-1 font-mono text-xs dark:text-gray-300 text-gray-700">
               U f i m s u x
             </p>
           </div>
 
           <div class="sm:col-span-6">
-            <%= label(f, :string, class: "block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700") %>
+            <.label for={@form[:string]} class="block text-sm font-medium leading-5 dark:text-gray-300 text-gray-700">String</.label>
             <div class="mt-1 rounded-md shadow-sm">
-              <%= textarea(f, :string,
-                spellcheck: "false",
-                rows: 6,
-                class: "shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5"
-              ) %>
+              <.input field={@form[:string]} type="textarea" spellcheck="false" rows={6} class="shadow-sm focus:ring-brand-500 focus:border-brand-500 w-full sm:text-sm dark:border-gray-700 border-gray-300 rounded-md font-mono block w-full sm:leading-5" />
             </div>
-            <Components.errors form={f} field={:string} />
+            <Components.errors form={@form} field={:string} />
           </div>
         </div>
 
@@ -96,23 +82,44 @@
             </p>
             <div class="flex flex-wrap mt-1 space-x-8">
               <div class="flex items-center">
-                <%= radio_button(f, :function, "run", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
-                <label for="regex_live_function_run" class="ml-2">
+                <input
+                  type="radio"
+                  id={@form[:function].id <> "_run"}
+                  name={@form[:function].name}
+                  value="run"
+                  checked={@form[:function].value == "run"}
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
+                <label field="regex_live_function_run" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Run
                   </span>
                 </label>
               </div>
               <div class="flex items-center">
-                <%= radio_button(f, :function, "named_captures", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
-                <label for="regex_live_function_named_captures" class="ml-2">
+                <input
+                  type="radio"
+                  id={@form[:function].id <> "_named_captures"}
+                  name={@form[:function].name}
+                  value="named_captures"
+                  checked={@form[:function].value == "named_captures"}
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
+                <label field="regex_live_function_named_captures" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Named Captures
                   </span>
                 </label>
               </div>
               <div class="flex items-center">
-                <%= radio_button(f, :function, "scan", class: "dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out") %>
+                <input
+                  type="radio"
+                  id={@form[:function].id <> "_scan"}
+                  name={@form[:function].name}
+                  value="scan"
+                  checked={@form[:function].value == "scan"}
+                  class="dark:border-gray-700 border-gray-300 rounded-md focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 h-4 w-4 text-brand-600 transition duration-150 ease-in-out"
+                />
                 <label for="regex_live_function_scan" class="ml-2">
                   <span class="text-sm font-medium dark:text-gray-300 text-gray-700 leading-5">
                     Scan
@@ -140,8 +147,7 @@ pretty: true
           Visualization
         </p>
         <div class="w-full p-2 my-2 font-mono dark:bg-gray-700 bg-gray-200 rounded">
-          <pre class="overflow-x-auto matches"><%= for {type, string} <- assigns.matched,
-                                                        do: span_match(type, string) %></pre>
+          <pre class="overflow-x-auto matches"><.span_match :for={{type, string} <- @matched} type={type} string={string} /></pre>
         </div>
       </.form>
     </div>
@@ -250,15 +256,15 @@ pretty: true
             <dd>One or more of a</dd>
           </div>
           <div class="w-full p-2 md:w-1/3">
-            <dt class="font-semibold select-all"><code>a{3}</code></dt>
+            <dt class="font-semibold select-all"><code>a&lbrace;3&rbrace;</code></dt>
             <dd>Exactly 3 of a</dd>
           </div>
           <div class="w-full p-2 md:w-1/3">
-            <dt class="font-semibold select-all"><code>a{3,}</code></dt>
+            <dt class="font-semibold select-all"><code>a&lbrace;3,&rbrace;</code></dt>
             <dd>3 or more of a</dd>
           </div>
           <div class="w-full p-2 md:w-1/3">
-            <dt class="font-semibold select-all"><code>a{3,6}</code></dt>
+            <dt class="font-semibold select-all"><code>a&lbrace;3,6&rbrace;</code></dt>
             <dd>Between 3 and 6 of a</dd>
           </div>
         </dl>
@@ -349,7 +355,7 @@ pretty: true
             </dt>
             <dd>
               <code class="select-all">
-                \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z
+                \A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d&lbrace;10,11&rbrace;)(?:\.(?&lt;subseconds&gt;\d&lbrace;1,10&rbrace;))?\z
               </code>
             </dd>
           </div>

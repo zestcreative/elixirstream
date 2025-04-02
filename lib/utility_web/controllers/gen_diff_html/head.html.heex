@@ -11,7 +11,7 @@
     <select id="themeChooser" class="dark:border-gray-800 border-gray-200 focus:ring-indigo-500 focus:border-brand-500 ml-6 py-1 pl-2 pr-4 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md">
       <option disabled>Site theme</option>
       <%= for theme <- themes() do %>
-        <option id={"theme-#{theme}"} value={theme}><%= theme %></option>
+        <option id={"theme-#{theme}"} value={theme}>{theme}</option>
       <% end %>
     </select>
 

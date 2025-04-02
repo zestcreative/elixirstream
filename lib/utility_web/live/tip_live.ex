@@ -2,7 +2,6 @@ defmodule UtilityWeb.TipLive do
   use UtilityWeb, :live_view
   use Ecto.Schema
   import Utility.Accounts, only: [admin?: 1]
-  import Phoenix.HTML.Form, only: [submit: 2]
   alias Ecto.Changeset
   alias Utility.TipCatalog
   require Logger
@@ -91,7 +90,10 @@ defmodule UtilityWeb.TipLive do
 
     {:ok,
      socket
-     |> assign(searching: false, search_changeset: search_changeset(%{}))
+     |> assign(
+       searching: false,
+       search_form: %{} |> search_changeset() |> to_form(as: :q)
+     )
      |> mount_new_tip()}
   end
 
@@ -232,7 +234,7 @@ defmodule UtilityWeb.TipLive do
     end
   end
 
-  def handle_event("search", %{"search" => search}, socket) do
+  def handle_event("search", %{"q" => search}, socket) do
     params = [search: search]
     {:noreply, socket |> push_patch(to: ~p"/tips?#{params}")}
   end
@@ -266,7 +268,7 @@ defmodule UtilityWeb.TipLive do
         {:noreply,
          socket
          |> put_flash(:error, "Tip not found")
-         |> push_redirect(to: ~p"/tips")}
+         |> push_navigate(to: ~p"/tips")}
 
       tip ->
         if socket.assigns.live_action == :edit && !editable?(tip, socket.assigns.current_user) do
@@ -287,7 +289,7 @@ defmodule UtilityWeb.TipLive do
            |> assign(:tip, tip)
            |> assign(:tip_form, tip_form)
            |> assign(:page_title, tip.title)
-           |> assign(:changeset, changeset(tip_form, %{}))
+           |> assign(:form, tip_form |> changeset(%{}) |> to_form())
            |> assign_computed()}
         end
     end
@@ -312,11 +314,11 @@ defmodule UtilityWeb.TipLive do
         {:noreply,
          socket
          |> load_tips(search: q, by_latest: true)
-         |> assign(:search_changeset, search_changeset)
+         |> assign(:search_form, to_form(search_changeset, as: :q))
          |> assign(:searching, true)}
 
       {:error, search_changeset} ->
-        {:noreply, assign(socket, search_changeset: search_changeset)}
+        {:noreply, assign(socket, search_form: to_form(search_changeset, as: :q))}
     end
   end
 
@@ -326,19 +328,19 @@ defmodule UtilityWeb.TipLive do
      |> mount_new_tip()
      |> assign(tips: [])
      |> assign(page_metadata: nil)
-     |> assign(search_changeset: search_changeset(params))}
+     |> assign(search_form: params |> search_changeset() |> to_form(as: :q))}
   end
 
   def handle_params(params, _uri, socket) do
     {:noreply,
      socket
      |> load_tips(params)
-     |> assign(search_changeset: search_changeset(params))}
+     |> assign(search_form: params |> search_changeset() |> to_form(as: :q))}
   end
 
   defp mount_new_tip(socket) do
     tip_form = %__MODULE__{contributor: socket.assigns.current_user}
-    changeset = changeset(tip_form, %{published_at: Date.utc_today() |> Date.to_iso8601()})
+    changeset = tip_form |> changeset(%{published_at: Date.utc_today() |> Date.to_iso8601()})
     placeholder_code = Changeset.get_field(changeset, :code)
 
     socket

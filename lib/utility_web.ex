@@ -37,6 +37,7 @@ defmodule UtilityWeb do
   def live_view do
     quote do
       use Phoenix.LiveView, layout: {UtilityWeb.Layouts, :app}
+      import UtilityWeb.Components
 
       unquote(html_helpers())
     end
