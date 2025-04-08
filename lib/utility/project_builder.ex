@@ -196,11 +196,9 @@ defmodule Utility.ProjectBuilder do
   end
 
   @phx_gen_auth_merged Version.parse!("1.6.0")
-  @no_compile_flag Version.parse!("1.7.13")
   def run_command("phx.gen.auth", version_string, flags) do
     with {:ok, version} <- Version.parse(version_string),
          true <- Version.compare(version, @phx_gen_auth_merged) != :lt do
-      flags = if Version.compare(version, @no_compile_flag) == :lt, do: flags, else: flags ++ ["--no-compile"]
       # phx.gen.auth is merged into phx_new package
       # sed will make sure the actual version is used and not a later version.
       """
