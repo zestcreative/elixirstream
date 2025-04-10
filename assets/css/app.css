@@ -285,7 +285,7 @@
   }
 
   .dark .ghd-line-type-add .ghd-line-number {
-    background-color: rgba(46, 160, 67, 0.1);
+    background-color: rgb(9,49,14);
     color: rgb(126, 231, 135);
   }
 
@@ -307,7 +307,7 @@
 
   .dark .ghd-line-type-remove .ghd-line-number {
     color: rgb(248, 81, 73);
-    background-color: rgba(218, 54, 51, 0.1);
+    background-color: rgb(92,18,16);
   }
 
   .ghd-line-number div {
@@ -470,4 +470,3 @@
   .dark .highlight .vi {color: #f8f8f2; } /* :name_variable_instance */
   .dark .highlight .vm {color: #f8f8f2; } /* :name_variable_magic */
 }
-
