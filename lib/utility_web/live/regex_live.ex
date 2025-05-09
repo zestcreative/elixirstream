@@ -5,7 +5,6 @@ defmodule UtilityWeb.RegexLive do
 
   use UtilityWeb, :live_view
   use Ecto.Schema
-  import Phoenix.HTML.Form
   alias Ecto.Changeset
   alias Utility.Cache
   require Logger
@@ -64,7 +63,7 @@ defmodule UtilityWeb.RegexLive do
   @one_year 60 * 60 * 24 * 365
   @impl Phoenix.LiveView
   def handle_event("permalink", _content, socket) do
-    with {:ok, record} <- Changeset.apply_action(socket.assigns.changeset, :insert),
+    with {:ok, record} <- Changeset.apply_action(socket.assigns.form.source, :insert),
          record <- %{record | id: Ecto.UUID.generate()},
          {:ok, _} <-
            Cache.multi([
@@ -89,10 +88,10 @@ defmodule UtilityWeb.RegexLive do
   end
 
   defp assign_changeset(socket, params) do
-    changeset = changeset(socket.assigns.record, params)
+    changeset = socket.assigns.record |> changeset(params) |> Map.put(:action, :insert)
 
     socket
-    |> assign(:changeset, Map.put(changeset, :action, :insert))
+    |> assign(:form, to_form(changeset))
     |> assign(:function, Changeset.get_field(changeset, :function))
     |> assign(:matched, Changeset.get_field(changeset, :matched))
     |> assign(:pasta, Changeset.get_field(changeset, :pasta))
@@ -275,11 +274,20 @@ defmodule UtilityWeb.RegexLive do
 
   defp cache_key_for(id), do: "regex-#{id}"
 
-  def changed?(changeset) do
-    Map.take(changeset.changes, [:regex, :string, :flags, :function]) != %{}
+  def changed?(form) do
+    Map.take(form.data, [:regex, :string, :flags, :function]) != %{}
   end
 
-  def span_match(type, string) do
-    Phoenix.HTML.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
+  attr :type, :atom, required: true
+  attr :string, :string, required: true
+
+  def span_match(assigns) do
+    assigns =
+      assign_new(assigns, :class, fn
+        %{type: :matched} -> "m"
+        _ -> "u"
+      end)
+
+    ~H"<span class={@class}>{@string}</span>"
   end
 end

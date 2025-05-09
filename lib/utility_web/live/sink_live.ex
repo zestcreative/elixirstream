@@ -9,7 +9,7 @@ defmodule UtilityWeb.SinkLive do
      socket
      |> assign(:page_title, "HTTP Sink")
      |> assign(:id, nil)
-     |> assign(:requests, []), temporary_assigns: [requests: []]}
+     |> stream(:requests, [])}
   end
 
   @impl Phoenix.LiveView
@@ -24,45 +24,46 @@ defmodule UtilityWeb.SinkLive do
 
   @impl Phoenix.LiveView
   def handle_params(_params, _uri, socket) do
-    {:noreply, push_redirect(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
+    {:noreply, push_navigate(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
   end
 
   @impl Phoenix.LiveView
   def handle_info(payload, socket) do
-    {:noreply, assign(socket, requests: [payload])}
+    {:noreply, stream_insert(socket, :requests, payload, at: 0)}
   end
 
   @gif_header <<0x47, 0x49, 0x46, 0x38>>
   @png_header <<0x89, 0x50, 0x4E, 0x47>>
   @jpg_header <<0xFF, 0xD8>>
-  defp render_body(%{format: :json, body_params: body}) do
-    case Jason.encode(body, pretty: true) do
-      {:ok, parsed} ->
-        Phoenix.HTML.Tag.content_tag(:pre, parsed, class: "whitespace-pre select-all")
+  attr :encoded, :any, default: nil
+  attr :body, :any, default: nil
+  attr :request, UtilityWeb.HTTPSink, required: true
 
-      {:error, _} ->
-        render_body(%{body_params: body})
-    end
-  end
+  def render_body(assigns) do
+    assigns =
+      case assigns.request do
+        %{body_params: @gif_header <> _rest = body} ->
+          assign(assigns, :encoded, ["data:image/gif;base64,", Base.encode64(body)])
 
-  defp render_body(%{body_params: @gif_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/gif;base64,", Base.encode64(body)])
-  end
+        %{body_params: @png_header <> _rest = body} ->
+          assign(assigns, :encoded, ["data:image/png;base64,", Base.encode64(body)])
 
-  defp render_body(%{body_params: @png_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/png;base64,", Base.encode64(body)])
-  end
+        %{body_params: @jpg_header <> _rest = body} ->
+          assign(assigns, :encoded, ["data:image/jpeg;base64,", Base.encode64(body)])
 
-  defp render_body(%{body_params: @jpg_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/jpeg;base64,", Base.encode64(body)])
-  end
+        %{body_params: body, format: format} ->
+          with :json <- format, {:ok, parsed} <- Jason.encode(body, pretty: true) do
+            assign(assigns, :body, parsed)
+          else
+            _ ->
+              assign(assigns, :body, inspect(body, limit: :infinity, printable_limit: :infinity))
+          end
+      end
 
-  defp render_body(%{body_params: body}) do
-    Phoenix.HTML.Tag.content_tag(
-      :pre,
-      inspect(body, limit: :infinity, printable_limit: :infinity),
-      class: "whitespace-pre select-all"
-    )
+    ~H"""
+    <img :if={@encoded} src={@encoded} />
+    <pre :if={!@encoded} class="whitespace-pre select-all"><%= @body %></pre>
+    """
   end
 
   def hide_warning(js \\ %JS{}) do

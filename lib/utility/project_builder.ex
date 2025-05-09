@@ -395,12 +395,14 @@ defmodule Utility.ProjectBuilder do
       true -> "rails27"
     end
   end
+
   def docker_tag_for("rails webpacker:install", version) do
     cond do
       Version.compare(version, @rails_32_at) != :lt -> "rails32"
       true -> "rails27"
     end
   end
+
   def docker_tag_for(_command, _version), do: "117"
 
   defp tmp_path(prefix) do
