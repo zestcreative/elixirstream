@@ -243,7 +243,7 @@ defmodule Utility.ProjectBuilder do
       cd my_app &&
       mix deps.get &&
       mix surface.init #{Enum.join(flags, " ")} &&
-      rm -rf _build deps mix.lock
+      rm -rf _build deps mix.lock .git
     """
   end
 
@@ -255,6 +255,7 @@ defmodule Utility.ProjectBuilder do
     elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
       shopt -s globstar &&
+      rm -rf "#{where}/.git" &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}/**/*.ex* &> /dev/null || true)
     """
@@ -265,6 +266,7 @@ defmodule Utility.ProjectBuilder do
     elixir --version &&
     yes n | mix phx.new #{Enum.join(flags, " ")} &&
       shopt -s globstar &&
+      rm -rf "#{where}/.git" &&
       (sed -i 's/secret_key_base: ".*"/secret_key_base: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true) &&
       (sed -i 's/signing_salt: ".*"/signing_salt: "foo"/g' #{where}_umbrella/**/*.ex* &> /dev/null || true)
     """
@@ -354,7 +356,7 @@ defmodule Utility.ProjectBuilder do
       cd my_app &&
       mix deps.get &&
       mix credo.gen.config &&
-      rm -rf _build deps mix.exs mix.lock
+      rm -rf _build deps mix.exs mix.lock .git
     """
   end
 
