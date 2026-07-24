@@ -10,7 +10,7 @@ primary_region = "dfw"
 processes = []
 
 [deploy]
-  release_command = "/app/bin/utility eval 'Utility.Release.migrate()'"
+  release_command = "sh -c 'sudo /sbin/storage-setup && /app/bin/utility eval Utility.Release.migrate()'"
 
 [env]
   PORT = "4000"

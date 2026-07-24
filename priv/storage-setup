@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+# The Fly volume mounts root-owned; make the app's dir writable by uid 1000.
+# Run as root (via sudo) before the release boots — both start.sh and the
+# deploy release_command need this.
+mkdir -p /storage/utility
+chown app:app /storage/utility

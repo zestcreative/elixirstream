@@ -37,15 +37,16 @@ RUN (getent group docker || addgroup -S docker) && \
     addgroup -S --gid 1000 app && \
     adduser -D -G app --uid 1000 app && \
     addgroup -S app docker && \
-    echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup" >> /etc/sudoers
+    echo "app ALL=(ALL) NOPASSWD: /sbin/docker-setup, /sbin/storage-setup" >> /etc/sudoers
 
 ## COPY RELEASE
 WORKDIR /app
 RUN chown -R 1000:1000 /app
 COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
 COPY priv/docker-setup /sbin/docker-setup
+COPY priv/storage-setup /sbin/storage-setup
 COPY priv/docker-daemon.json /etc/docker/daemon.json
-RUN chmod 711 /sbin/docker-setup
+RUN chmod 711 /sbin/docker-setup /sbin/storage-setup
 USER app
 WORKDIR /app
 ENV HOME=/app
