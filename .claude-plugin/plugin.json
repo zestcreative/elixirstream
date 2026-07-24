@@ -1,0 +1,12 @@
+{
+  "name": "elixirstream",
+  "description": "Skills for using elixirstream.dev from your coding agent. Includes the gendiff skill for upgrading Elixir/Phoenix code generators from real, flag-accurate diffs.",
+  "version": "0.1.0",
+  "author": {
+    "name": "David Bernheisel"
+  },
+  "homepage": "https://elixirstream.dev",
+  "repository": "https://github.com/zestcreative/elixirstream",
+  "license": "MIT",
+  "keywords": ["elixir", "phoenix", "gendiff", "upgrade", "generators"]
+}
