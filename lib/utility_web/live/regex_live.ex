@@ -5,7 +5,6 @@ defmodule UtilityWeb.RegexLive do
 
   use UtilityWeb, :live_view
   use Ecto.Schema
-  import PhoenixHTMLHelpers.Form
   alias Ecto.Changeset
   alias Utility.Cache
   require Logger
@@ -277,12 +276,19 @@ defmodule UtilityWeb.RegexLive do
     Map.take(changeset.changes, [:regex, :string, :flags, :function]) != %{}
   end
 
-  def span_match(type, string) do
-    PhoenixHTMLHelpers.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
+  @doc """
+  Renders the result as `mix format`-ed Elixir, syntax-highlighted via MDEx.
+  Falls back to escaped pretty inspect if formatting/highlighting fails.
+  """
+  def highlight_result(result) do
+    ("```elixir\n" <> format_result(result) <> "\n```")
+    |> MDEx.to_html!(syntax_highlight: [formatter: {:html_inline, theme: "onedark"}])
+    |> Phoenix.HTML.raw()
+  rescue
+    _ -> Phoenix.HTML.html_escape("result = " <> inspect(result, limit: :infinity, pretty: true))
   end
 
-  @doc "Renders the result as `mix format`-ed Elixir source, falling back to pretty inspect."
-  def format_result(result) do
+  defp format_result(result) do
     ("result = " <> inspect(result, limit: :infinity))
     |> Code.format_string!()
     |> IO.iodata_to_binary()

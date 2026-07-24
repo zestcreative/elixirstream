@@ -203,10 +203,6 @@ defmodule Utility.ProjectBuilder do
     end
   end
 
-  def install_archive("phx_gen_auth", _version) do
-    "mix archive.install --force hex phx_new 1.5.7"
-  end
-
   def install_archive("surface", version) do
     install_archive("phx_new", surface_phoenix_version(version))
   end
@@ -225,33 +221,17 @@ defmodule Utility.ProjectBuilder do
     "mix archive.install --force hex #{package} #{version}"
   end
 
-  @phx_gen_auth_merged Version.parse!("1.6.0")
   def run_command("phx.gen.auth", version_string, flags) do
-    with {:ok, version} <- Version.parse(version_string),
-         true <- Version.compare(version, @phx_gen_auth_merged) != :lt do
-      # phx.gen.auth is merged into phx_new package
-      # sed will make sure the actual version is used and not a later version.
-      """
-      #{run_command("phx.new", version_string, ["my_app"])} &&
-        cd my_app &&
-        (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
-        mix deps.get &&
-        mix phx.gen.auth #{Enum.join(flags, " ")} &&
-        rm -rf _build deps mix.lock
-      """
-    else
-      _ ->
-        # This is the separate phx_gen_auth package
-        """
-        elixir --version &&
-        #{run_command("phx.new", "1.5.7", ["my_app"])} &&
-          sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
-          cd my_app &&
-          mix deps.get &&
-          mix phx.gen.auth #{Enum.join(flags, " ")} &&
-          rm -rf _build deps mix.lock
-        """
-    end
+    # phx.gen.auth is part of the phx_new package (merged into Phoenix in 1.6).
+    # sed will make sure the actual version is used and not a later version.
+    """
+    #{run_command("phx.new", version_string, ["my_app"])} &&
+      cd my_app &&
+      (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
+      mix deps.get &&
+      mix phx.gen.auth #{Enum.join(flags, " ")} &&
+      rm -rf _build deps mix.lock
+    """
     |> String.trim()
   end
 

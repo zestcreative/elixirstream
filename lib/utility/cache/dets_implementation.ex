@@ -10,9 +10,7 @@ defmodule Utility.Cache.Dets do
   Records are `{key, %{field => value}, expires_at}`, mapping Redis hashes and TTLs
   onto DETS. `expires_at` is a unix timestamp (seconds) or `:infinity`.
 
-  Expiry is lazy — checked on read. ponytail: no periodic sweeper; a stale entry
-  costs one record until its key is next read or overwritten. Add a sweep only if
-  the file grows unbounded (it won't for the current regex-permalink usage).
+  Expiry is lazy — checked on read.
 
   On Fly.io the DETS file lives on the mounted volume (see `STORAGE_DIR`) so it
   survives deploys and restarts.

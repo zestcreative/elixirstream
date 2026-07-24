@@ -56,7 +56,6 @@ defmodule Utility.MixProject do
       {:phoenix, "~> 1.7"},
       {:phoenix_ecto, "~> 4.0"},
       {:phoenix_html, "~> 4.0"},
-      {:phoenix_html_helpers, "~> 1.0"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_dashboard, "~> 0.6"},
       {:phoenix_live_view, "~> 1.0"},

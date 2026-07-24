@@ -58,26 +58,6 @@ defmodule Utility.GenDiff.Data do
         }
       ]
     },
-    "phx_gen_auth" => %{
-      url: "https://hex.pm/packages/phx_gen_auth",
-      source: :hex,
-      generators: [
-        %{
-          command: "phx.gen.auth",
-          docs_url: "https://hexdocs.pm/phx_gen_auth",
-          default_flags: ["Accounts", "User", "users"],
-          help:
-            "Ran on a default Phoenix 1.5.7 project. You might consider using phx_new instead.",
-          flags: [
-            {"--binary-id", [from: "0.1.0"]},
-            {"--no-binary-id", [from: "0.1.0"]},
-            {"--hashing-lib=bcrypt", [from: "0.7.0"]},
-            {"--hashing-lib=pbkdf2", [from: "0.7.0"]},
-            {"--hashing-lib=argon2", [from: "0.7.0"]}
-          ]
-        }
-      ]
-    },
     "credo" => %{
       url: "https://hexdocs.pm/credo",
       source: :hex,

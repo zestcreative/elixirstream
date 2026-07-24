@@ -109,6 +109,20 @@
     height: 1px;
   }
 
+  .terminal-cursor {
+    @apply inline-block bg-accent-400;
+    width: 0.5em;
+    height: 1em;
+    vertical-align: -0.15em;
+    animation: terminal-blink 2s step-end infinite;
+  }
+
+  @keyframes terminal-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
   /* REGEX MATCHES */
 
   .matches span.m {

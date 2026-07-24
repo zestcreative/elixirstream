@@ -132,23 +132,17 @@ defmodule UtilityWeb.GenDiffHTML do
 
   def line_type(line), do: to_string(line.type)
 
-  def line_text("+" <> text),
-    do: [
-      PhoenixHTMLHelpers.Tag.content_tag(:span, "+ ", class: "ghd-line-status"),
-      PhoenixHTMLHelpers.Tag.content_tag(:span, text)
-    ]
+  def line_text("+" <> text), do: [status_span("+ "), text_span(text)]
+  def line_text("-" <> text), do: [status_span("- "), text_span(text)]
+  def line_text(" " <> text), do: [status_span("  "), text_span(text)]
+  def line_text(text), do: [text_span(text)]
 
-  def line_text("-" <> text),
-    do: [
-      PhoenixHTMLHelpers.Tag.content_tag(:span, "- ", class: "ghd-line-status"),
-      PhoenixHTMLHelpers.Tag.content_tag(:span, text)
-    ]
+  # Safe HTML built directly (no phoenix_html_helpers). The status prefix is a fixed
+  # literal; the line text is escaped since it comes from an arbitrary diff.
+  defp status_span(status), do: {:safe, [~s(<span class="ghd-line-status">), status, "</span>"]}
 
-  def line_text(" " <> text),
-    do: [
-      PhoenixHTMLHelpers.Tag.content_tag(:span, "  ", class: "ghd-line-status"),
-      PhoenixHTMLHelpers.Tag.content_tag(:span, text)
-    ]
-
-  def line_text(text), do: [PhoenixHTMLHelpers.Tag.content_tag(:span, text)]
+  defp text_span(text) do
+    {:safe, escaped} = Phoenix.HTML.html_escape(text)
+    {:safe, ["<span>", escaped, "</span>"]}
+  end
 end

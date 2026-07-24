@@ -12,18 +12,72 @@ defmodule UtilityWeb.GenDiffController do
   """
   def api(conn, params) do
     conn = put_resp_content_type(conn, "text/markdown")
+    p = downcase(params)
 
-    file_url = fn generator, file -> url(~p"/gendiff/api/file?#{file_query(generator, file)}") end
-    changelog_url = fn generator -> url(~p"/gendiff/api/changelog?#{base_query(generator)}") end
+    # Bare/exploratory request (no version range): serve the usage guide so an agent
+    # pointed at this URL learns how to generate a diff without making one first.
+    if p["from"] in [nil, ""] or p["to"] in [nil, ""] do
+      send_resp(conn, 200, usage_md())
+    else
+      file_url = fn generator, file ->
+        url(~p"/gendiff/api/file?#{file_query(generator, file)}")
+      end
 
-    opts = [file_url: file_url, changelog_url: changelog_url]
+      changelog_url = fn generator -> url(~p"/gendiff/api/changelog?#{base_query(generator)}") end
 
-    case Utility.GenDiff.Api.markdown(generator_params(params), opts) do
-      {:ok, markdown} -> send_resp(conn, 200, markdown)
-      {:error, :invalid, changeset} -> send_resp(conn, 400, invalid_markdown(changeset))
-      {:error, :build_failed} -> send_resp(conn, 502, build_failed_md())
-      {:error, :timeout} -> send_resp(conn, 504, timeout_md())
+      opts = [file_url: file_url, changelog_url: changelog_url]
+
+      case Utility.GenDiff.Api.markdown(generator_params(params), opts) do
+        {:ok, markdown} -> send_resp(conn, 200, markdown)
+        {:error, :invalid, changeset} -> send_resp(conn, 400, invalid_markdown(changeset))
+        {:error, :build_failed} -> send_resp(conn, 502, build_failed_md())
+        {:error, :timeout} -> send_resp(conn, 504, timeout_md())
+      end
     end
+  end
+
+  defp usage_md do
+    example =
+      url(
+        ~p"/gendiff/api?#{[project: "phx_new", command: "phx.new", from: "1.7.14", to: "1.8.5"]}"
+      )
+
+    """
+    # gendiff — Markdown API for coding agents
+
+    Generate a diff of a project generator's output between two versions, rendered as
+    Markdown built for LLMs. Fetch one URL, get the diff — no UI needed.
+
+    ## Endpoint
+
+        GET /gendiff/api
+
+    ## Query parameters
+
+    | Param | Required | Default | Notes |
+    | --- | --- | --- | --- |
+    | `project` | no | `phx_new` | Generator package, e.g. `phx_new`, `nerves_bootstrap`, `credo` |
+    | `command` | no | `phx.new` | Mix task, e.g. `phx.new`, `phx.gen.auth` |
+    | `from` | **yes** | — | FROM version, e.g. `1.7.14` |
+    | `to` | **yes** | — | TO version, e.g. `1.8.5` |
+    | `from_flags` | no | — | Comma-separated flags for the FROM run, e.g. `--binary-id,--no-mailer` |
+    | `to_flags` | no | — | Comma-separated flags for the TO run |
+
+    ## Example
+
+    Diff a fresh `mix phx.new` app between 1.7.14 and 1.8.5:
+
+        #{example}
+
+    The response is an **index**: generator metadata, a change summary, and a list of
+    changed files — each linking to its own per-file patch URL. Fetch only the files
+    relevant to your task. A new (uncached) version+flag combination may take up to
+    ~3 minutes to build on the first request; subsequent requests are cached.
+
+    ## Discovering valid projects, commands, versions, and flags
+
+    Browse the interactive tool to see every available option: #{url(~p"/gendiff")}
+    """
   end
 
   @doc """

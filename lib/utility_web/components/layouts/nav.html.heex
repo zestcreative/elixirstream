@@ -1,5 +1,13 @@
-<header class="sticky top-0 z-30 bg-[#0c0a12]/90 backdrop-blur border-b border-[#241b39]">
-  <div class="max-w-6xl mx-auto px-5 h-14 flex items-center gap-4 sm:gap-6 font-mono">
+<header
+  id="nav-water"
+  phx-hook="WaterRipple"
+  class="sticky top-0 z-30 h-14 bg-[#0c0a12]/90 backdrop-blur border-b border-[#241b39] relative overflow-hidden"
+>
+  <%!-- WebGL fluid canvas: purple ripples follow the cursor and dissipate.
+       pointer-events-none keeps the nav links clickable; the hook forwards moves to it.
+       The hook sets an explicit pixel size (ResizeObserver) to avoid a size feedback loop. --%>
+  <canvas id="nav-fluid" class="absolute top-0 left-0 z-0 pointer-events-none" aria-hidden="true"></canvas>
+  <div class="max-w-6xl mx-auto px-5 h-14 flex items-center gap-4 sm:gap-6 font-mono relative z-10">
     <div class="flex items-center shrink-0">
       <.link navigate={~p"/regex"} class="flex items-center gap-1.5 select-none">
         <img src={~p"/images/logo.svg"} class="w-6 h-6" alt="Elixir Stream" />
@@ -7,11 +15,11 @@
       </.link>
     </div>
     <nav class="flex items-center gap-1 text-[13px] flex-wrap">
-      <.link navigate={~p"/regex"} class={"px-3 py-1.5 rounded-md #{if @active_tab == :regex, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>regex</.link>
-      <.link navigate={~p"/sink"} class={"px-3 py-1.5 rounded-md #{if @active_tab == :sink, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>sink</.link>
-      <.link navigate={~p"/gendiff"} class={"px-3 py-1.5 rounded-md #{if @active_tab == :gendiff, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>gendiff</.link>
-      <.link navigate={~p"/about"} class={"px-3 py-1.5 rounded-md #{if @active_tab == nil, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>about</.link>
+      <.link navigate={~p"/regex"} class={"px-3 py-1.5 rounded-md backdrop-brightness-[0.35] #{if @active_tab == :regex, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>regex</.link>
+      <.link navigate={~p"/sink"} class={"px-3 py-1.5 rounded-md backdrop-brightness-[0.35] #{if @active_tab == :sink, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>sink</.link>
+      <.link navigate={~p"/gendiff"} class={"px-3 py-1.5 rounded-md backdrop-brightness-[0.35] #{if @active_tab == :gendiff, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>gendiff</.link>
+      <.link navigate={~p"/about"} class={"px-3 py-1.5 rounded-md backdrop-brightness-[0.35] #{if @active_tab == nil, do: "text-white bg-brand-500/15 ring-1 ring-brand-500/40", else: "text-zinc-400 hover:text-white hover:bg-white/5"}"}>about</.link>
     </nav>
-    <div class="ml-auto text-xs text-zinc-400 hidden sm:block">iex(1)&gt; <span class="text-accent-400">▊</span></div>
+    <div class="ml-auto text-xs text-zinc-400 hidden sm:block">iex(1)&gt; <span class="terminal-cursor"></span></div>
   </div>
 </header>

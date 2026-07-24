@@ -10,11 +10,6 @@ defmodule UtilityWeb.PageLive do
   def render(assigns) do
     ~H"""
     <div class="max-w-6xl mx-auto px-5 py-10 text-zinc-300">
-      <div class="mb-8">
-        <h1 class="font-brand font-extrabold text-white text-2xl sm:text-3xl leading-tight tracking-tight">
-          About
-        </h1>
-      </div>
       <div class="rounded-xl border border-[#241b39] bg-[#141021] p-6 shadow-[0_0_60px_-15px_rgba(148,40,236,0.5)]">
         <article class="prose dark:prose-invert lg:prose-lg max-w-none">
           <p>

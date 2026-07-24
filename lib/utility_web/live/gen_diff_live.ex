@@ -8,7 +8,6 @@ defmodule UtilityWeb.GenDiffLive do
   alias Utility.GenDiff.Data
   alias Utility.GenDiff.Storage
   alias Utility.GenDiff.Generator
-  import PhoenixHTMLHelpers.Form
   alias Ecto.Changeset
 
   @impl Phoenix.LiveView
