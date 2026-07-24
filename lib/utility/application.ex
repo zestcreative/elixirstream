@@ -9,6 +9,7 @@ defmodule Utility.Application do
   def start(_type, _args) do
     # Attach the Sentry :logger handler configured in config/config.exs.
     Logger.add_handlers(:utility)
+    Utility.Release.migrate()
 
     children =
       [
