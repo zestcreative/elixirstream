@@ -35,15 +35,16 @@ defmodule Utility.Release do
       alias Ecto.Adapters.SQL
 
       query = """
-      SELECT tablename from "pg_tables"
-      WHERE schemaname = 'public'
-        AND tablename NOT IN (#{@excluded_tables |> Enum.map_join(", ", &"'#{&1}'")});
+      SELECT name FROM sqlite_master
+      WHERE type = 'table'
+        AND name NOT LIKE 'sqlite_%'
+        AND name NOT IN (#{@excluded_tables |> Enum.map_join(", ", &"'#{&1}'")});
       """
 
       for repo <- repos() do
         (tables || repo |> SQL.query(query) |> elem(1) |> Map.get(:rows))
         |> List.flatten()
-        |> Enum.each(fn table -> SQL.query(repo, "TRUNCATE #{table} CASCADE;") end)
+        |> Enum.each(fn table -> SQL.query(repo, "DELETE FROM #{table};") end)
       end
     end
   end
@@ -54,13 +55,13 @@ defmodule Utility.Release do
   end
 
   defp run_migrations_for(repo, opts) do
-    app = Keyword.get(repo.config, :otp_app)
+    app = Keyword.get(repo.config(), :otp_app)
     IO.puts("Running migrations for #{app}...")
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, opts))
   end
 
   defp run_rollbacks_for(repo, opts) do
-    app = Keyword.get(repo.config, :otp_app)
+    app = Keyword.get(repo.config(), :otp_app)
     IO.puts("Running rollbacks for #{app}...")
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, opts))
   end

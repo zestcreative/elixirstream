@@ -9,6 +9,33 @@ A series of utilities for developers.
 1. Community-provided tips that post to Twitter for you from [@elixirstream](https://twitter.com/elixirstream)
 1. ... that's it for now :)
 
+## Use from your coding agent (Claude Code / Codex)
+
+This repo doubles as an agent-skill marketplace. The **gendiff** skill teaches your
+agent to upgrade Elixir/Phoenix generators from real, flag-accurate diffs served by
+`elixirstream.dev` (via `/gendiff/api`) instead of guessing at what changed.
+
+**Claude Code** — add this repo as a plugin marketplace, then install:
+
+```
+/plugin marketplace add github://zestcreative/elixirstream
+/plugin install elixirstream@elixirstream
+```
+
+The skill loads as `elixirstream:gendiff`.
+
+**Codex** (`SKILL.md` is a cross-agent standard) — drop the skill into your Codex
+skills directory:
+
+```sh
+# project-scoped
+mkdir -p .codex/skills && cp -rf skills/gendiff .codex/skills/
+# or global, from a clone of this repo
+mkdir -p ~/.codex/skills && cp -rf skills/gendiff ~/.codex/skills/
+```
+
+Codex auto-discovers any directory under those paths that contains a `SKILL.md`.
+
 ## Running Locally
 
 You need to install `docker` and `gem` for Ruby and docker needs to be running,

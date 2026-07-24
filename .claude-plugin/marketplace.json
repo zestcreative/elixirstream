@@ -1,0 +1,14 @@
+{
+  "name": "elixirstream",
+  "owner": {
+    "name": "Zest Creative",
+    "url": "https://github.com/zestcreative/elixirstream"
+  },
+  "plugins": [
+    {
+      "name": "elixirstream",
+      "source": "./",
+      "description": "Skills for using elixirstream.dev from your coding agent — starting with gendiff, which upgrades Elixir/Phoenix generators from real diffs."
+    }
+  ]
+}

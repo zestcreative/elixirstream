@@ -1,4 +1,5 @@
 defmodule Utility.Workers.ErrorHandler do
+  @moduledoc false
   def handle_event([:oban, :job, :exception], measure, meta, _config) do
     extra = meta |> Map.take([:id, :args, :queue, :worker]) |> Map.merge(measure)
     Sentry.capture_exception(meta.error, stacktrace: meta.stacktrace, extra: extra)

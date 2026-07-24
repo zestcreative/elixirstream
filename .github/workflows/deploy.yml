@@ -15,31 +15,12 @@ jobs:
     env:
       MIX_ENV: test
       CI: "true"
-      AUTH_USER: admin
-      AUTH_PASS: admin
-      DATABASE_PASS: postgres
-      DATABASE_USER: postgres
-      DATABASE_HOST: localhost
-    services:
-      postgres:
-        image: postgres:12.2-alpine
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: utility_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v3
       - uses: erlef/setup-beam@v1
         with:
-          otp-version: '25'
-          elixir-version: '1.14.2'
+          otp-version: '29.0.3'
+          elixir-version: '1.20.2'
       - run: mix deps.get --only test
       - run: mix compile --warnings-as-errors
       - run: mix test

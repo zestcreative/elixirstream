@@ -25,6 +25,7 @@ defmodule Utility.GenDiff.Data do
             {"--database=sqlite", [from: "1.0.0"]},
             {"--database=sqlite3", [from: "1.6.0"]},
             {"--live", [from: "1.5.0", until: "1.6.0"]},
+            {"--no-agents", [from: "1.8.0"]},
             {"--no-assets", [from: "1.6.0"]},
             {"--no-brunch", [from: "1.0.0", until: "1.4.0"]},
             {"--no-dashboard", [from: "1.5.0"]},
@@ -53,26 +54,6 @@ defmodule Utility.GenDiff.Data do
             {"--hashing-lib=bcrypt", [from: "1.6.0"]},
             {"--hashing-lib=pbkdf2", [from: "1.6.0"]},
             {"--hashing-lib=argon2", [from: "1.6.0"]}
-          ]
-        }
-      ]
-    },
-    "phx_gen_auth" => %{
-      url: "https://hex.pm/packages/phx_gen_auth",
-      source: :hex,
-      generators: [
-        %{
-          command: "phx.gen.auth",
-          docs_url: "https://hexdocs.pm/phx_gen_auth",
-          default_flags: ["Accounts", "User", "users"],
-          help:
-            "Ran on a default Phoenix 1.5.7 project. You might consider using phx_new instead.",
-          flags: [
-            {"--binary-id", [from: "0.1.0"]},
-            {"--no-binary-id", [from: "0.1.0"]},
-            {"--hashing-lib=bcrypt", [from: "0.7.0"]},
-            {"--hashing-lib=pbkdf2", [from: "0.7.0"]},
-            {"--hashing-lib=argon2", [from: "0.7.0"]}
           ]
         }
       ]
@@ -224,13 +205,22 @@ defmodule Utility.GenDiff.Data do
   end
 
   def get_by(project: project, command: command) do
-    Enum.find_value(all()[project][:generators], fn generator ->
-      generator[:command] == command && generator
-    end)
+    case all()[project] do
+      %{generators: generators} ->
+        Enum.find_value(generators, fn generator ->
+          generator[:command] == command && generator
+        end)
+
+      _ ->
+        nil
+    end
   end
 
   def commands_for_project(project) do
-    Enum.map(all()[project][:generators] || [], & &1[:command])
+    case all()[project] do
+      %{generators: generators} -> Enum.map(generators, & &1[:command])
+      _ -> []
+    end
   end
 
   def url_for_project(project) do

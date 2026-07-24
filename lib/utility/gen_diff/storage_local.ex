@@ -1,4 +1,5 @@
 defmodule Utility.GenDiff.StorageLocal do
+  @moduledoc false
   @behaviour Utility.GenDiff.Storage
 
   def list(project, term) do
@@ -11,10 +12,9 @@ defmodule Utility.GenDiff.StorageLocal do
     File.rm(file)
   end
 
+  # Rendered HTML for the chunked web view — streamed.
   def get(project, id) do
-    hash = :erlang.phash2({Application.get_env(:utility, :cache_version), id})
-    filename = key(project, id, hash)
-    path = Path.join([dir(), project, filename])
+    path = path_for(project, id, "html")
 
     if File.regular?(path) do
       {:ok, File.stream!(path, [:read_ahead])}
@@ -23,18 +23,35 @@ defmodule Utility.GenDiff.StorageLocal do
     end
   end
 
-  def put(project, id, file_path) do
-    hash = :erlang.phash2({Application.get_env(:utility, :cache_version), id})
-    filename = key(project, id, hash)
-    destination_path = Path.join([dir(), project, filename])
+  def put(project, id, file_path), do: copy(file_path, path_for(project, id, "html"))
 
-    File.mkdir_p!(Path.dirname(destination_path))
-    File.cp!(file_path, destination_path)
+  # Raw (path-cleaned) git patch — read whole for the Markdown API.
+  def get_patch(project, id), do: read(path_for(project, id, "patch"))
+  def put_patch(project, id, file_path), do: copy(file_path, path_for(project, id, "patch"))
+
+  # Assembled Markdown document — cached so repeat requests skip re-assembly.
+  def get_md(project, id), do: read(path_for(project, id, "md"))
+  def put_md(project, id, content), do: write(content, path_for(project, id, "md"))
+
+  defp read(path) do
+    if File.regular?(path), do: {:ok, File.read!(path)}, else: {:error, :not_found}
+  end
+
+  defp copy(src, dest) do
+    File.mkdir_p!(Path.dirname(dest))
+    File.cp!(src, dest)
     :ok
   end
 
-  defp key(project, id, hash) do
-    "#{project}-#{id}-#{hash}.html"
+  defp write(content, dest) do
+    File.mkdir_p!(Path.dirname(dest))
+    File.write!(dest, content)
+    :ok
+  end
+
+  defp path_for(project, id, ext) do
+    hash = :erlang.phash2({Application.get_env(:utility, :cache_version), id})
+    Path.join([dir(), project, "#{project}-#{id}-#{hash}.#{ext}"])
   end
 
   defp dir() do

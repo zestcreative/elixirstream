@@ -8,7 +8,6 @@ defmodule UtilityWeb.GenDiffLive do
   alias Utility.GenDiff.Data
   alias Utility.GenDiff.Storage
   alias Utility.GenDiff.Generator
-  import Phoenix.HTML.Form
   alias Ecto.Changeset
 
   @impl Phoenix.LiveView
@@ -20,7 +19,10 @@ defmodule UtilityWeb.GenDiffLive do
      |> assign(page_title: "Generator Diff")
      |> assign(record: record, building: false, finished_building: false)
      |> assign(changeset: Generator.changeset(record, %{}))
-     |> assign_changeset(%{}), temporary_assigns: [lines_1: [], lines_2: [], lines_main: []]}
+     |> stream(:lines_main, [])
+     |> stream(:lines_1, [])
+     |> stream(:lines_2, [])
+     |> assign_changeset(%{})}
   end
 
   @impl Phoenix.LiveView
@@ -58,12 +60,10 @@ defmodule UtilityWeb.GenDiffLive do
 
       {:noreply,
        socket
-       |> assign(
-         generator: generator,
-         finished_building: false,
-         building: true,
-         lines_main: [{@waiting, "waiting"}]
-       )
+       |> assign(generator: generator, finished_building: false, building: true)
+       |> stream(:lines_1, [], reset: true)
+       |> stream(:lines_2, [], reset: true)
+       |> stream(:lines_main, [%{id: "waiting", line: @waiting}], reset: true)
        |> runner_to_id(generator, :from)
        |> runner_to_id(generator, :to)
        |> push_event("scroll", %{to: "#runners"})}
@@ -102,13 +102,13 @@ defmodule UtilityWeb.GenDiffLive do
 
     cond do
       String.starts_with?(id, socket.assigns.runner_from) ->
-        {:noreply, assign(socket, :lines_1, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_1, %{id: id, line: line})}
 
       String.starts_with?(id, socket.assigns.runner_to) ->
-        {:noreply, assign(socket, :lines_2, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_2, %{id: id, line: line})}
 
       true ->
-        {:noreply, assign(socket, :lines_main, [{line, id}])}
+        {:noreply, stream_insert(socket, :lines_main, %{id: id, line: line})}
     end
   end
 
@@ -175,37 +175,41 @@ defmodule UtilityWeb.GenDiffLive do
   defp versions_for(_project, nil, _opts), do: []
 
   defp versions_for(project, command, opts) do
-    {compare, limit} = if floor = opts[:floor], do: {:lt, floor}, else: {nil, nil}
-    {compare, limit} = if ceil = opts[:ceiling], do: {:gt, ceil}, else: {compare, limit}
+    {compare, limit} = compare_and_limit(opts)
+    filter_versions(Data.versions_for_project(project, command), parse_limit(limit), compare)
+  end
 
-    limit =
-      if limit do
-        case Version.parse(limit) do
-          {:ok, version} -> version
-          :error -> limit
-        end
-      end
+  # :ceiling takes precedence over :floor (callers only ever pass one).
+  defp compare_and_limit(opts) do
+    cond do
+      ceil = opts[:ceiling] -> {:gt, ceil}
+      floor = opts[:floor] -> {:lt, floor}
+      true -> {nil, nil}
+    end
+  end
 
-    case {limit, compare, Data.versions_for_project(project, command)} do
-      {_, _, []} ->
-        []
+  defp parse_limit(nil), do: nil
 
-      {nil, nil, versions} ->
-        versions
+  defp parse_limit(limit) do
+    case Version.parse(limit) do
+      {:ok, version} -> version
+      :error -> limit
+    end
+  end
 
-      {main, :gt, versions} when main in ["master", "main"] ->
-        versions
+  defp filter_versions([], _limit, _compare), do: []
+  defp filter_versions(versions, nil, nil), do: versions
+  defp filter_versions(versions, main, :gt) when main in ["master", "main"], do: versions
+  defp filter_versions(_versions, main, :lt) when main in ["master", "main"], do: [main]
 
-      {main, :lt, _versions} when main in ["master", "main"] ->
-        [main]
+  defp filter_versions(versions, limit, compare) do
+    Enum.reject(versions, &reject_version?(&1, limit, compare))
+  end
 
-      {limit, compare, versions} ->
-        Enum.reject(versions, fn version ->
-          case Version.parse(version) do
-            {:ok, version} -> Version.compare(version, limit) == compare
-            :error -> false
-          end
-        end)
+  defp reject_version?(version, limit, compare) do
+    case Version.parse(version) do
+      {:ok, parsed} -> Version.compare(parsed, limit) == compare
+      :error -> false
     end
   end
 

@@ -9,7 +9,7 @@ defmodule UtilityWeb.SinkLive do
      socket
      |> assign(:page_title, "HTTP Sink")
      |> assign(:id, nil)
-     |> assign(:requests, []), temporary_assigns: [requests: []]}
+     |> stream(:requests, [])}
   end
 
   @impl Phoenix.LiveView
@@ -24,12 +24,12 @@ defmodule UtilityWeb.SinkLive do
 
   @impl Phoenix.LiveView
   def handle_params(_params, _uri, socket) do
-    {:noreply, push_redirect(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
+    {:noreply, push_navigate(socket, to: ~p"/sink/view/#{Ecto.UUID.generate()}")}
   end
 
   @impl Phoenix.LiveView
   def handle_info(payload, socket) do
-    {:noreply, assign(socket, requests: [payload])}
+    {:noreply, stream_insert(socket, :requests, payload, at: 0)}
   end
 
   @gif_header <<0x47, 0x49, 0x46, 0x38>>
@@ -37,32 +37,28 @@ defmodule UtilityWeb.SinkLive do
   @jpg_header <<0xFF, 0xD8>>
   defp render_body(%{format: :json, body_params: body}) do
     case Jason.encode(body, pretty: true) do
-      {:ok, parsed} ->
-        Phoenix.HTML.Tag.content_tag(:pre, parsed, class: "whitespace-pre select-all")
-
-      {:error, _} ->
-        render_body(%{body_params: body})
+      {:ok, parsed} -> pre(parsed)
+      {:error, _} -> render_body(%{body_params: body})
     end
   end
 
-  defp render_body(%{body_params: @gif_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/gif;base64,", Base.encode64(body)])
-  end
-
-  defp render_body(%{body_params: @png_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/png;base64,", Base.encode64(body)])
-  end
-
-  defp render_body(%{body_params: @jpg_header <> _rest = body}) do
-    Phoenix.HTML.Tag.img_tag(["data:image/jpeg;base64,", Base.encode64(body)])
-  end
+  defp render_body(%{body_params: @gif_header <> _rest = body}), do: image("gif", body)
+  defp render_body(%{body_params: @png_header <> _rest = body}), do: image("png", body)
+  defp render_body(%{body_params: @jpg_header <> _rest = body}), do: image("jpeg", body)
 
   defp render_body(%{body_params: body}) do
-    Phoenix.HTML.Tag.content_tag(
-      :pre,
-      inspect(body, limit: :infinity, printable_limit: :infinity),
-      class: "whitespace-pre select-all"
-    )
+    pre(inspect(body, limit: :infinity, printable_limit: :infinity))
+  end
+
+  # Build safe HTML directly (no phoenix_html_helpers). html_escape/1 returns
+  # already-escaped iodata; the tags and base64 payload contain no HTML metachars.
+  defp pre(content) do
+    {:safe, escaped} = Phoenix.HTML.html_escape(content)
+    {:safe, [~s(<pre class="whitespace-pre select-all">), escaped, "</pre>"]}
+  end
+
+  defp image(type, body) do
+    {:safe, [~s(<img src="data:image/), type, ";base64,", Base.encode64(body), ~s(">)]}
   end
 
   def hide_warning(js \\ %JS{}) do

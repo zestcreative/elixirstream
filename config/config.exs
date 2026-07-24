@@ -7,20 +7,25 @@
 # General application configuration
 import Config
 
+# MDEx syntax highlighting is powered by the lumis engine (compiled into the NIF).
+config :mdex_native, syntax_highlighter: :lumis
+
 config :utility,
   ecto_repos: [Utility.Repo],
   generators: [binary_id: true],
-  redis_url: System.get_env("REDIS_URL", "redis://127.0.0.1:6379"),
-  redis_pool_size: 5,
   gendiff_storage: Utility.GenDiff.StorageLocal,
-  tip_storage: Utility.TipCatalog.StorageLocal,
-  cache: Utility.Cache.Redis,
-  cache_version: 2,
+  cache: Utility.Cache.Dets,
+  cache_version: 3,
   builder_mount: System.tmp_dir!(),
   app_env: Mix.env()
 
+# DETS cache file. Overridden in prod to live on the Fly volume (see runtime.exs).
+config :utility, Utility.Cache.Dets, path: "tmp/cache.dets"
+
 config :utility, Oban,
   repo: Utility.Repo,
+  engine: Oban.Engines.Lite,
+  notifier: Oban.Notifiers.PG,
   plugins: [Oban.Plugins.Pruner],
   queues: [builder: 1]
 
@@ -64,8 +69,13 @@ config :mime, :types, %{
   "application/manifest+json" => ["webmanifest"]
 }
 
-config :logger,
-  backends: [:console, Sentry.LoggerBackend]
+# Report crashes/errors to Sentry via the modern :logger handler. The old
+# Sentry.LoggerBackend and the :backends key are both deprecated; the handler is
+# attached in Utility.Application.start/2 via Logger.add_handlers(:utility).
+config :utility, :logger, [
+  {:handler, :sentry_handler, Sentry.LoggerHandler,
+   %{config: %{capture_metadata: [:file, :line]}}}
+]
 
 # Configures Elixir's Logger
 config :logger, :console,
@@ -75,25 +85,8 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :utility, Utility.TipCatalog.Storage, bucket: "elixirstream.dev"
-config :oauth2, adapter: Tesla.Adapter.Mint
-
-config :utility, Utility.Accounts.Guardian,
-  issuer: "utility",
-  secret_key: "9uLgRESJMtHUcFDBAwm3S8rqNtftKmzNbdZc+yf1vf1i+gF5gvBuaI7PtHfjuXop"
-
-config :ueberauth, Ueberauth,
-  json_library: Jason,
-  providers: [
-    github:
-      {Ueberauth.Strategy.Github,
-       [
-         allow_private_emails: true,
-         send_redirect_uri: false,
-         default_scope: "read:user"
-       ]},
-    twitter: {Ueberauth.Strategy.Twitter, []}
-  ]
+# HTTP Basic Auth for the /admin LiveDashboard. Overridden in prod via env vars.
+config :utility, :admin_auth, username: "admin", password: "admin"
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.

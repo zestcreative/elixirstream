@@ -1,4 +1,5 @@
 defmodule Utility.Hex do
+  @moduledoc false
   alias Utility.Hex.Api
   alias Utility.Package
   alias Utility.PackageRepo

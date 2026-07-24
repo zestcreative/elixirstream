@@ -7,6 +7,7 @@ import { indentWithTab } from "@codemirror/commands"
 import { elixir } from "codemirror-lang-elixir"
 import { oneDark } from '@codemirror/theme-one-dark'
 import debounce from 'lodash.debounce'
+import WebGLFluid from 'webgl-fluid'
 
 const editorTheme = new Compartment()
 const lightTheme = EditorView.baseTheme({})
@@ -41,6 +42,12 @@ hooks.HandleScroll = {
   }
 }
 
+hooks.AutoScroll = {
+  mounted() { this.toBottom() },
+  updated() { this.toBottom() },
+  toBottom() { this.el.scrollTop = this.el.scrollHeight }
+}
+
 hooks.MaskFlags = {
   mounted() {
     this.el.addEventListener("input", _event => {
@@ -52,22 +59,67 @@ hooks.MaskFlags = {
   }
 }
 
-hooks.ConfirmBeforeLeave = {
+hooks.WaterRipple = {
   mounted() {
-    window.addEventListener("beforeunload", this.confirm(this.el), false);
-  },
+    const canvas = this.el.querySelector("#nav-fluid")
+    if (!canvas) return
 
-  confirm(el) {
-    return function(e) {
-      e.preventDefault();
-      if(el.dataset.isChanged === 'true') {
-        if(!confirm("Are you sure you want to leave?")) {
-          e.returnValue = '';
-        };
+    // Pin the canvas to an explicit pixel size so its client size can't feed back off
+    // the WebGL backing store (which otherwise runs away to millions of px). Skip while
+    // the bar has no size (layout not ready) so the sim never inits a 0-size framebuffer.
+    const sizeCanvas = () => {
+      const rect = this.el.getBoundingClientRect()
+      if (rect.width < 1 || rect.height < 1) return false
+      canvas.style.width = Math.round(rect.width) + "px"
+      canvas.style.height = Math.round(rect.height) + "px"
+      return true
+    }
+
+    const start = () => {
+      if (!sizeCanvas()) {
+        this.raf = requestAnimationFrame(start) // wait until the bar has a real size
+        return
       }
 
-      return;
+      this.ro = new ResizeObserver(sizeCanvas)
+      this.ro.observe(this.el)
+
+      WebGLFluid(canvas, {
+        TRIGGER: "hover",            // splat on cursor move, no click needed
+        TRANSPARENT: true,           // show the dark nav through the canvas
+        // The bar is ~21:1; the lib sizes textures as resolution*aspect, so the default
+        // DYE_RESOLUTION (1024) blows past GL_MAX_TEXTURE_SIZE and the FBO fails. Keep low.
+        SIM_RESOLUTION: 128,
+        DYE_RESOLUTION: 256,
+        COLORFUL: false,
+        SPLAT_COLOR: { r: 0.6, g: 0.15, b: 1.0 }, // bright Elixir purple dye
+        SPLAT_RADIUS: 0.25,          // larger, softer blob around the cursor
+        SPLAT_FORCE: 8000,
+        DENSITY_DISSIPATION: 1.3,    // dye lingers to show the flow, then settles
+        VELOCITY_DISSIPATION: 0.4,   // motion keeps propagating & rippling for a while
+        PRESSURE: 1.0,               // incompressible → strong wave-like propagation
+        PRESSURE_ITERATIONS: 32,
+        CURL: 65,                    // heavy vorticity → lots of swirling, watery tendrils
+        SHADING: true,               // liquid-surface highlights/shadows
+        BLOOM: false,                // bloom spread the glow across the whole bar
+        SUNRAYS: false,
+        AUTO: false,
+      })
+
+      // The canvas is pointer-events:none so nav links stay clickable — forward
+      // the header's hover position to the canvas as a synthetic mousemove.
+      this.onMove = (e) => {
+        canvas.dispatchEvent(new MouseEvent("mousemove", { clientX: e.clientX, clientY: e.clientY }))
+      }
+      this.el.addEventListener("pointermove", this.onMove)
     }
+
+    start()
+  },
+  destroyed() {
+    if (this.raf) cancelAnimationFrame(this.raf)
+    if (this.onMove) this.el.removeEventListener("pointermove", this.onMove)
+    if (this.ro) this.ro.disconnect()
   }
 }
 

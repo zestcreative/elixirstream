@@ -4,7 +4,38 @@ defmodule UtilityWeb.GenDiffHTML do
 
   embed_templates "gen_diff_html/*"
 
-  def themes, do: UtilityWeb.Layouts.themes()
+  # Dark theme to match the gendiff page; styles are inlined into the HTML so no
+  # extra stylesheet is needed. Powered by MDEx + the lumis highlighter.
+  @changelog_theme "github_dark"
+
+  @doc """
+  Render the (trusted, upstream) changelog Markdown to safe HTML with syntax-highlighted
+  code blocks. MDEx escapes raw inline HTML by default, so this is XSS-safe.
+  """
+  def render_changelog(markdown) do
+    markdown
+    |> MDEx.to_html!(syntax_highlight: [formatter: {:html_inline, theme: @changelog_theme}])
+    |> Phoenix.HTML.raw()
+  end
+
+  @doc "The sliced upstream changelog for this diff's version range, or nil."
+  def changelog(generator) do
+    case Utility.GenDiff.Changelog.slice(
+           generator.project,
+           generator.from_version,
+           generator.to_version
+         ) do
+      {:ok, changelog} -> changelog
+      {:error, _} -> nil
+    end
+  end
+
+  @doc "Absolute URL of the LLM-friendly Markdown version of this diff."
+  def md_url(generator) do
+    url(
+      ~p"/gendiff/api?#{[project: generator.project, command: generator.command, from: generator.from_version, to: generator.to_version, from_flags: Enum.join(generator.from_flags || [], ","), to_flags: Enum.join(generator.to_flags || [], ",")]}"
+    )
+  end
 
   def render_diff(stream, generator) do
     path = tmp_path("html-#{generator.project}-#{generator.id}-")
@@ -12,7 +43,10 @@ defmodule UtilityWeb.GenDiffHTML do
 
     File.open!(path, [:write, :raw, :binary, :write_delay], fn file ->
       html_patch =
-        Phoenix.Template.render_to_iodata(__MODULE__, "diff_header", "html", generator: generator)
+        Phoenix.Template.render_to_iodata(__MODULE__, "diff_header", "html",
+          generator: generator,
+          changelog: changelog(generator)
+        )
 
       IO.binwrite(file, html_patch)
       IO.binwrite(file, diff_header())
@@ -98,23 +132,17 @@ defmodule UtilityWeb.GenDiffHTML do
 
   def line_type(line), do: to_string(line.type)
 
-  def line_text("+" <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "+ ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
+  def line_text("+" <> text), do: [status_span("+ "), text_span(text)]
+  def line_text("-" <> text), do: [status_span("- "), text_span(text)]
+  def line_text(" " <> text), do: [status_span("  "), text_span(text)]
+  def line_text(text), do: [text_span(text)]
 
-  def line_text("-" <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "- ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
+  # Safe HTML built directly (no phoenix_html_helpers). The status prefix is a fixed
+  # literal; the line text is escaped since it comes from an arbitrary diff.
+  defp status_span(status), do: {:safe, [~s(<span class="ghd-line-status">), status, "</span>"]}
 
-  def line_text(" " <> text),
-    do: [
-      Phoenix.HTML.Tag.content_tag(:span, "  ", class: "ghd-line-status"),
-      Phoenix.HTML.Tag.content_tag(:span, text)
-    ]
-
-  def line_text(text), do: [Phoenix.HTML.Tag.content_tag(:span, text)]
+  defp text_span(text) do
+    {:safe, escaped} = Phoenix.HTML.html_escape(text)
+    {:safe, ["<span>", escaped, "</span>"]}
+  end
 end

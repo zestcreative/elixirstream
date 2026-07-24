@@ -1,4 +1,5 @@
 defmodule Utility.GenDiff.PruneMainBranchCache do
+  @moduledoc false
   use GenServer
   require Logger
   alias Utility.GenDiff.Storage

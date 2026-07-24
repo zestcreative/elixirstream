@@ -115,9 +115,9 @@ defmodule UtilityWeb.RegexLiveTest do
   describe "mounting" do
     test "can mount", %{conn: conn} do
       conn = get(conn, @route)
-      assert html_response(conn, 200) =~ "Regex Tester</h2>"
+      assert html_response(conn, 200) =~ "Regex Tester"
       assert {:ok, _view, html} = live(conn)
-      assert html =~ "Regex Tester</h2>"
+      assert html =~ "Regex Tester"
     end
 
     test "can load saved record", %{conn: conn} do
@@ -129,7 +129,7 @@ defmodule UtilityWeb.RegexLiveTest do
       ])
 
       conn = get(conn, @route <> "/test-id")
-      assert html_response(conn, 200) =~ "Regex Tester</h2>"
+      assert html_response(conn, 200) =~ "Regex Tester"
       assert {:ok, _view, html} = live(conn)
       assert html =~ "1234 my test string"
     end
@@ -184,7 +184,11 @@ defmodule UtilityWeb.RegexLiveTest do
         }
       }
 
-      assert render_change(view, :validate, params) =~ "result = [&quot;1234&quot;]"
+      # The result is syntax-highlighted (MDEx wraps tokens in spans, and the test
+      # renderer drops the whitespace-only nodes between them), so strip tags and
+      # tolerate collapsed whitespace at the token joins.
+      assert view |> render_change(:validate, params) |> strip_tags() =~
+               ~r/result\s*=\s*\[&quot;1234&quot;\]/
     end
 
     test "renders error message with invalid regex", %{conn: conn} do
@@ -200,8 +204,11 @@ defmodule UtilityWeb.RegexLiveTest do
         }
       }
 
-      assert render_change(view, :validate, params) =~
-               "result = &quot;missing terminating ] for character class (at character 5)&quot;"
+      assert view |> render_change(:validate, params) |> strip_tags() =~
+               ~r/result\s*=\s*&quot;missing terminating \] for character class \(at character 5\)&quot;/
     end
   end
+
+  # MDEx syntax-highlights the result into nested spans; strip tags to assert on text.
+  defp strip_tags(html), do: String.replace(html, ~r/<[^>]*>/, "")
 end

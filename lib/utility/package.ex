@@ -1,7 +1,6 @@
 defmodule Utility.Package do
   use Ecto.Schema
   import Ecto.Changeset
-  require Logger
 
   @primary_key {:name, :string, autogenerate: false}
   schema "packages" do

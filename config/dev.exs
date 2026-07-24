@@ -17,19 +17,14 @@ config :utility, UtilityWeb.Endpoint,
   ]
 
 config :utility, Utility.Repo,
-  database: "utility_dev",
+  database: Path.expand("../utility_dev.db", __DIR__),
+  journal_mode: :wal,
   stacktrace: true,
-  hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
-
-config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-  client_id: System.get_env("GITHUB_CLIENT_ID"),
-  client_secret: System.get_env("GITHUB_CLIENT_SECRET")
+  pool_size: 5
 
 config :utility,
-  gendiff_storage_dir: System.tmp_dir!(),
-  tip_storage_dir: Path.expand("priv/static")
+  gendiff_storage_dir: System.tmp_dir!()
 
 # Watch static and templates for browser reloading.
 config :utility, UtilityWeb.Endpoint,
@@ -51,3 +46,7 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view,
+  debug_heex_annotations: true,
+  debug_attributes: true

@@ -1,4 +1,5 @@
 defmodule Utility.ProjectBuilder do
+  @moduledoc false
   require Logger
   alias Utility.GenDiff.Data
   alias Utility.GenDiff.Generator
@@ -34,6 +35,7 @@ defmodule Utility.ProjectBuilder do
            results <- Enum.group_by(results, &elem(&1, 0), &elem(&1, 1)),
            {nil, _success} <- Map.pop(results, :error),
            {:ok, any?} <- git_diff(generated_from, generated_to, path_diff),
+           :ok <- store_patch(generator, path_diff, generated_from, generated_to, any?),
            {:ok, html} <- render_diff(generator, any?, generated_from, generated_to, path_diff) do
         result = Storage.put(generator, html)
         File.rm_rf(html)
@@ -67,6 +69,34 @@ defmodule Utility.ProjectBuilder do
   def render_diff(generator, false, _from, _to, path) do
     File.rm(path)
     UtilityWeb.GenDiffHTML.render_diff(nil, generator)
+  end
+
+  # Persist the raw git patch (path-cleaned to relative a//b/ paths) alongside the
+  # rendered HTML, so the Markdown API can serve it. Empty string when there's no diff.
+  defp store_patch(generator, path_diff, generated_from, generated_to, any?) do
+    content =
+      if any?, do: clean_patch(File.read!(path_diff), generated_from, generated_to), else: ""
+
+    clean_path = path_diff <> ".clean"
+    File.write!(clean_path, content)
+    result = Storage.put_patch(generator, clean_path)
+    File.rm(clean_path)
+    result
+  end
+
+  # `git diff --no-index` renders the two absolute app dirs as `a/<abs-from>/rel`
+  # and `b/<abs-to>/rel` (leading slash stripped). Added/deleted files use the *same*
+  # existing-side path for both `a/` and `b/`, so strip both prefixes from both
+  # positions to get clean `a/rel` / `b/rel` paths regardless.
+  defp clean_patch(patch, generated_from, generated_to) do
+    from = String.trim_leading(generated_from, "/")
+    to = String.trim_leading(generated_to, "/")
+
+    patch
+    |> String.replace("a/" <> from, "a")
+    |> String.replace("b/" <> from, "b")
+    |> String.replace("a/" <> to, "a")
+    |> String.replace("b/" <> to, "b")
   end
 
   def git_diff(path_from, path_to, path_out) do
@@ -173,10 +203,6 @@ defmodule Utility.ProjectBuilder do
     end
   end
 
-  def install_archive("phx_gen_auth", _version) do
-    "mix archive.install --force hex phx_new 1.5.7"
-  end
-
   def install_archive("surface", version) do
     install_archive("phx_new", surface_phoenix_version(version))
   end
@@ -195,33 +221,17 @@ defmodule Utility.ProjectBuilder do
     "mix archive.install --force hex #{package} #{version}"
   end
 
-  @phx_gen_auth_merged Version.parse!("1.6.0")
   def run_command("phx.gen.auth", version_string, flags) do
-    with {:ok, version} <- Version.parse(version_string),
-         true <- Version.compare(version, @phx_gen_auth_merged) != :lt do
-      # phx.gen.auth is merged into phx_new package
-      # sed will make sure the actual version is used and not a later version.
-      """
-      #{run_command("phx.new", version_string, ["my_app"])} &&
-        cd my_app &&
-        (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
-        mix deps.get &&
-        mix phx.gen.auth #{Enum.join(flags, " ")} &&
-        rm -rf _build deps mix.lock
-      """
-    else
-      _ ->
-        # This is the separate phx_gen_auth package
-        """
-        elixir --version &&
-        #{run_command("phx.new", "1.5.7", ["my_app"])} &&
-          sed -i 's/{:phoenix, "~> 1.5.7"},/{:phoenix, "~> 1.5.7"},\\n      {:phx_gen_auth, "#{version_string}", only: [:dev], runtime: false},/g' my_app/mix.exs &&
-          cd my_app &&
-          mix deps.get &&
-          mix phx.gen.auth #{Enum.join(flags, " ")} &&
-          rm -rf _build deps mix.lock
-        """
-    end
+    # phx.gen.auth is part of the phx_new package (merged into Phoenix in 1.6).
+    # sed will make sure the actual version is used and not a later version.
+    """
+    #{run_command("phx.new", version_string, ["my_app"])} &&
+      cd my_app &&
+      (sed -i 's/{:phoenix, "~> /{:phoenix, "/g' mix.exs || true) &&
+      mix deps.get &&
+      mix phx.gen.auth #{Enum.join(flags, " ")} &&
+      rm -rf _build deps mix.lock
+    """
     |> String.trim()
   end
 
@@ -392,17 +402,13 @@ defmodule Utility.ProjectBuilder do
 
   @rails_32_at Version.parse!("7.2.0")
   def docker_tag_for("rails new", version) do
-    cond do
-      Version.compare(version, @rails_32_at) != :lt -> "rails32"
-      true -> "rails27"
-    end
+    if Version.compare(version, @rails_32_at) != :lt, do: "rails32", else: "rails27"
   end
+
   def docker_tag_for("rails webpacker:install", version) do
-    cond do
-      Version.compare(version, @rails_32_at) != :lt -> "rails32"
-      true -> "rails27"
-    end
+    if Version.compare(version, @rails_32_at) != :lt, do: "rails32", else: "rails27"
   end
+
   def docker_tag_for(_command, _version), do: "117"
 
   defp tmp_path(prefix) do
@@ -416,60 +422,58 @@ defmodule Utility.ProjectBuilder do
   def surface_phoenix_version("main"), do: "main"
 
   def surface_phoenix_version(version) when is_binary(version) do
-    cond do
-      Version.compare(version, "0.10.0") != :lt -> "1.7.7"
-      true -> "1.6.16"
-    end
+    if Version.compare(version, "0.10.0") != :lt, do: "1.7.7", else: "1.6.16"
   end
 
   def surface_deps_changes("main"), do: {nil, nil}
 
   def surface_deps_changes(version_string) do
     version = Version.parse!(version_string)
+    {extra_deps_for(version), extra_replaces_for(version)}
+  end
 
-    extra_deps =
-      cond do
-        Version.compare(version, "0.11.1") != :lt ->
-          nil
+  defp extra_deps_for(version) do
+    cond do
+      Version.compare(version, "0.11.1") != :lt ->
+        nil
 
-        Version.compare(version, "0.10.0") != :lt ->
-          ~s'\\n      {:sourceror, "~> 0.12.0"}, # Manually added'
+      Version.compare(version, "0.10.0") != :lt ->
+        ~s'\\n      {:sourceror, "~> 0.12.0"}, # Manually added'
 
-        Version.compare(version, "0.7.0") != :lt ->
-          ~s'\\n      {:sourceror, "~> 0.11.0"}, # Manually added'
+      Version.compare(version, "0.7.0") != :lt ->
+        ~s'\\n      {:sourceror, "~> 0.11.0"}, # Manually added'
 
-        true ->
-          ~s'\\n      {:phoenix_html, "~> 3.2.0"}, # Manually added'
-      end
+      true ->
+        ~s'\\n      {:phoenix_html, "~> 3.2.0"}, # Manually added'
+    end
+  end
 
-    extra_replaces =
-      cond do
-        Version.compare(version, "0.11.0") != :lt ->
-          nil
+  defp extra_replaces_for(version) do
+    cond do
+      Version.compare(version, "0.11.0") != :lt ->
+        nil
 
-        Version.compare(version, "0.10.0") != :lt ->
-          """
-          sed -i 's/{:phoenix_live_view, "~> 0.19.0"},/{:phoenix_live_view, "~> 0.18.18"}, # Manually changed/g' my_app/mix.exs &&
-          """
-          |> String.trim()
+      Version.compare(version, "0.10.0") != :lt ->
+        """
+        sed -i 's/{:phoenix_live_view, "~> 0.19.0"},/{:phoenix_live_view, "~> 0.18.18"}, # Manually changed/g' my_app/mix.exs &&
+        """
+        |> String.trim()
 
-        Version.compare(version, "0.9.0") != :lt ->
-          """
-          sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "0.18.16"}, # Manually changed/g' my_app/mix.exs &&
-          sed -i 's/import Phoenix.LiveView.Helpers/import Phoenix.LiveView.Helpers\\n      import Phoenix.Component # Manually added/g' my_app/lib/my_app_web.ex &&
-          """
-          |> String.trim()
+      Version.compare(version, "0.9.0") != :lt ->
+        """
+        sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "0.18.16"}, # Manually changed/g' my_app/mix.exs &&
+        sed -i 's/import Phoenix.LiveView.Helpers/import Phoenix.LiveView.Helpers\\n      import Phoenix.Component # Manually added/g' my_app/lib/my_app_web.ex &&
+        """
+        |> String.trim()
 
-        Version.compare(version, "0.7.0") != :lt ->
-          nil
+      Version.compare(version, "0.7.0") != :lt ->
+        nil
 
-        true ->
-          """
-          sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "~> 0.16.0"}, # Manually changed/g' my_app/mix.exs &&
-          """
-          |> String.trim()
-      end
-
-    {extra_deps, extra_replaces}
+      true ->
+        """
+        sed -i 's/{:phoenix_live_view, "~> 0.17.5"},/{:phoenix_live_view, "~> 0.16.0"}, # Manually changed/g' my_app/mix.exs &&
+        """
+        |> String.trim()
+    end
   end
 end

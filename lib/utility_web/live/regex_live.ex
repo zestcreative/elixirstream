@@ -5,7 +5,6 @@ defmodule UtilityWeb.RegexLive do
 
   use UtilityWeb, :live_view
   use Ecto.Schema
-  import Phoenix.HTML.Form
   alias Ecto.Changeset
   alias Utility.Cache
   require Logger
@@ -143,13 +142,11 @@ defmodule UtilityWeb.RegexLive do
         changeset
 
       {string, regex} when is_binary(regex) and is_binary(string) ->
-        if is_binary(string) do
-          :telemetry.execute(
-            [:utility, :regex, :payload],
-            %{payload: byte_size(string)},
-            %{}
-          )
-        end
+        :telemetry.execute(
+          [:utility, :regex, :payload],
+          %{payload: byte_size(string)},
+          %{}
+        )
 
         {result, indexes, changeset} =
           do_result(
@@ -279,7 +276,23 @@ defmodule UtilityWeb.RegexLive do
     Map.take(changeset.changes, [:regex, :string, :flags, :function]) != %{}
   end
 
-  def span_match(type, string) do
-    Phoenix.HTML.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
+  @doc """
+  Renders the result as `mix format`-ed Elixir, syntax-highlighted via MDEx.
+  Falls back to escaped pretty inspect if formatting/highlighting fails.
+  """
+  def highlight_result(result) do
+    ("```elixir\n" <> format_result(result) <> "\n```")
+    |> MDEx.to_html!(syntax_highlight: [formatter: {:html_inline, theme: "onedark"}])
+    |> Phoenix.HTML.raw()
+  rescue
+    _ -> Phoenix.HTML.html_escape("result = " <> inspect(result, limit: :infinity, pretty: true))
+  end
+
+  defp format_result(result) do
+    ("result = " <> inspect(result, limit: :infinity))
+    |> Code.format_string!()
+    |> IO.iodata_to_binary()
+  rescue
+    _ -> "result = " <> inspect(result, limit: :infinity, pretty: true)
   end
 end
