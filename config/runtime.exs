@@ -48,7 +48,7 @@ if config_env() == :prod do
     password: System.fetch_env!("ADMIN_PASSWORD")
 
   config :utility, UtilityWeb.Endpoint,
-    http: [port: System.get_env("PORT"), compress: true],
+    http: [port: System.get_env("PORT")],
     url: [scheme: "https", host: host || fly_host, port: 443],
     secret_key_base: secret_key_base,
     signing_salt: signing_salt
