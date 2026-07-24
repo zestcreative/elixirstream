@@ -42,19 +42,19 @@
           <label for="regex_live_regex" class="text-xs text-zinc-400 mb-1.5 block">pattern</label>
           <div class="flex items-stretch rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus-within:ring-brand-500 text-base overflow-hidden">
             <span class="px-3 flex items-center text-brand-400 select-none bg-brand-500/10">~r/</span>
-            <%= text_input(f, :regex,
+            {text_input(f, :regex,
               placeholder: "regex",
               autofocus: true,
               autocomplete: "off",
               class: "flex-1 min-w-0 bg-transparent py-2.5 px-1 outline-none text-white border-0 focus:ring-0 font-mono"
-            ) %>
+            )}
             <span class="px-3 flex items-center text-brand-400 select-none">/</span>
-            <%= text_input(f, :flags,
+            {text_input(f, :flags,
               placeholder: "flags",
               phx_hook: "MaskFlags",
               autocomplete: "off",
               class: "w-16 bg-transparent py-2.5 text-center outline-none text-accent-400 border-0 border-l border-[#241b39] focus:ring-0 font-mono"
-            ) %>
+            )}
           </div>
           <Components.errors form={f} field={:regex} />
           <Components.errors form={f} field={:flags} />
@@ -71,11 +71,11 @@
         <%!-- subject --%>
         <div>
           <label for="regex_live_string" class="text-xs text-zinc-400 mb-1.5 block">subject</label>
-          <%= textarea(f, :string,
+          {textarea(f, :string,
             spellcheck: "false",
             rows: 4,
             class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 p-3 text-white font-mono resize-y outline-none"
-          ) %>
+          )}
           <Components.errors form={f} field={:string} />
         </div>
 
@@ -89,15 +89,15 @@
           </div>
           <div class="inline-flex rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] p-1 gap-1">
             <label class="cursor-pointer">
-              <%= radio_button(f, :function, "run", class: "sr-only peer") %>
+              {radio_button(f, :function, "run", class: "sr-only peer")}
               <span class="block px-3 py-1.5 rounded-md text-zinc-400 hover:text-white transition peer-checked:bg-brand-500/20 peer-checked:text-brand-300 peer-checked:ring-1 peer-checked:ring-brand-500/40">Regex.run</span>
             </label>
             <label class="cursor-pointer">
-              <%= radio_button(f, :function, "named_captures", class: "sr-only peer") %>
+              {radio_button(f, :function, "named_captures", class: "sr-only peer")}
               <span class="block px-3 py-1.5 rounded-md text-zinc-400 hover:text-white transition peer-checked:bg-brand-500/20 peer-checked:text-brand-300 peer-checked:ring-1 peer-checked:ring-brand-500/40">named_captures</span>
             </label>
             <label class="cursor-pointer">
-              <%= radio_button(f, :function, "scan", class: "sr-only peer") %>
+              {radio_button(f, :function, "scan", class: "sr-only peer")}
               <span class="block px-3 py-1.5 rounded-md text-zinc-400 hover:text-white transition peer-checked:bg-brand-500/20 peer-checked:text-brand-300 peer-checked:ring-1 peer-checked:ring-brand-500/40">scan</span>
             </label>
           </div>
@@ -153,53 +153,127 @@
 
     <Components.tab group="help" id="cheatsheet" class="p-4" active="true">
       <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1 text-[13px]">
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[abc]</code></dt><dd class="text-zinc-400">one of a, b, or c</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[^abc]</code></dt><dd class="text-zinc-400">not a, b, or c</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[a-z]</code></dt><dd class="text-zinc-400">range a-z</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[a-zA-Z]</code></dt><dd class="text-zinc-400">range a-z or A-Z</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>^</code></dt><dd class="text-zinc-400">start of line</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>$</code></dt><dd class="text-zinc-400">end of line</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\A</code></dt><dd class="text-zinc-400">start of string</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\z</code></dt><dd class="text-zinc-400">end of string</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>.</code></dt><dd class="text-zinc-400">any character</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\s</code></dt><dd class="text-zinc-400">whitespace</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\S</code></dt><dd class="text-zinc-400">non-whitespace</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\d</code></dt><dd class="text-zinc-400">any digit</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\D</code></dt><dd class="text-zinc-400">non-digit</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\w</code></dt><dd class="text-zinc-400">word character</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\W</code></dt><dd class="text-zinc-400">non-word character</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\b</code></dt><dd class="text-zinc-400">word boundary</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>(...)</code></dt><dd class="text-zinc-400">capture group</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>(a|b)</code></dt><dd class="text-zinc-400">a or b</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a?</code></dt><dd class="text-zinc-400">zero or one</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a*</code></dt><dd class="text-zinc-400">zero or more</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a+</code></dt><dd class="text-zinc-400">one or more</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3}</code></dt><dd class="text-zinc-400">exactly 3 of a</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3,}</code></dt><dd class="text-zinc-400">3 or more of a</dd></div>
-        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5"><dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3,6}</code></dt><dd class="text-zinc-400">3 to 6 of a</dd></div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[abc]</code></dt><dd class="text-zinc-400">one of a, b, or c</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[^abc]</code></dt><dd class="text-zinc-400">not a, b, or c</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[a-z]</code></dt><dd class="text-zinc-400">range a-z</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>[a-zA-Z]</code></dt><dd class="text-zinc-400">range a-z or A-Z</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>^</code></dt><dd class="text-zinc-400">start of line</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>$</code></dt><dd class="text-zinc-400">end of line</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\A</code></dt><dd class="text-zinc-400">start of string</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\z</code></dt><dd class="text-zinc-400">end of string</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>.</code></dt><dd class="text-zinc-400">any character</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\s</code></dt><dd class="text-zinc-400">whitespace</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\S</code></dt><dd class="text-zinc-400">non-whitespace</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\d</code></dt><dd class="text-zinc-400">any digit</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\D</code></dt><dd class="text-zinc-400">non-digit</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\w</code></dt><dd class="text-zinc-400">word character</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\W</code></dt><dd class="text-zinc-400">non-word character</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>\b</code></dt><dd class="text-zinc-400">word boundary</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>(...)</code></dt><dd class="text-zinc-400">capture group</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>(a|b)</code></dt><dd class="text-zinc-400">a or b</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a?</code></dt><dd class="text-zinc-400">zero or one</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a*</code></dt><dd class="text-zinc-400">zero or more</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code>a+</code></dt><dd class="text-zinc-400">one or more</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3}</code></dt><dd class="text-zinc-400">exactly 3 of a</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3,}</code></dt><dd class="text-zinc-400">3 or more of a</dd>
+        </div>
+        <div class="flex gap-3 items-baseline px-2 py-1.5 rounded hover:bg-white/5">
+          <dt class="font-semibold text-brand-300 select-all w-20 shrink-0"><code phx-no-curly-interpolation>a{3,6}</code></dt><dd class="text-zinc-400">3 to 6 of a</dd>
+        </div>
       </dl>
     </Components.tab>
 
     <Components.tab group="help" id="flags" class="p-4">
       <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-[13px]">
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>u</code> unicode</dt><dd class="text-zinc-400">Unicode patterns like <code>\p</code>; expects valid Unicode input</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>i</code> caseless</dt><dd class="text-zinc-400">case insensitivity</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>s</code> dotall</dt><dd class="text-zinc-400">dot matches newlines</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>m</code> multiline</dt><dd class="text-zinc-400"><code>^</code>/<code>$</code> mark each line; use <code>\A</code>/<code>\z</code> for the string</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>x</code> extended</dt><dd class="text-zinc-400">ignore whitespace, allow <code>#</code> comments</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>f</code> firstline</dt><dd class="text-zinc-400">match before or at the first newline</dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-brand-300"><code>U</code> ungreedy</dt><dd class="text-zinc-400">invert greediness</dd></div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>u</code> unicode</dt><dd class="text-zinc-400">Unicode patterns like <code>\p</code>; expects valid Unicode input</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>i</code> caseless</dt><dd class="text-zinc-400">case insensitivity</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>s</code> dotall</dt><dd class="text-zinc-400">dot matches newlines</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>m</code> multiline</dt><dd class="text-zinc-400"><code>^</code>/<code>$</code> mark each line; use <code>\A</code>/<code>\z</code> for the string</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>x</code> extended</dt><dd class="text-zinc-400">ignore whitespace, allow <code>#</code> comments</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>f</code> firstline</dt><dd class="text-zinc-400">match before or at the first newline</dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-brand-300"><code>U</code> ungreedy</dt><dd class="text-zinc-400">invert greediness</dd>
+        </div>
       </dl>
     </Components.tab>
 
     <Components.tab group="help" id="recipes" class="p-4">
       <dl class="grid grid-cols-1 lg:grid-cols-2 gap-3 text-[13px]">
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">US Phone Number</dt><dd><code class="select-all text-brand-300" phx-no-curly-interpolation>\(?\d{3}\)?-? *\d{3}-? *-?\d{4}</code></dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">Unix Epoch (named captures)</dt><dd><code class="select-all text-brand-300" phx-no-curly-interpolation>\A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z</code></dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">Entire string is only numbers</dt><dd><code class="select-all text-brand-300">\A[0-9]*\z</code></dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">HTML attribute (eg: class)</dt><dd><code class="select-all text-brand-300">(?&lt;=class=(?:'|")).*?(?=(?:'|").*?&gt;)</code></dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">Simple Email Address</dt><dd><code class="select-all text-brand-300">\A[^\s]+@[^\s]+\z</code></dd></div>
-        <div class="px-2 py-1.5"><dt class="font-semibold text-zinc-200">Alpha-numeric, underscore, and dash</dt><dd><code class="select-all text-brand-300">\A[\w-]+\z</code></dd></div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">US Phone Number</dt><dd><code class="select-all text-brand-300" phx-no-curly-interpolation>\(?\d{3}\)?-? *\d{3}-? *-?\d{4}</code></dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">Unix Epoch (named captures)</dt><dd><code class="select-all text-brand-300" phx-no-curly-interpolation>\A(?&lt;sign&gt;-)?(?&lt;seconds&gt;\d{10,11})(?:\.(?&lt;subseconds&gt;\d{1,10}))?\z</code></dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">Entire string is only numbers</dt><dd><code class="select-all text-brand-300">\A[0-9]*\z</code></dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">HTML attribute (eg: class)</dt><dd><code class="select-all text-brand-300">(?&lt;=class=(?:'|")).*?(?=(?:'|").*?&gt;)</code></dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">Simple Email Address</dt><dd><code class="select-all text-brand-300">\A[^\s]+@[^\s]+\z</code></dd>
+        </div>
+        <div class="px-2 py-1.5">
+          <dt class="font-semibold text-zinc-200">Alpha-numeric, underscore, and dash</dt><dd><code class="select-all text-brand-300">\A[\w-]+\z</code></dd>
+        </div>
       </dl>
     </Components.tab>
   </div>

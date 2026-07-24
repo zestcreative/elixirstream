@@ -24,7 +24,7 @@
         <svg class="font-mono w-full h-full dark:text-brand-200 text-brand-600 select-all" viewbox="0 0 650 24" preserveAspectRatio="xMinYMin meet">
           <foreignObject class="w-full h-full">
             <p>
-              <%= url(~p"/sink/#{@id}") %>
+              {url(~p"/sink/#{@id}")}
             </p>
           </foreignObject>
         </svg>
@@ -88,56 +88,56 @@
           class="my-6 dark:bg-gray-900 bg-gray-50 overflow-hidden shadow sm:rounded-lg"
           id={dom_id}
         >
-            <div>
-              <dl>
-                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                  <dt class="text-sm leading-5 font-medium text-gray-500">
-                    Method
-                  </dt>
-                  <dd class="mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
-                    <%= request.method %>
-                  </dd>
-                  <dt class="text-right text-sm leading-5 font-medium text-gray-500">
-                    Received at
-                  </dt>
-                  <dd class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
-                    <%= request.received_at %>
-                  </dd>
-                </div>
-                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                  <dt class="text-sm leading-5 font-medium text-gray-500">
-                    Headers
-                  </dt>
-                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                    <ul>
-                      <%= for {header, value} <- request.headers do %>
-                        <li class="p-1 flex items-center justify-between text-sm leading-5">
-                          <%= header %>: <%= value %>
-                        </li>
-                      <% end %>
-                    </ul>
-                  </dd>
-                </div>
-                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                  <dt class="text-sm leading-5 font-medium text-gray-500">
-                    Query Params
-                  </dt>
-                  <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                    <%= request.query_string %>
-                  </dd>
-                </div>
-                <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
-                  <dt class="text-sm leading-5 font-medium text-gray-500">
-                    Body
-                  </dt>
-                  <dd class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
-                    <%= render_body(request) %>
-                  </dd>
-                </div>
-              </dl>
-            </div>
+          <div>
+            <dl>
+              <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Method
+                </dt>
+                <dd class="mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
+                  {request.method}
+                </dd>
+                <dt class="text-right text-sm leading-5 font-medium text-gray-500">
+                  Received at
+                </dt>
+                <dd class="text-right mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-2">
+                  {request.received_at}
+                </dd>
+              </div>
+              <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Headers
+                </dt>
+                <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  <ul>
+                    <%= for {header, value} <- request.headers do %>
+                      <li class="p-1 flex items-center justify-between text-sm leading-5">
+                        {header}: {value}
+                      </li>
+                    <% end %>
+                  </ul>
+                </dd>
+              </div>
+              <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Query Params
+                </dt>
+                <dd class="select-all overflow-x-auto mt-1 font-mono text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  {request.query_string}
+                </dd>
+              </div>
+              <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
+                <dt class="text-sm leading-5 font-medium text-gray-500">
+                  Body
+                </dt>
+                <dd class="select-all overflow-x-auto mt-1 text-sm leading-5 dark:text-gray-100 text-gray-900 sm:mt-0 sm:col-span-5">
+                  {render_body(request)}
+                </dd>
+              </div>
+            </dl>
           </div>
         </div>
       </div>
+    </div>
   </:content>
 </Components.page_panel>

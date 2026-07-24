@@ -25,14 +25,14 @@
           project
           <%= if @project_url do %>
             <a rel="nofollow" target="_blank" href={@project_url} class="text-accent-400 hover:text-accent-300 lowercase">
-              <%= Phoenix.Naming.humanize(@project_source) %>
+              {Phoenix.Naming.humanize(@project_source)}
             </a>
           <% end %>
         <% end %>
-        <%= select(f, :project, generator_package_options(),
+        {select(f, :project, generator_package_options(),
           autocomplete: "off",
           class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm py-2.5 px-3"
-        ) %>
+        )}
         <Components.errors form={f} field={:project} />
       </div>
 
@@ -45,36 +45,36 @@
             </a>
           <% end %>
         <% end %>
-        <%= select(f, :command, generator_options(@project),
+        {select(f, :command, generator_options(@project),
           autocomplete: "off",
           class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm py-2.5 px-3"
-        ) %>
+        )}
         <Components.errors form={f} field={:command} />
         <%= if @command_help do %>
           <p class="mt-2 text-sm text-zinc-400">
-            <%= @command_help %>
+            {@command_help}
           </p>
         <% end %>
       </div>
 
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <%= label(f, :from_version, "from version", class: "block text-xs text-zinc-400 mb-1.5") %>
-          <%= select(f, :from_version, version_options(@from_versions),
+          {label(f, :from_version, "from version", class: "block text-xs text-zinc-400 mb-1.5")}
+          {select(f, :from_version, version_options(@from_versions),
             autocomplete: "off",
             placeholder: "From version...",
             class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm py-2.5 px-3"
-          ) %>
+          )}
           <Components.errors form={f} field={:from_version} />
         </div>
 
         <div>
-          <%= label(f, :to_version, "to version", class: "block text-xs text-zinc-400 mb-1.5") %>
-          <%= select(f, :to_version, version_options(@to_versions),
+          {label(f, :to_version, "to version", class: "block text-xs text-zinc-400 mb-1.5")}
+          {select(f, :to_version, version_options(@to_versions),
             autocomplete: "off",
             placeholder: "To version...",
             class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm py-2.5 px-3"
-          ) %>
+          )}
           <Components.errors form={f} field={:to_version} />
         </div>
       </div>
@@ -82,20 +82,20 @@
       <% is_flags_hidden = !Enum.any?(@available_from_flags ++ @available_to_flags) %>
       <div class={"grid grid-cols-1 md:grid-cols-2 gap-3 #{if is_flags_hidden, do: "hidden"}"}>
         <div>
-          <%= label(f, :from_flags, "from #{@from_version} flags", class: "block text-xs text-zinc-400 mb-1.5") %>
-          <%= multiple_select(f, :from_flags, @available_from_flags,
+          {label(f, :from_flags, "from #{@from_version} flags", class: "block text-xs text-zinc-400 mb-1.5")}
+          {multiple_select(f, :from_flags, @available_from_flags,
             class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm overflow-y-hidden",
             size: length(@available_from_flags)
-          ) %>
+          )}
           <Components.errors form={f} field={:from_flags} />
         </div>
 
         <div>
-          <%= label(f, :to_flags, "to #{@to_version} flags", class: "block text-xs text-zinc-400 mb-1.5") %>
-          <%= multiple_select(f, :to_flags, @available_to_flags,
+          {label(f, :to_flags, "to #{@to_version} flags", class: "block text-xs text-zinc-400 mb-1.5")}
+          {multiple_select(f, :to_flags, @available_to_flags,
             class: "w-full rounded-lg bg-[#0c0a12] ring-1 ring-[#241b39] focus:ring-brand-500 border-0 text-white text-sm overflow-y-hidden",
             size: length(@available_to_flags)
-          ) %>
+          )}
           <Components.errors form={f} field={:to_flags} />
         </div>
       </div>
