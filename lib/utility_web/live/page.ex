@@ -9,19 +9,23 @@ defmodule UtilityWeb.PageLive do
 
   def render(assigns) do
     ~H"""
-    <div class="max-w-3xl mt-6 lg:mt-0 mx-auto px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-      <div class="rounded-lg dark:bg-gray-800 bg-white overflow-hidden shadow">
-        <article class="p-6 prose dark:prose-invert lg:prose-lg">
+    <div class="max-w-6xl mx-auto px-5 py-10 text-zinc-300">
+      <div class="mb-8">
+        <h1 class="font-brand font-extrabold text-white text-2xl sm:text-3xl leading-tight tracking-tight">
+          About
+        </h1>
+      </div>
+      <div class="rounded-xl border border-[#241b39] bg-[#141021] p-6 shadow-[0_0_60px_-15px_rgba(148,40,236,0.5)]">
+        <article class="prose dark:prose-invert lg:prose-lg max-w-none">
           <p>
             Made with 💚💙💜💛❤️ by
-            <Components.outbound_link href="https://twitter.com/bernheisel" class="link">
+            <Components.outbound_link href="https://bsky.app/profile/david.bernheisel.com" class="link">
               @dbernheisel
             </Components.outbound_link>
           </p>
 
           <p>
-            If you're interested in the source code,
-            <.link href="https://github.com/zestcreative/utility" class="link">check it out</.link>
+            If you're interested in the source code, <.link href="https://github.com/zestcreative/utility" class="link">check it out</.link>
             .
             Have any ideas on what would be helpful here? Drop me a line by
             <Components.outbound_link href="https://github.com/zestcreative/utility/discussions/categories/ideas" class="link">
@@ -65,8 +69,7 @@ defmodule UtilityWeb.PageLive do
             </li>
             <li>
               Phoenix LiveView is a welcome addition that enables normally-backend-developers like me produce reactive Web
-              UIs like the
-              <.link navigate={~p"/regex"} class="link">Regex Tester</.link>
+              UIs like the <.link navigate={~p"/regex"} class="link">Regex Tester</.link>
               without having to split the codebase into "backend" and "frontend" so much. This isn't a knock on frontend frameworks; this is just another highly-efficient tool in the developer's toolbelt to rapidly produce good web applications.
             </li>
           </ul>
@@ -81,15 +84,11 @@ defmodule UtilityWeb.PageLive do
 
           <h3>How do you deploy the app?</h3>
           <p>
-            We're using
-            <Components.outbound_link href="https://www.fly.io" class="link">fly.io</Components.outbound_link>
-            .
-            When it's time to deploy, all we do is commit to the main branch and a GitHub Action will run <code>flyctl deploy</code>
-            automatically if tests pass.
+            We're using <Components.outbound_link href="https://www.fly.io" class="link">fly.io</Components.outbound_link> .
+            When it's time to deploy, all we do is commit to the main branch and a GitHub Action will run <code>flyctl deploy</code> automatically if tests pass.
           </p>
           <p>
-            Since it costs money, it would be wonderful if you considered
-            <Components.outbound_link href="https://github.com/sponsors/dbernheisel" class="link">sponsoring us at GitHub</Components.outbound_link>.
+            Since it costs money, it would be wonderful if you considered <Components.outbound_link href="https://github.com/sponsors/dbernheisel" class="link">sponsoring us at GitHub</Components.outbound_link>.
           </p>
 
           <h3>While I have you here...</h3>

@@ -1,4 +1,5 @@
 defmodule Utility.SentryFilter do
+  @moduledoc false
   @behaviour Sentry.EventFilter
 
   def exclude_exception?(%Phoenix.Router.NoRouteError{}, _), do: true

@@ -1,4 +1,7 @@
-FROM hexpm/elixir:1.17.3-erlang-27.2-debian-bookworm-20241202-slim
+# Elixir stays 1.17.3 (generator-diff fidelity); OTP bumped to 27.3.4.14 because
+# OTP 27.2's stricter TLS cert validation rejects hex.pm's chain with
+# key_usage_mismatch, breaking `mix local.hex`. OTP version doesn't affect phx.new output.
+FROM hexpm/elixir:1.17.3-erlang-27.3.4.14-debian-bookworm-20260713-slim
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \

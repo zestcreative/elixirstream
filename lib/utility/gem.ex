@@ -1,4 +1,5 @@
 defmodule Utility.Gem do
+  @moduledoc false
   alias Utility.Gem.Api
   alias Utility.Package
   alias Utility.PackageRepo

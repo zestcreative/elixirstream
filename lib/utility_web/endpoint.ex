@@ -28,6 +28,10 @@ defmodule UtilityWeb.Endpoint do
     gzip: true,
     only: UtilityWeb.static_paths()
 
+  if Mix.env() == :dev do
+    plug Tidewave
+  end
+
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do

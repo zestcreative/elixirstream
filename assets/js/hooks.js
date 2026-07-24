@@ -41,6 +41,12 @@ hooks.HandleScroll = {
   }
 }
 
+hooks.AutoScroll = {
+  mounted() { this.toBottom() },
+  updated() { this.toBottom() },
+  toBottom() { this.el.scrollTop = this.el.scrollHeight }
+}
+
 hooks.MaskFlags = {
   mounted() {
     this.el.addEventListener("input", _event => {

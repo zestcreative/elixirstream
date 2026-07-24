@@ -115,9 +115,9 @@ defmodule UtilityWeb.RegexLiveTest do
   describe "mounting" do
     test "can mount", %{conn: conn} do
       conn = get(conn, @route)
-      assert html_response(conn, 200) =~ "Regex Tester</h2>"
+      assert html_response(conn, 200) =~ "Regex Tester"
       assert {:ok, _view, html} = live(conn)
-      assert html =~ "Regex Tester</h2>"
+      assert html =~ "Regex Tester"
     end
 
     test "can load saved record", %{conn: conn} do
@@ -129,7 +129,7 @@ defmodule UtilityWeb.RegexLiveTest do
       ])
 
       conn = get(conn, @route <> "/test-id")
-      assert html_response(conn, 200) =~ "Regex Tester</h2>"
+      assert html_response(conn, 200) =~ "Regex Tester"
       assert {:ok, _view, html} = live(conn)
       assert html =~ "1234 my test string"
     end

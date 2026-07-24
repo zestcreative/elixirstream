@@ -1,4 +1,7 @@
 <Components.page_panel title="HTTP Sink" id="http-sink">
+  <:description>
+    A disposable endpoint that captures any HTTP request you send it — inspect the method, headers, and body in real time.
+  </:description>
   <:call_to_action>
     <button
       type="button"
@@ -67,7 +70,7 @@
           <p>For example, in a shell:</p>
           <pre class="p-4 bg-gray-100 text-gray-800 dark:bg-black
               dark:text-gray-50 rounded-md select-all
-              overflow-x-auto"><code>curl '<%= url(~p"/sink/#{@id}/?query=param") %>' \
+              overflow-x-auto"><code phx-no-curly-interpolation>curl '<%= url(~p"/sink/#{@id}/?query=param") %>' \
   --silent \
   --header "Content-Type: application/json" \
   --data '{"foo": "bar"}'</code></pre>
@@ -79,9 +82,12 @@
         </div>
       </div>
 
-      <div id="requests" phx-update="prepend">
-        <%= for request <- @requests do %>
-          <div class="my-6 dark:bg-gray-900 bg-gray-50 overflow-hidden shadow sm:rounded-lg" id={request.id}>
+      <div id="requests" phx-update="stream">
+        <div
+          :for={{dom_id, request} <- @streams.requests}
+          class="my-6 dark:bg-gray-900 bg-gray-50 overflow-hidden shadow sm:rounded-lg"
+          id={dom_id}
+        >
             <div>
               <dl>
                 <div class="px-4 py-5 sm:grid sm:grid-cols-6 sm:gap-4 sm:px-6">
@@ -131,8 +137,7 @@
               </dl>
             </div>
           </div>
-        <% end %>
+        </div>
       </div>
-    </div>
   </:content>
 </Components.page_panel>

@@ -1,4 +1,5 @@
 defmodule UtilityWeb.Nav do
+  @moduledoc false
   import Phoenix.LiveView
 
   def on_mount(:default, _params, _session, socket) do
@@ -11,7 +12,6 @@ defmodule UtilityWeb.Nav do
         {UtilityWeb.RegexLive, _} -> :regex
         {UtilityWeb.GenDiffLive, _} -> :gendiff
         {UtilityWeb.SinkLive, _} -> :sink
-        {UtilityWeb.TipLive, _} -> :tips
         {_, _} -> nil
       end
 

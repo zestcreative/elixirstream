@@ -1,4 +1,5 @@
 defmodule Utility.Gem.Api do
+  @moduledoc false
   import Utility.ProjectRunner, only: [path_for: 1]
 
   @gem_search "bin/gemsearch.sh"

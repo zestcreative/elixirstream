@@ -23,9 +23,9 @@ defmodule Utility.Hex.Api do
   end
 
   def get_versions(package) do
-    with {:ok, package_versions} <- get_package(package) do
-      package_versions
-      |> Enum.map(& &1[:version])
+    with {:ok, %{releases: releases}} <- get_package(package) do
+      releases
+      |> Enum.map(& &1.version)
       |> get_nonhex_versions(package)
       |> Enum.sort({:desc, Version})
       |> get_nonstandard_versions(package)

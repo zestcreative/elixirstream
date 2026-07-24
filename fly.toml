@@ -13,7 +13,6 @@ processes = []
   release_command = "/app/bin/utility eval 'Utility.Release.migrate()'"
 
 [env]
-  ECTO_IPV6 = "true"
   PORT = "4000"
   STORAGE_DIR = "/storage/utility"
 

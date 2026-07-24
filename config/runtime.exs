@@ -2,27 +2,19 @@ import Config
 
 if config_env() != :test do
   config :utility,
-    silicon_bin: System.find_executable("silicon") || raise("needs 'silicon' installed."),
     docker_bin:
       System.find_executable("docker") || System.find_executable("podman") ||
         raise("needs 'docker' installed."),
     gem_bin: System.find_executable("gem") || raise("needs 'gem' installed.")
 end
 
-config :utility, Utility.Twitter, publish: System.get_env("TWITTER_PUBLISH", "false") == "true"
+if config_env() == :dev do
+  config :utility, UtilityWeb.Endpoint, http: [port: System.get_env("PORT") || 4000]
+end
 
 if config_env() == :prod do
   host = System.get_env("HOST")
   fly_host = System.get_env("FLY_APP_NAME") <> ".fly.dev"
-
-  config :utility,
-    redis_ip6: System.get_env("REDIS_IP6") == "true",
-    redis_url:
-      System.get_env("REDIS_URL") ||
-        raise("""
-        environment variable REDIS_URL is missing.
-        For example: redis://default:pass@127.0.0.1:6379
-        """)
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
@@ -51,19 +43,9 @@ if config_env() == :prod do
       }
   end
 
-  config :ueberauth, Ueberauth.Strategy.Github.OAuth,
-    client_id: System.fetch_env!("GITHUB_CLIENT_ID"),
-    client_secret: System.fetch_env!("GITHUB_CLIENT_SECRET")
-
-  config :ueberauth, Ueberauth.Strategy.Twitter.OAuth,
-    consumer_key: System.get_env("TWITTER_LOGIN_CONSUMER_KEY"),
-    consumer_secret: System.get_env("TWITTER_LOGIN_CONSUMER_SECRET")
-
-  config :utility, Utility.Twitter.Client,
-    consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
-    consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
-    token: System.get_env("TWITTER_TOKEN"),
-    token_secret: System.get_env("TWITTER_TOKEN_SECRET")
+  config :utility, :admin_auth,
+    username: System.fetch_env!("ADMIN_USER"),
+    password: System.fetch_env!("ADMIN_PASSWORD")
 
   config :utility, UtilityWeb.Endpoint,
     http: [port: System.get_env("PORT"), compress: true],
@@ -71,28 +53,19 @@ if config_env() == :prod do
     secret_key_base: secret_key_base,
     signing_salt: signing_salt
 
-  if storage_dir = System.get_env("STORAGE_DIR") do
-    File.mkdir_p(storage_dir)
-    config :utility, gendiff_storage_dir: storage_dir
-    config :utility, tip_storage_dir: storage_dir
-  end
+  # Everything that must persist lives on the Fly volume (STORAGE_DIR): the SQLite
+  # database, the DETS cache, and generated gendiff output.
+  storage_dir = System.get_env("STORAGE_DIR") || "/storage/utility"
+  File.mkdir_p!(storage_dir)
 
-  database_url =
-    System.get_env("DATABASE_URL") ||
-      raise """
-      environment variable DATABASE_URL is missing.
-      For example: postgres://USER:PASS@HOST/DATABASE
-      """
+  config :utility,
+    gendiff_storage_dir: storage_dir
 
-  maybe_ipv6 = if System.get_env("ECTO_IPV6"), do: [:inet6], else: []
+  # DETS cache on the volume so it survives deploys/restarts.
+  config :utility, Utility.Cache.Dets, path: Path.join(storage_dir, "cache.dets")
 
   config :utility, Utility.Repo,
-    # ssl: true,
-    url: database_url,
-    socket_options: maybe_ipv6,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10")
-
-  config :utility, Utility.Silicon,
-    fonts: Utility.Silicon.fonts(),
-    themes: Utility.Silicon.themes()
+    database: Path.join(storage_dir, "utility.db"),
+    journal_mode: :wal,
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "5")
 end

@@ -1,6 +1,12 @@
 # The directory Mix will write compiled artifacts to.
 /_build/
 
+# Local SQLite databases and DETS cache files.
+*.db
+*.db-shm
+*.db-wal
+*.dets
+
 # If you run "mix test --cover", coverage assets end up here.
 /cover/
 

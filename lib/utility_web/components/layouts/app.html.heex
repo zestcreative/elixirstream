@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+<div class="min-h-screen bg-[#0c0a12] text-zinc-300">
   <%= Phoenix.Template.render(UtilityWeb.Layouts, "nav", "html", assigns) %>
-  <main class="-mt-24 pb-8">
+  <main class="pb-8">
     <%= if info = Phoenix.Flash.get(@flash, :info) do %>
-      <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+      <div class="fixed inset-0 z-50 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
         <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
           <div class="overflow-hidden rounded-lg shadow-xs">
             <div class="p-4">
@@ -35,7 +35,7 @@
     <% end %>
 
     <%= if error = Phoenix.Flash.get(@flash, :error) do %>
-      <div class="fixed inset-0 z-10 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
+      <div class="fixed inset-0 z-50 flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
         <div class="w-full max-w-sm dark:bg-black bg-white rounded-lg shadow-lg pointer-events-auto">
           <div class="overflow-hidden rounded-lg shadow-xs">
             <div class="p-4">

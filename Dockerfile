@@ -1,12 +1,8 @@
 # BUILD LAYER
 
-FROM hexpm/elixir:1.14.3-erlang-25.2.3-alpine-3.18.0 AS build
-RUN apk add --no-cache build-base npm git gcompat \
-    expat-dev pkgconfig fontconfig fontconfig-dev freetype-dev freetype \
-    libxcb libxcb-dev xclip harfbuzz harfbuzz-dev libxkbcommon-dev \
-    libxml2 libxml2-dev cargo
+FROM hexpm/elixir:1.20.2-erlang-29.0.3-alpine-3.21.7 AS build
+RUN apk add --no-cache build-base npm git gcompat libxml2 libxml2-dev
 WORKDIR /app
-RUN cargo install --root / silicon --version 0.4.3
 
 ## HEX
 ENV HEX_HTTP_TIMEOUT=20
@@ -33,13 +29,11 @@ COPY rel ./rel
 RUN mix release
 
 # APP LAYER
-FROM docker:20.10.24-dind-alpine3.18 AS app
+FROM docker:28.2.2-dind-alpine3.21 AS app
 RUN apk add --no-cache libstdc++ openssl ncurses-libs ruby bash git curl \
-    ip6tables pigz sysstat procps lsof sudo bind-tools expat-dev pkgconfig \
-    fontconfig fontconfig-dev freetype-dev freetype libxcb libxcb-dev \
-    xclip harfbuzz harfbuzz-dev libxkbcommon-dev libxml2 libxml2-dev \
-    font-fira-code-nerd uuidgen coreutils pngquant
-RUN addgroup -S docker && \
+    ip6tables pigz sysstat procps lsof sudo bind-tools uuidgen coreutils
+# The docker:dind base image already ships a "docker" group, so create it only if missing.
+RUN (getent group docker || addgroup -S docker) && \
     addgroup -S --gid 1000 app && \
     adduser -D -G app --uid 1000 app && \
     addgroup -S app docker && \
@@ -49,7 +43,6 @@ RUN addgroup -S docker && \
 WORKDIR /app
 RUN chown -R 1000:1000 /app
 COPY --from=build --chown=app:app app/_build/prod/rel/utility ./
-COPY --from=build /bin/silicon /bin/silicon
 COPY priv/docker-setup /sbin/docker-setup
 COPY priv/docker-daemon.json /etc/docker/daemon.json
 RUN chmod 711 /sbin/docker-setup

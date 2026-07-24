@@ -5,7 +5,7 @@ defmodule UtilityWeb.RegexLive do
 
   use UtilityWeb, :live_view
   use Ecto.Schema
-  import Phoenix.HTML.Form
+  import PhoenixHTMLHelpers.Form
   alias Ecto.Changeset
   alias Utility.Cache
   require Logger
@@ -143,13 +143,11 @@ defmodule UtilityWeb.RegexLive do
         changeset
 
       {string, regex} when is_binary(regex) and is_binary(string) ->
-        if is_binary(string) do
-          :telemetry.execute(
-            [:utility, :regex, :payload],
-            %{payload: byte_size(string)},
-            %{}
-          )
-        end
+        :telemetry.execute(
+          [:utility, :regex, :payload],
+          %{payload: byte_size(string)},
+          %{}
+        )
 
         {result, indexes, changeset} =
           do_result(
@@ -280,6 +278,15 @@ defmodule UtilityWeb.RegexLive do
   end
 
   def span_match(type, string) do
-    Phoenix.HTML.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
+    PhoenixHTMLHelpers.Tag.content_tag(:span, string, class: (type == :matched && "m") || "u")
+  end
+
+  @doc "Renders the result as `mix format`-ed Elixir source, falling back to pretty inspect."
+  def format_result(result) do
+    ("result = " <> inspect(result, limit: :infinity))
+    |> Code.format_string!()
+    |> IO.iodata_to_binary()
+  rescue
+    _ -> "result = " <> inspect(result, limit: :infinity, pretty: true)
   end
 end

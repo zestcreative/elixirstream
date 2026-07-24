@@ -3,18 +3,10 @@ import Config
 config :utility, cache: Utility.Test.MockCache
 
 config :utility, Utility.Repo,
-  database: "utility_test#{System.get_env("MIX_TEST_PARTITION")}",
+  database: Path.expand("../utility_test#{System.get_env("MIX_TEST_PARTITION")}.db", __DIR__),
   show_sensitive_data_on_connection_error: true,
-  hostname: "localhost",
-  pool_size: 10,
+  pool_size: 5,
   pool: Ecto.Adapters.SQL.Sandbox
-
-if System.get_env("CI") do
-  config :utility, Utility.Repo,
-    hostname: System.get_env("DATABASE_HOST"),
-    username: System.get_env("DATABASE_USER"),
-    password: System.get_env("DATABASE_PASS")
-end
 
 config :phoenix, :plug_init_mode, :runtime
 
@@ -23,8 +15,7 @@ config :utility, UtilityWeb.Endpoint,
   server: false
 
 config :utility,
-  gendiff_storage_dir: Path.expand("tmp/test"),
-  tip_storage_dir: Path.expand("tmp/test")
+  gendiff_storage_dir: Path.expand("tmp/test")
 
 config :utility, Oban,
   crontab: false,

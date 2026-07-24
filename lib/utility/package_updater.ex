@@ -1,4 +1,5 @@
 defmodule Utility.Package.Updater do
+  @moduledoc false
   use GenServer
   require Logger
   @update_every :timer.hours(12)
