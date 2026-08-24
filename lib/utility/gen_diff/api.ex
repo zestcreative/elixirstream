@@ -41,15 +41,61 @@ defmodule Utility.GenDiff.Api do
   end
 
   @doc """
-  Returns `{:ok, changelog_markdown}` — the upstream CHANGELOG sliced to this version
-  range — or `{:error, :unsupported}` / `{:error, :unavailable}`. Served as its own
-  file so its markdown headings don't collide with the index document.
+  Returns `{:ok, changelog_markdown}` — the generator's own CHANGELOG sliced to this
+  version range, followed by an index of the deps whose requirement moved in the
+  generated `mix.exs` (LiveView, Ecto, Plug, …), each linking to its own changelog URL.
+
+  Listing the deps is network-free — it's read straight off the diff — so this stays a
+  cheap request. `opts[:dep_url]` is a 2-arity function `(generator, package) -> url`.
+
+  `{:error, :unsupported}` / `{:error, :unavailable}` if the generator has no changelog.
   """
   @spec changelog(map(), keyword()) ::
           {:ok, binary()} | {:error, :invalid, Ecto.Changeset.t()} | {:error, atom()}
-  def changelog(params, _opts \\ []) do
-    with {:ok, generator} <- apply_generator(params) do
-      Changelog.slice(generator.project, generator.from_version, generator.to_version)
+  def changelog(params, opts \\ []) do
+    timeout = Keyword.get(opts, :timeout, @default_timeout)
+    dep_url = Keyword.get(opts, :dep_url, fn _generator, _package -> nil end)
+
+    with {:ok, generator} <- apply_generator(params),
+         {:ok, own} <-
+           Changelog.slice(generator.project, generator.from_version, generator.to_version) do
+      deps = Changelog.changed_deps(stored_patch(generator, params, timeout))
+      {:ok, own <> Markdown.dep_index(deps, &dep_url.(generator, &1))}
+    end
+  end
+
+  @doc """
+  Returns `{:ok, changelog_markdown}` for a single dependency's changelog, sliced to the
+  range that dep moved across in this diff. `{:error, :not_in_diff}` if that dep's
+  requirement didn't change (or we don't know where its changelog lives).
+
+  One dep per document: LiveView alone can run to 50KB, and an agent upgrading Phoenix
+  rarely needs all of them at once.
+  """
+  @spec dep_changelog(map(), binary(), keyword()) ::
+          {:ok, binary()}
+          | {:error, :invalid, Ecto.Changeset.t()}
+          | {:error, :not_in_diff}
+          | {:error, :build_failed}
+          | {:error, :timeout}
+  def dep_changelog(params, package, opts \\ []) do
+    timeout = Keyword.get(opts, :timeout, @default_timeout)
+
+    with {:ok, generator} <- apply_generator(params),
+         {:ok, patch} <- ensure_patch(generator, params, timeout) do
+      case Changelog.companion_slices(patch, [package]) do
+        [{^package, md}] -> {:ok, md}
+        [] -> {:error, :not_in_diff}
+      end
+    end
+  end
+
+  # The dep list needs the patch, but the generator's own changelog shouldn't 502 just
+  # because the diff isn't built yet — degrade to "no deps listed" instead.
+  defp stored_patch(generator, params, timeout) do
+    case ensure_patch(generator, params, timeout) do
+      {:ok, patch} -> patch
+      _ -> nil
     end
   end
 

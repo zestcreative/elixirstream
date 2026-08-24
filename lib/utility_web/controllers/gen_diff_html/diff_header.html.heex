@@ -17,9 +17,20 @@
     <%= if @changelog do %>
       <details class="mt-4" open>
         <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
-          📋 Changelog: {@generator.from_version} → {@generator.to_version}
+          📋 {changelog_name(@generator)} changelog: {@generator.from_version} → {@generator.to_version}
         </summary>
         <div class="prose dark:prose-invert prose-sm max-w-none mt-2 max-h-96 overflow-auto p-4 rounded bg-gray-100 dark:bg-gray-900">{render_changelog(@changelog)}</div>
+      </details>
+    <% end %>
+    <%!-- One section per dependency, LiveView first and expanded alongside Phoenix: for a
+          Phoenix upgrade those two are what you actually read. The rest carry real
+          breaking changes too but are usually small bumps, so they stay collapsed. --%>
+    <%= for {package, dep_changelog} <- @dep_changelogs do %>
+      <details class="mt-2" open={expanded?(package)}>
+        <summary class="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-300">
+          📦 {package} changelog
+        </summary>
+        <div class="prose dark:prose-invert prose-sm max-w-none mt-2 max-h-96 overflow-auto p-4 rounded bg-gray-100 dark:bg-gray-900">{render_changelog(dep_changelog)}</div>
       </details>
     <% end %>
   </div>

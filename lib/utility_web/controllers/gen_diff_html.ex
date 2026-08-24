@@ -18,6 +18,19 @@ defmodule UtilityWeb.GenDiffHTML do
     |> Phoenix.HTML.raw()
   end
 
+  # Phoenix and LiveView are what you actually read for a Phoenix upgrade, so they're the
+  # only sections open on load. The rest are usually small bumps.
+  @expanded_deps ~w[phoenix_live_view]
+
+  @doc "Whether a dependency's changelog section starts expanded."
+  def expanded?(package), do: package in @expanded_deps
+
+  @doc """
+  The library this project's changelog is about — `phoenix`, not `phx_new`. The generator
+  package and the changelog's subject aren't the same thing.
+  """
+  def changelog_name(generator), do: Utility.GenDiff.Changelog.changelog_name(generator.project)
+
   @doc "The sliced upstream changelog for this diff's version range, or nil."
   def changelog(generator) do
     case Utility.GenDiff.Changelog.slice(
@@ -27,6 +40,22 @@ defmodule UtilityWeb.GenDiffHTML do
          ) do
       {:ok, changelog} -> changelog
       {:error, _} -> nil
+    end
+  end
+
+  @doc """
+  One sliced changelog per dependency whose version moved, as `[{package, markdown}]`.
+  Rendered as a separate collapsed section each — LiveView's alone can be 50KB, so
+  they don't belong in one block with the generator's.
+
+  The patch is read from storage rather than built: rendering only happens after a
+  successful build, so it's always there. If it somehow isn't, the dep changelogs are
+  dropped rather than blocking the render on a rebuild.
+  """
+  def dep_changelogs(generator) do
+    case Utility.GenDiff.Storage.get_patch(generator) do
+      {:ok, patch} -> Utility.GenDiff.Changelog.companion_slices(patch)
+      {:error, _} -> []
     end
   end
 
@@ -45,7 +74,8 @@ defmodule UtilityWeb.GenDiffHTML do
       html_patch =
         Phoenix.Template.render_to_iodata(__MODULE__, "diff_header", "html",
           generator: generator,
-          changelog: changelog(generator)
+          changelog: changelog(generator),
+          dep_changelogs: dep_changelogs(generator)
         )
 
       IO.binwrite(file, html_patch)

@@ -33,6 +33,40 @@ defmodule Utility.GenDiff.Markdown do
     """
   end
 
+  @doc """
+  An index of the dependencies whose version moved, each linking to its own changelog.
+
+  Served alongside the generator's changelog rather than inlined: a Phoenix 1.7 -> 1.8
+  hop moves seven deps and LiveView's slice alone is ~50KB, so concatenating them all
+  would blow the context of the agent that fetched it.
+  """
+  @spec dep_index([{binary(), binary(), binary()}], (binary() -> binary() | nil)) :: binary()
+  def dep_index([], _dep_url), do: ""
+
+  def dep_index(deps, dep_url) do
+    rows =
+      Enum.map_join(deps, "\n", fn {package, from_req, to_req} ->
+        "- [`#{package}`](#{dep_url.(package)}) — `#{from_req}` → `#{to_req}`"
+      end)
+
+    """
+
+
+    ---
+
+    # Dependency changelogs — ⚠️ READ THESE TOO
+
+    The changelog above covers only the generator itself. These dependencies moved
+    version in the generated `mix.exs`, and for a Phoenix upgrade they usually carry
+    **more** breaking changes than Phoenix does — LiveView especially.
+
+    Each has its own changelog URL below, sliced to the range it moved across. Fetch the
+    ones relevant to your task.
+
+    #{rows}
+    """
+  end
+
   @doc "Per-file entries (`path`, `additions`, `deletions`) parsed from a unified patch."
   @spec file_entries(binary()) :: [
           %{path: binary(), additions: non_neg_integer(), deletions: non_neg_integer()}
@@ -97,7 +131,12 @@ defmodule Utility.GenDiff.Markdown do
 
     Before looking at any file diffs, **fetch and read the changelog** below. It explains
     the release's intent, new features, deprecations, and breaking changes that the diffs
-    alone won't convey:
+    alone won't convey.
+
+    It covers the generator's own changelog **and** the changelog of every dependency
+    whose version moved between these two releases (LiveView, Ecto, Plug, …) — for a
+    Phoenix upgrade those dependencies usually carry more breaking changes than Phoenix
+    itself, so don't stop at the first section:
 
     #{url}
     """

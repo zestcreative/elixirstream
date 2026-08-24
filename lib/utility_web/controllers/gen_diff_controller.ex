@@ -82,28 +82,63 @@ defmodule UtilityWeb.GenDiffController do
 
   @doc """
   Returns the upstream CHANGELOG sliced to this version range, as its own `text/markdown`
-  document (linked from the index). Same params as `api/2`.
+  document (linked from the index), followed by an index of the dependencies whose
+  version moved. Same params as `api/2`.
+
+  With `?dep=phoenix_live_view`, returns that one dependency's changelog instead — one
+  dep per document, so an agent fetches only what it needs.
   """
   def api_changelog(conn, params) do
     conn = put_resp_content_type(conn, "text/markdown")
 
-    case Utility.GenDiff.Api.changelog(generator_params(params)) do
-      {:ok, changelog} ->
-        send_resp(conn, 200, changelog)
+    case downcase(params)["dep"] do
+      nil ->
+        respond_changelog(conn, changelog_index(params))
 
-      {:error, :invalid, changeset} ->
-        send_resp(conn, 400, invalid_markdown(changeset))
-
-      {:error, :unsupported} ->
-        send_resp(conn, 404, "# No changelog\n\nThis generator has no changelog source.\n")
-
-      {:error, _reason} ->
-        send_resp(
+      dep ->
+        respond_changelog(
           conn,
-          502,
-          "# Changelog unavailable\n\nCould not fetch the changelog for this range.\n"
+          Utility.GenDiff.Api.dep_changelog(generator_params(params), dep),
+          dep
         )
     end
+  end
+
+  defp changelog_index(params) do
+    dep_url = fn generator, package ->
+      url(~p"/gendiff/api/changelog?#{base_query(generator) ++ [dep: package]}")
+    end
+
+    Utility.GenDiff.Api.changelog(generator_params(params), dep_url: dep_url)
+  end
+
+  defp respond_changelog(conn, result, dep \\ nil)
+
+  defp respond_changelog(conn, {:ok, changelog}, _dep), do: send_resp(conn, 200, changelog)
+
+  defp respond_changelog(conn, {:error, :invalid, changeset}, _dep),
+    do: send_resp(conn, 400, invalid_markdown(changeset))
+
+  defp respond_changelog(conn, {:error, :unsupported}, _dep),
+    do: send_resp(conn, 404, "# No changelog\n\nThis generator has no changelog source.\n")
+
+  defp respond_changelog(conn, {:error, :not_in_diff}, dep) do
+    send_resp(
+      conn,
+      404,
+      "# No changelog for `#{dep}`\n\nThis dependency's version did not change in this diff, " <>
+        "or its changelog source is unknown.\n"
+    )
+  end
+
+  defp respond_changelog(conn, {:error, :timeout}, _dep), do: send_resp(conn, 504, timeout_md())
+
+  defp respond_changelog(conn, {:error, _reason}, _dep) do
+    send_resp(
+      conn,
+      502,
+      "# Changelog unavailable\n\nCould not fetch the changelog for this range.\n"
+    )
   end
 
   @doc """
